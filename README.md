@@ -1,5 +1,5 @@
-# <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="20" height="20" /> Civitai Android App
-Android app based on Civitai API
+# <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Civitai Android App
+The application provides users with the ability to upload, view, and generate images using the Civitai API. The interface resembles Pinterest but integrates image generation features powered by neural networks. Users can choose from various models, styles, and generation parameters, as well as apply filters and settings to personalize the process. Additionally, the app allows users to save images, share them with others, leave comments, follow authors and models, and receive recommendations based on their preferences.
 
 ## 🚀 Our Team
 
@@ -9,13 +9,13 @@ Android app based on Civitai API
 - **[Fetisov Igor](https://github.com/Fetisyony)**
   A brief description or role of the team member.
 
-- **[IvanCRA](https://github.com/IvanCRA)**
+- **[Ivan Petritchev](https://github.com/IvanCRA)**
   A brief description or role of the team member.
 
 - **[Vladislav Fokin](https://github.com/mareliberum)**
   A brief description or role of the team member.
 
-- **[Polina](https://github.com/pulkabarlova)**
+- **[Polina Barlova](https://github.com/pulkabarlova)**
   A brief description or role of the team member.
 
 - **[Valery Mitioglo](https://github.com/val3rkq)**
