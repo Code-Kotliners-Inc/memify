@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
 android {
@@ -46,6 +47,10 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+    ktlint {
+        debug = true
+        verbose = true
     }
 }
 
