@@ -1,5 +1,5 @@
-# <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Civitai Android App
-The application provides users with the ability to upload, view, and generate images using the Civitai API. The interface resembles Pinterest but integrates image generation features powered by neural networks. Users can choose from various models, styles, and generation parameters, as well as apply filters and settings to personalize the process. Additionally, the app allows users to save images, share them with others, leave comments, follow authors and models, and receive recommendations based on their preferences.
+# <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Memify
+The application provides users with the ability to upload, view, and generate memes. The interface resembles Pinterest but integrates image generation features powered by neural networks.
 
 ## 🚀 Our Team
 
