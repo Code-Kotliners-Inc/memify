@@ -18,9 +18,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MemifyTheme
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                Greeting(name = "fuckers (TEST CI)", modifier = Modifier.padding(innerPadding))
+            MemifyTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Greeting(
+                        name = "fuckers",
+                        modifier = Modifier.padding(innerPadding)
+
+                    )
+                }
             }
         }
     }
@@ -28,11 +33,16 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(text = "Hello $name!", modifier = modifier)
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    MemifyTheme { Greeting("Android") }
+    MemifyTheme {
+        Greeting("Android")
+    }
 }
