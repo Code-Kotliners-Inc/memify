@@ -20,6 +20,14 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: gradle-caches-${{ runner.os }}-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            gradle-caches-${{ runner.os }}-
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -28,3 +36,6 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+
+      - name: Check code style with ktlint
+        run: ./gradlew ktlintCheck
