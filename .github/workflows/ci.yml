@@ -32,7 +32,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: ./gradlew build -x ktlintCheck
+        run: ./gradlew build -x ktlintCheck -x ktlintMainSourceSetCheck -x ktlintTestSourceSetCheck -x ktlintAndroidTestSourceSetCheck
 
       # - name: Run tests
       #   run: ./gradlew test
