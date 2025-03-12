@@ -18,10 +18,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MemifyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(name = "fuckers (TEST CI)", modifier = Modifier.padding(innerPadding))
-                }
+            MemifyTheme
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Greeting(name = "fuckers (TEST CI)", modifier = Modifier.padding(innerPadding))
             }
         }
     }
