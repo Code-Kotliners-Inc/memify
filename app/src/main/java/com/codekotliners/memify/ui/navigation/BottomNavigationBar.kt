@@ -13,38 +13,43 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.domain.entities.NavBarItems
+import com.codekotliners.memify.domain.entities.NavRoutes
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    NavigationBar {
-        val backStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = backStackEntry?.destination?.route
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
 
-        NavBarItems.BarItems.forEach { navItem ->
-            NavigationBarItem(
-                selected = currentRoute == navItem.route,
-                onClick = {
-                    navController.navigate(navItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                icon = {
-                    val icon = if (currentRoute == navItem.route) {
-                        navItem.iconPressed
-                    } else navItem.iconNotPressed
-                    Icon(
-                        painter = painterResource(icon), contentDescription = navItem.title
+    if (currentRoute != NavRoutes.Auth.route) {
+        NavigationBar {
+            NavBarItems.BarItems.forEach { navItem ->
+                NavigationBarItem(
+                    selected = currentRoute == navItem.route,
+                    onClick = {
+                        navController.navigate(navItem.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = {
+                        val icon = if (currentRoute == navItem.route) {
+                            navItem.iconPressed
+                        } else navItem.iconNotPressed
+                        Icon(
+                            painter = painterResource(icon), contentDescription = navItem.title
+                        )
+                    },
+                    label = {
+                        Text(text = navItem.title)
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent
                     )
-                },
-                label = {
-                    Text(text = navItem.title)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent
                 )
-            )
+            }
         }
     }
 }
