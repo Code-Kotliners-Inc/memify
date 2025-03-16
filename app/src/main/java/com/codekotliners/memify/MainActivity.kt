@@ -1,11 +1,15 @@
 package com.codekotliners.memify
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.ContextMenu
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -14,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -42,7 +48,10 @@ import com.codekotliners.memify.ui.screens.CreateScreen
 import com.codekotliners.memify.ui.screens.HomeScreen
 import com.codekotliners.memify.ui.screens.ProfileScreen
 import com.codekotliners.memify.ui.theme.MemifyTheme
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,6 +93,8 @@ fun App() {
 fun LongPressMenu() {
     var showMenu by remember { mutableStateOf(false) }
     var menuPosition by remember { mutableStateOf(Offset.Zero) }
+    val radius = 100.dp
+    val options = listOf("✏️", "🔤", "📤")
 
     Box(
         modifier = Modifier
@@ -94,28 +105,36 @@ fun LongPressMenu() {
                         showMenu = true
                         menuPosition = offset
                     },
-                    onPress = { /* Optional: Handle press if needed */ }
+                    onTap = { showMenu = false }
                 )
             }
     ) {
-        if (showMenu) {
+        AnimatedVisibility(visible = showMenu, exit = androidx.compose.animation.fadeOut(tween(50))) {
             Popup(
                 onDismissRequest = { showMenu = false },
-                alignment = Alignment.TopStart,
+                alignment = Alignment.BottomEnd,
                 offset = IntOffset(menuPosition.x.toInt(), menuPosition.y.toInt()),
                 properties = PopupProperties(focusable = true)
             ) {
-                Box(
-                    modifier = Modifier
+                Box(modifier = Modifier
+                    .size(83.dp)
+                    .padding(15.dp)
                 ) {
-                    Card(
-                        elevation = CardDefaults.cardElevation(8.dp),
-                        modifier = Modifier
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text("Сохранить", modifier = Modifier.padding(8.dp))
-                            Text("Сделать ремикс", modifier = Modifier.padding(8.dp))
-                            Text("Репост", modifier = Modifier.padding(8.dp))
+                    options.forEachIndexed { index, option ->
+                        val angle = (index * (-360 / options.size)) * (PI / 180).toFloat()
+                        val offsetX = (cos(angle) * radius.value).roundToInt()
+                        val offsetY = (sin(angle) * radius.value).roundToInt()
+
+                        Box(
+                            modifier = Modifier
+                                .offset { IntOffset(offsetX, offsetY) }
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .background(Color.White, CircleShape)
+                                .padding(15.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = option, style = MaterialTheme.typography.bodyLarge)
                         }
                     }
                 }
