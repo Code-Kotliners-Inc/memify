@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -27,7 +28,8 @@ import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
 
 
 @Composable
-fun TemplatesFeedScreen(templatesFeedViewModel: TemplatesFeedViewModel = viewModel()) {
+fun TemplatesFeedScreen() {
+    val templatesFeedViewModel: TemplatesFeedViewModel = viewModel()
     val tabs = listOf("Лучшее", "Новое", "Избранное")
 
     val selectedTab by templatesFeedViewModel.selectedTab.collectAsState()
@@ -62,7 +64,7 @@ fun TemplateGrid(templates: List<Int>) {
             .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
         content = {
-            items(templates.size) { template ->
+            items(templates) { template ->
                 TemplateItem(image = painterResource(template))
             }
         }
