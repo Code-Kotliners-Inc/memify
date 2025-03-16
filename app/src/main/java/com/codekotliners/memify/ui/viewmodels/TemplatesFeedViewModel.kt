@@ -1,6 +1,7 @@
-package com.codekotliners.memify
+package com.codekotliners.memify.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
+import com.codekotliners.memify.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
