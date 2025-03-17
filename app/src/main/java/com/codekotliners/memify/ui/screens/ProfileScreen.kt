@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun profileScreen() {
+fun ProfileScreen() {
     Box(
         modifier =
             Modifier

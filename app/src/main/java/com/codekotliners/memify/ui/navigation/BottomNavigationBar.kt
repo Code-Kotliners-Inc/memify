@@ -15,7 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.domain.entities.NavBarItems
 
 @Composable
-fun bottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController) {
     NavigationBar {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route

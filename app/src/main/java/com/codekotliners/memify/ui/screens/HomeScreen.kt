@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun homeScreen() {
+fun HomeScreen() {
     Box(
         modifier =
             Modifier

@@ -38,11 +38,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.codekotliners.memify.domain.entities.NavRoutes
-import com.codekotliners.memify.ui.navigation.bottomNavigationBar
-import com.codekotliners.memify.ui.screens.createScreen
-import com.codekotliners.memify.ui.screens.homeScreen
-import com.codekotliners.memify.ui.screens.profileScreen
-import com.codekotliners.memify.ui.theme.memifyTheme
+import com.codekotliners.memify.ui.navigation.BottomNavigationBar
+import com.codekotliners.memify.ui.screens.CreateScreen
+import com.codekotliners.memify.ui.screens.HomeScreen
+import com.codekotliners.memify.ui.screens.ProfileScreen
+import com.codekotliners.memify.ui.theme.MemifyTheme
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -53,16 +53,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            memifyTheme {
-                longPressMenu()
-                app()
+            MemifyTheme {
+                LongPressMenu()
+                App()
             }
         }
     }
 }
 
 @Composable
-fun app() {
+fun App() {
     val navController = rememberNavController()
     Box(
         modifier =
@@ -76,17 +76,17 @@ fun app() {
                 startDestination = NavRoutes.Home.route,
                 modifier = Modifier.weight(1f),
             ) {
-                composable(NavRoutes.Home.route) { homeScreen() }
-                composable(NavRoutes.Create.route) { createScreen() }
-                composable(NavRoutes.Profile.route) { profileScreen() }
+                composable(NavRoutes.Home.route) { HomeScreen() }
+                composable(NavRoutes.Create.route) { CreateScreen() }
+                composable(NavRoutes.Profile.route) { ProfileScreen() }
             }
-            bottomNavigationBar(navController = navController)
+            BottomNavigationBar(navController = navController)
         }
     }
 }
 
 @Composable
-fun longPressMenu() {
+fun LongPressMenu() {
     var showMenu by remember { mutableStateOf(false) }
     var menuPosition by remember { mutableStateOf(Offset.Zero) }
     val radius = 100.dp
@@ -146,8 +146,8 @@ fun longPressMenu() {
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
-fun appPreview() {
-    memifyTheme {
-        app()
+fun AppPreview() {
+    MemifyTheme {
+        App()
     }
 }
