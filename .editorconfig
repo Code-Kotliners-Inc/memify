@@ -11,8 +11,9 @@ insert_final_newline = true
 
 [*.{kt,kts}]
 ktlint_standard = enabled
+ktlint_standard_multiline-expression-wrapping = enabled
+ktlint_standard_string-template-indent = enabled
 ktlint_standard_function-naming = disabled
-ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_function-signature = disabled
 ktlint_standard_import-ordering = disabled
 ktlint_standard_no-semi = disabled
