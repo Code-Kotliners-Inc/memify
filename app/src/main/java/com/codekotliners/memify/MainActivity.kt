@@ -1,10 +1,7 @@
 package com.codekotliners.memify
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
-import android.view.ContextMenu
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,8 +16,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,12 +37,12 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.domain.entities.NavRoutes
-import com.codekotliners.memify.ui.screens.CreateScreen
-import com.codekotliners.memify.ui.screens.HomeScreen
-import com.codekotliners.memify.ui.screens.ProfileScreen
-import com.codekotliners.memify.ui.theme.MemifyTheme
+import com.codekotliners.memify.ui.navigation.bottomNavigationBar
+import com.codekotliners.memify.ui.screens.createScreen
+import com.codekotliners.memify.ui.screens.homeScreen
+import com.codekotliners.memify.ui.screens.profileScreen
+import com.codekotliners.memify.ui.theme.memifyTheme
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -58,67 +53,71 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MemifyTheme {
-                LongPressMenu()
-                App()
+            memifyTheme {
+                longPressMenu()
+                app()
             }
         }
     }
 }
 
 @Composable
-fun App() {
+fun app() {
     val navController = rememberNavController()
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Column {
             NavHost(
                 navController,
                 startDestination = NavRoutes.Home.route,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
-                composable(NavRoutes.Home.route) { HomeScreen() }
-                composable(NavRoutes.Create.route) { CreateScreen() }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Home.route) { homeScreen() }
+                composable(NavRoutes.Create.route) { createScreen() }
+                composable(NavRoutes.Profile.route) { profileScreen() }
             }
-            BottomNavigationBar(navController = navController)
+            bottomNavigationBar(navController = navController)
         }
     }
 }
 
 @Composable
-fun LongPressMenu() {
+fun longPressMenu() {
     var showMenu by remember { mutableStateOf(false) }
     var menuPosition by remember { mutableStateOf(Offset.Zero) }
     val radius = 100.dp
     val options = listOf("✏️", "🔤", "📤")
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { offset ->
-                        showMenu = true
-                        menuPosition = offset
-                    },
-                    onTap = { showMenu = false }
-                )
-            }
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = { offset ->
+                            showMenu = true
+                            menuPosition = offset
+                        },
+                        onTap = { showMenu = false },
+                    )
+                },
     ) {
         AnimatedVisibility(visible = showMenu, exit = androidx.compose.animation.fadeOut(tween(50))) {
             Popup(
                 onDismissRequest = { showMenu = false },
                 alignment = Alignment.BottomEnd,
                 offset = IntOffset(menuPosition.x.toInt(), menuPosition.y.toInt()),
-                properties = PopupProperties(focusable = true)
+                properties = PopupProperties(focusable = true),
             ) {
-                Box(modifier = Modifier
-                    .size(83.dp)
-                    .padding(15.dp)
+                Box(
+                    modifier =
+                        Modifier
+                            .size(83.dp)
+                            .padding(15.dp),
                 ) {
                     options.forEachIndexed { index, option ->
                         val angle = (index * (-360 / options.size)) * (PI / 180).toFloat()
@@ -126,13 +125,14 @@ fun LongPressMenu() {
                         val offsetY = (sin(angle) * radius.value).roundToInt()
 
                         Box(
-                            modifier = Modifier
-                                .offset { IntOffset(offsetX, offsetY) }
-                                .size(50.dp)
-                                .clip(CircleShape)
-                                .background(Color.White, CircleShape)
-                                .padding(15.dp),
-                            contentAlignment = Alignment.Center
+                            modifier =
+                                Modifier
+                                    .offset { IntOffset(offsetX, offsetY) }
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White, CircleShape)
+                                    .padding(15.dp),
+                            contentAlignment = Alignment.Center,
                         ) {
                             Text(text = option, style = MaterialTheme.typography.bodyLarge)
                         }
@@ -143,12 +143,11 @@ fun LongPressMenu() {
     }
 }
 
-
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
-fun AppPreview() {
-    MemifyTheme {
-        App()
+fun appPreview() {
+    memifyTheme {
+        app()
     }
 }
