@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.domain.entities.NavRoutes
+import com.codekotliners.memify.ui.screens.AuthScreen
 import com.codekotliners.memify.ui.screens.CreateScreen
 import com.codekotliners.memify.ui.screens.HomeScreen
 import com.codekotliners.memify.ui.screens.ProfileScreen
@@ -51,9 +52,10 @@ fun App() {
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
                 composable(NavRoutes.Create.route) { CreateScreen() }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Profile.route) { ProfileScreen(navController) }
+                composable(NavRoutes.Auth.route) { AuthScreen() }
             }
-            BottomNavigationBar(navController = navController)
+            BottomNavigationBar(navController)
         }
     }
 }

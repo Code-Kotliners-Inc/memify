@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.sp
+import com.codekotliners.memify.ui.theme.displayFontFamily
 
 @Composable
 fun CreateScreen() {
@@ -19,6 +20,7 @@ fun CreateScreen() {
     ) {
         Text(
             text = "Create Page, fuckers",
+            fontFamily = displayFontFamily,
             fontSize = 30.sp,
             fontStyle = FontStyle.Italic,
             color = MaterialTheme.colorScheme.onBackground
