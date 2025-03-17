@@ -9,8 +9,9 @@ on:
 
 jobs:
   build:
+    if: >
+      !(github.base_ref == 'develop' && (github.head_ref == 'master' || github.head_ref == 'main'))
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
