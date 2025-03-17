@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -16,8 +17,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,7 +95,12 @@ fun LongPressMenu() {
     var showMenu by remember { mutableStateOf(false) }
     var menuPosition by remember { mutableStateOf(Offset.Zero) }
     val radius = 100.dp
-    val options = listOf("✏️", "🔤", "📤")
+    val options =
+        listOf(
+            Icons.Filled.Edit to "Редактировать",
+            Icons.Filled.TextFields to "Добавить текст",
+            Icons.Filled.Upload to "Загрузить",
+        )
 
     Box(
         modifier =
@@ -106,7 +116,7 @@ fun LongPressMenu() {
                     )
                 },
     ) {
-        AnimatedVisibility(visible = showMenu, exit = androidx.compose.animation.fadeOut(tween(50))) {
+        AnimatedVisibility(visible = showMenu, exit = fadeOut(tween(50))) {
             Popup(
                 onDismissRequest = { showMenu = false },
                 alignment = Alignment.BottomEnd,
@@ -119,7 +129,7 @@ fun LongPressMenu() {
                             .size(83.dp)
                             .padding(15.dp),
                 ) {
-                    options.forEachIndexed { index, option ->
+                    options.forEachIndexed { index, (icon, description) ->
                         val angle = (index * (-360 / options.size)) * (PI / 180).toFloat()
                         val offsetX = (cos(angle) * radius.value).roundToInt()
                         val offsetY = (sin(angle) * radius.value).roundToInt()
@@ -134,7 +144,7 @@ fun LongPressMenu() {
                                     .padding(15.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(text = option, style = MaterialTheme.typography.bodyLarge)
+                            Icon(imageVector = icon, contentDescription = description)
                         }
                     }
                 }
