@@ -21,9 +21,8 @@ class MainActivity : ComponentActivity() {
             MemifyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "fuckers",
-                        modifier = Modifier.padding(innerPadding)
-
+                            name = "fuckers (TEST CI #2)",
+                            modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
@@ -33,16 +32,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+    Text(text = "Hello $name!", modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    MemifyTheme {
-        Greeting("Android")
-    }
+    MemifyTheme { Greeting("Android") }
 }
