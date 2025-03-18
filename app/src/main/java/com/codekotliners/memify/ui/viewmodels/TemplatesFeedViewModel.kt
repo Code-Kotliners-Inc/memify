@@ -21,10 +21,6 @@ class TemplatesFeedViewModel : ViewModel() {
     private val _selectedTab = MutableStateFlow(Tabs.BEST)
     val selectedTab : StateFlow<Tabs> = _selectedTab.asStateFlow()
 
-    private val _templates = MutableStateFlow(
-        List(8){R.drawable.placeholder600x400}
-    )
-
     fun selectTab(tab: Tabs){
         _selectedTab.update { tab }
     }
