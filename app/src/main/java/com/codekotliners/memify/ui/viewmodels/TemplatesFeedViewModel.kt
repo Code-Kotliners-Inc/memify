@@ -25,10 +25,6 @@ class TemplatesFeedViewModel : ViewModel() {
         List(8){R.drawable.placeholder600x400}
     )
 
-    val bestTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
-    val newTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
-    val favouriteTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
-
     fun selectTab(tab: Tabs){
         _selectedTab.update { tab }
     }
