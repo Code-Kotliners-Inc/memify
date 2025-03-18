@@ -13,15 +13,16 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun HomeScreen() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Text(
             text = "Home Page, fuckers",
             fontSize = 30.sp,
             fontStyle = FontStyle.Italic,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
