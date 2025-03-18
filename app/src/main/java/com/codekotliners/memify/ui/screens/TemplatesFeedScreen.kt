@@ -24,9 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.TabState
 import com.codekotliners.memify.ui.viewmodels.Tabs
 import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
@@ -37,7 +39,11 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun TemplatesFeedScreen() {
     val templatesFeedViewModel: TemplatesFeedViewModel = viewModel()
-    val tabs = listOf("Лучшее", "Новое", "Избранное")
+    val tabs = listOf(
+        stringResource(R.string.Best),
+        stringResource(R.string.New),
+        stringResource(R.string.Favourites)
+    )
 
     val tabStates by templatesFeedViewModel.tabStates.collectAsState()
     val selectedTab by templatesFeedViewModel.selectedTab.collectAsState()
