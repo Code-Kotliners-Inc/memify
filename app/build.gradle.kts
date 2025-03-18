@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
-
 android {
     namespace = "com.codekotliners.memify"
     compileSdk = 35
