@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
-
 android {
     namespace = "com.codekotliners.memify"
     compileSdk = 35
@@ -72,4 +71,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
