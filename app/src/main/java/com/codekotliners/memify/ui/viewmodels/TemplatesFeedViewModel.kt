@@ -9,27 +9,48 @@ import kotlinx.coroutines.flow.update
 
 
 class TemplatesFeedViewModel : ViewModel() {
-    private val _selectedTab = MutableStateFlow(0)
-    val selectedTab : StateFlow<Int> = _selectedTab.asStateFlow()
+    private val _tabStates = MutableStateFlow(
+        mapOf(
+            Tabs.BEST to TabState.Content(List(8) { R.drawable.placeholder600x400 }),
+            Tabs.NEW to TabState.Loading,
+            Tabs.FAVOURITE to TabState.Error("No favourites yet")
+        )
+    )
+    val tabStates = _tabStates.asStateFlow()
 
-    private val _templates = MutableStateFlow(mutableListOf(
-        R.drawable.placeholder400x400,
-        R.drawable.placeholder600x400,
-        R.drawable.placeholder600x400,
-        R.drawable.placeholder600x400,
-        R.drawable.placeholder400x400,
-        R.drawable.placeholder400x400,
-        R.drawable.placeholder400x400,
-        R.drawable.placeholder600x400,)
+    private val _selectedTab = MutableStateFlow(Tabs.BEST)
+    val selectedTab : StateFlow<Tabs> = _selectedTab.asStateFlow()
+
+    private val _templates = MutableStateFlow(
+        List(8){R.drawable.placeholder600x400}
     )
 
     val bestTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
     val newTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
     val favouriteTemplates : StateFlow<List<Int>> = _templates.asStateFlow()
 
-    fun selectTab(index: Int){
-        _selectedTab.update { index }
+    fun selectTab(tab: Tabs){
+        _selectedTab.update { tab }
     }
 
+    fun updateTabState(tab: Tabs, state: TabState) {
+        _tabStates.update { currentStates ->
+            currentStates.toMutableMap().apply {
+                this[tab] = state
+            }
+        }
+    }
 
+}
+
+enum class Tabs{
+    BEST,
+    NEW,
+    FAVOURITE
+}
+
+sealed interface TabState {
+    data object Loading : TabState
+    data class Error(val message: String) : TabState
+    data class Content(val templates: List<Int>) : TabState
 }
