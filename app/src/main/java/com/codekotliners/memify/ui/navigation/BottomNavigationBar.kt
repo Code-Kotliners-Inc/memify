@@ -31,19 +31,24 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 icon = {
-                    val icon = if (currentRoute == navItem.route) {
-                        navItem.iconPressed
-                    } else navItem.iconNotPressed
+                    val icon =
+                        if (currentRoute == navItem.route) {
+                            navItem.iconPressed
+                        } else {
+                            navItem.iconNotPressed
+                        }
                     Icon(
-                        painter = painterResource(icon), contentDescription = navItem.title
+                        painter = painterResource(icon),
+                        contentDescription = navItem.title,
                     )
                 },
                 label = {
                     Text(text = navItem.title)
                 },
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = Color.Transparent
-                )
+                colors =
+                    NavigationBarItemDefaults.colors(
+                        indicatorColor = Color.Transparent,
+                    ),
             )
         }
     }
