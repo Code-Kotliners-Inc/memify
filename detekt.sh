@@ -1,30 +1,33 @@
 #!/bin/bash
-
 set -e
 
 ROOT_FOLDER=build/bin
 VERSION=1.23.8
-DETEKT_BIN=$ROOT_FOLDER/detekt-$VERSION
-mkdir -p $ROOT_FOLDER
-if [ ! -f "$DETEKT_BIN" ]; then
-  echo "Please wait, first download..."
-  rm -f $ROOT_FOLDER/detekt-*
-  echo "Downloading..."
-  curl -sSL https://github.com/detekt/detekt/releases/download/v${VERSION}/detekt --output $DETEKT_BIN
-  echo "Chmod detekt"
-  chmod a+x $DETEKT_BIN
+DETEKT_JAR="$ROOT_FOLDER/detekt-cli-$VERSION-all.jar"
+DETEKT_URL="https://github.com/detekt/detekt/releases/download/v$VERSION/detekt-cli-$VERSION-all.jar"
+
+mkdir -p "$ROOT_FOLDER"
+
+if [ ! -f "$DETEKT_JAR" ]; then
+  echo "Downloading Detekt..."
+  rm -f "$ROOT_FOLDER"/detekt-*
+  curl -sSL "$DETEKT_URL" -o "$DETEKT_JAR"
 fi
 
-if [ $CI ]; then
+if [ "$CI" ]; then
   export REVIEWDOG_GITHUB_API_TOKEN="${GITHUB_TOKEN}"
-  $DETEKT_BIN --config .github/workflows/assets/detekt.yml --report xml:detekt_report.xml
+  java -jar "$DETEKT_JAR" \
+    --config .github/workflows/assets/detekt.yml \
+    --report xml:detekt_report.xml
 
   reviewdog -f=checkstyle \
-      -name="detekt" \
-      -reporter="github-pr-review" \
-      -fail-on-error="true" <detekt_report.xml
+    -name="detekt" \
+    -reporter="github-pr-review" \
+    -fail-on-error="true" <detekt_report.xml
 else
-  $DETEKT_BIN --config .github/workflows/assets/detekt.yml "$@"
+  java -jar "$DETEKT_JAR" \
+    --config .github/workflows/assets/detekt.yml \
+    "$@"
 fi
 
 echo "Done!"
