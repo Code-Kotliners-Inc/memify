@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
-    id("com.vk.vkompose") version "0.7"
+    id("com.vk.vkompose") version "0.6.2"
 }
 
 android {
@@ -78,7 +78,14 @@ dependencies {
 }
 
 vkompose {
-    skippabilityCheck = true
+
+    skippabilityCheck {
+
+        strongSkipping {
+            // Fail compilation if there is any problem with strong skipping mode
+            strongSkippingFailFastEnabled = false // false by default
+        }
+    }
 
     recompose {
         isHighlighterEnabled = true
