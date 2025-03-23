@@ -4,5 +4,5 @@ data class BarItem(
     val title: String,
     var iconNotPressed: Int,
     val iconPressed: Int,
-    val route: String
+    val route: String,
 )
