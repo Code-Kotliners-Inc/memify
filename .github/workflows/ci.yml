@@ -47,6 +47,9 @@ jobs:
             restore-keys: |
                 gradle-caches-${{ runner.os }}-
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./ktlint.sh ./detekt.sh
+
       - name: Ktlint Check
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
