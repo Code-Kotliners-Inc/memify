@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("com.vk.vkompose") version "0.7"
 }
 
 android {
@@ -72,4 +73,25 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+//    detektPlugins("com.vk.vkompose:detekt:0.6")
+}
+
+vkompose {
+    skippabilityCheck = true
+
+    recompose {
+        isHighlighterEnabled = true
+        isLoggerEnabled = true
+    }
+
+    testTag {
+        isApplierEnabled = true
+        isDrawerEnabled = false
+        isCleanerEnabled = false
+
+        isApplierEnabled = true
+    }
+
+    sourceInformationClean = true
 }
