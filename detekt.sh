@@ -9,7 +9,9 @@ mkdir -p $ROOT_FOLDER
 if [ ! -f "$DETEKT_BIN" ]; then
   echo "Please wait, first download..."
   rm -f $ROOT_FOLDER/detekt-*
+  echo "Downloading..."
   curl -sSL https://github.com/detekt/detekt/releases/download/v${VERSION}/detekt --output $DETEKT_BIN
+  echo "Chmod detekt"
   chmod a+x $DETEKT_BIN
 fi
 
