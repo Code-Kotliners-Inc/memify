@@ -36,6 +36,10 @@ jobs:
   static_analysis:
     runs-on: ubuntu-latest
     steps:
+      - name: Install reviewdog
+        uses: reviewdog/action-setup@v1
+        with:
+            reviewdog_version: latest
       - name: Checkout static code
         uses: actions/checkout@v3
 
