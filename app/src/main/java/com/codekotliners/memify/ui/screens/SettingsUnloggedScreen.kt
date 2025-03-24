@@ -29,40 +29,42 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codekotliners.memify.ui.theme.BackgroundLight
-import com.codekotliners.memify.ui.theme.BlueLight
+import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.theme.LocalExtraColors
 import com.codekotliners.memify.ui.theme.MemifyTheme
-import com.codekotliners.memify.ui.theme.WhiteLight
+import com.codekotliners.memify.ui.theme.authButton
+import com.codekotliners.memify.ui.theme.suggestNewAccount
+
 @Composable
 fun SettingsUnLoggedScreen() {
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .background(BackgroundLight)
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
         ) {
             IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "back",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
                 Text(
-                    text = "Настройки",
-                    fontSize = 20.sp,
-                    color = Color.Black,
+                    text = stringResource(id = R.string.settings_title),
+                    style = MaterialTheme.typography.suggestNewAccount,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -73,14 +75,13 @@ fun SettingsUnLoggedScreen() {
             modifier = Modifier
                 .height(56.dp)
                 .fillMaxWidth()
-                .background(WhiteLight, shape = RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
                 .padding(horizontal = 30.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "Тема",
-                color = Color.Black,
-                fontSize = 18.sp,
+                text = stringResource(id = R.string.theme),
+                style = MaterialTheme.typography.suggestNewAccount,
             )
             Spacer(modifier = Modifier.weight(1f))
             Switch(
@@ -88,7 +89,7 @@ fun SettingsUnLoggedScreen() {
                     .width(64.dp),
                 checked = false,
                 onCheckedChange = {},
-                colors = SwitchDefaults.colors(BlueLight),
+                colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -98,12 +99,11 @@ fun SettingsUnLoggedScreen() {
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = BlueLight),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
         ) {
             Text(
-                text = "Войти в аккаунт",
-                color = Color.White,
-                fontSize = 18.sp,
+                text = stringResource(id = R.string.login),
+                style = MaterialTheme.typography.authButton,
                 )
         }
     }
@@ -111,7 +111,7 @@ fun SettingsUnLoggedScreen() {
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
-fun AppPreview() {
+fun AppPreview1() {
     MemifyTheme {
         SettingsUnLoggedScreen()
     }

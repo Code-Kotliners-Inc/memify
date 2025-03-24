@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Memify</string>
+    <string name="settings_title">Настройки</string>
+    <string name="login">Войти в аккаунт</string>
+    <string name="theme">Тема</string>
+    <string name="user_name">Имя пользователя</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="user_photo">Фото профиля</string>
+    <string name="safety">Безопасность</string>
+    <string name="link_vk">Аккаунт ВК</string>
 </resources>
