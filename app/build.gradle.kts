@@ -4,6 +4,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("com.vk.vkompose") version "0.6.2"
 }
 
 android {
@@ -75,4 +76,30 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+vkompose {
+
+    skippabilityCheck {
+
+        strongSkipping {
+            // Fail compilation if there is any problem with strong skipping mode
+            strongSkippingFailFastEnabled = false // false by default
+        }
+    }
+
+    recompose {
+        isHighlighterEnabled = true
+        isLoggerEnabled = true
+    }
+
+    testTag {
+        isApplierEnabled = true
+        isDrawerEnabled = false
+        isCleanerEnabled = false
+
+        isApplierEnabled = true
+    }
+
+    sourceInformationClean = true
 }
