@@ -21,6 +21,8 @@ import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.domain.entities.NavRoutes
 import com.codekotliners.memify.ui.screens.CreateScreen
 import com.codekotliners.memify.ui.screens.HomeScreen
+import com.codekotliners.memify.ui.screens.ImageItem
+import com.codekotliners.memify.ui.screens.ImageViewerScreen
 import com.codekotliners.memify.ui.screens.ProfileScreen
 import com.codekotliners.memify.ui.theme.MemifyTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,7 +59,18 @@ fun App() {
                 modifier = Modifier.weight(1f),
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
-                composable(NavRoutes.Create.route) { CreateScreen() }
+                composable(NavRoutes.Create.route) {
+                    ImageViewerScreen(
+                        ImageItem(
+                            "Cringe",
+                            "https://fourloko.com/best-memes-of-2020/images/25a.png",
+                        ),
+                        {},
+                        {},
+                        {},
+                        {},
+                    )
+                }
                 composable(NavRoutes.Profile.route) { ProfileScreen() }
             }
             BottomNavigationBar(navController = navController)
