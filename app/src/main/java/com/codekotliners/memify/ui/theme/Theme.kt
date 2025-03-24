@@ -14,30 +14,33 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val lightScheme = lightColorScheme(
-    primary = primaryLight,
-    onPrimary = onPrimaryLight,
-    primaryContainer = primaryContainerLight,
-    onPrimaryContainer = onPrimaryContainerLight,
-    background = backgroundLight,
-    surface = surfaceLight,
-    error = errorLight,
-)
-
-private val darkScheme = darkColorScheme(
-    primary = primaryDark,
-    onPrimary = onPrimaryDark,
-    primaryContainer = primaryContainerDark,
-    onPrimaryContainer = onPrimaryContainerDark,
-    background = backgroundDark,
-    surface = surfaceDark,
-    error = errorDark,
-)
-
-val LocalExtraColors = staticCompositionLocalOf<ExtraColors> {
-    error(
-        "No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme."
+private val lightScheme =
+    lightColorScheme(
+        primary = primaryLight,
+        onPrimary = onPrimaryLight,
+        primaryContainer = primaryContainerLight,
+        onPrimaryContainer = onPrimaryContainerLight,
+        background = backgroundLight,
+        surface = surfaceLight,
+        error = errorLight,
     )
+
+private val darkScheme =
+    darkColorScheme(
+        primary = primaryDark,
+        onPrimary = onPrimaryDark,
+        primaryContainer = primaryContainerDark,
+        onPrimaryContainer = onPrimaryContainerDark,
+        background = backgroundDark,
+        surface = surfaceDark,
+        error = errorDark,
+    )
+
+val LocalExtraColors =
+    staticCompositionLocalOf<ExtraColors> {
+        error(
+            "No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme.",
+        )
 }
 
 @Composable
@@ -79,48 +82,54 @@ data class ExtraColors(
     )
 }
 
-val LightExtraColors = ExtraColors(
-    authButtons = ExtraColors.AuthButtons(
-        google = ButtonColors(
-            containerColor = Color(0xFF000000),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF4E4E4E),
-            disabledContentColor = Color.Black
-        ),
-        vk = ButtonColors(
-            containerColor = Color(0xFF0066FF),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF438EFF),
-            disabledContentColor = Color.Black
-        ),
-        mail = ButtonColors(
-            containerColor = Color(0xFFD30808),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFFE84F4F),
-            disabledContentColor = Color.White
-        ),
-    )
+val LightExtraColors =
+    ExtraColors(
+        authButtons =
+            ExtraColors.AuthButtons(
+                google = ButtonColors(
+                    containerColor = Color(0xFF000000),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFF4E4E4E),
+                    disabledContentColor = Color.Black,
+                ),
+                vk = ButtonColors(
+                    containerColor = Color(0xFF0066FF),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFF438EFF),
+                    disabledContentColor = Color.Black,
+                ),
+                mail = ButtonColors(
+                    containerColor = Color(0xFFD30808),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFFE84F4F),
+                    disabledContentColor = Color.White,
+                ),
+        )
 )
 
 val DarkExtraColors = ExtraColors(
-    authButtons = ExtraColors.AuthButtons(
-        google = ButtonColors(
-            containerColor = Color(0xFF000000),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF4E4E4E),
-            disabledContentColor = Color.Black
-        ),
-        vk = ButtonColors(
-            containerColor = Color(0xFF0066FF),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFF438EFF),
-            disabledContentColor = Color.Black
-        ),
-        mail = ButtonColors(
-            containerColor = Color(0xFFD30808),
-            contentColor = Color.White,
-            disabledContainerColor = Color(0xFFE84F4F),
-            disabledContentColor = Color.White
-        ),
-    )
+    authButtons =
+        ExtraColors.AuthButtons(
+            google =
+                ButtonColors(
+                    containerColor = Color(0xFF000000),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFF4E4E4E),
+                    disabledContentColor = Color.Black,
+                ),
+            vk =
+                ButtonColors(
+                    containerColor = Color(0xFF0066FF),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFF438EFF),
+                    disabledContentColor = Color.Black,
+                ),
+            mail =
+                ButtonColors(
+                    containerColor = Color(0xFFD30808),
+                    contentColor = Color.White,
+                    disabledContainerColor = Color(0xFFE84F4F),
+                    disabledContentColor = Color.White,
+                ),
+    ),
 )
