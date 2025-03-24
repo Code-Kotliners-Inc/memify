@@ -12,6 +12,4 @@
     <string name="back">Back</string>
     <string name="registration_title">Регистрация</string>
     <string name="go_back">Назад</string>
-    <string name="login_button">Войти</string>
-    <string name="login_title">Вход</string>
 </resources>
