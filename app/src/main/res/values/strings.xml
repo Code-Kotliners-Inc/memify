@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Memify</string>
+    <string name="login_google_button">Войти с помощью Google</string>
+    <string name="login_vk_button">Войти с помощью VK</string>
+    <string name="login_mail_button">Войти с помощью почты</string>
+    <string name="no_account_question">Нет аккаунта?</string>
+    <string name="register_button">Зарегистрироваться</string>
 </resources>
