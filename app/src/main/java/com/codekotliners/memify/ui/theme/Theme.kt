@@ -41,7 +41,7 @@ val LocalExtraColors =
         error(
             "No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme.",
         )
-}
+    }
 
 @Composable
 fun MemifyTheme(
@@ -86,50 +86,54 @@ val LightExtraColors =
     ExtraColors(
         authButtons =
             ExtraColors.AuthButtons(
-                google = ButtonColors(
-                    containerColor = Color(0xFF000000),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFF4E4E4E),
-                    disabledContentColor = Color.Black,
-                ),
-                vk = ButtonColors(
-                    containerColor = Color(0xFF0066FF),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFF438EFF),
-                    disabledContentColor = Color.Black,
-                ),
-                mail = ButtonColors(
-                    containerColor = Color(0xFFD30808),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFFE84F4F),
-                    disabledContentColor = Color.White,
-                ),
-        )
+                google =
+                    ButtonColors(
+                        containerColor = Color(0xFF000000),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContentColor = Color.Black,
+                    ),
+                vk =
+                    ButtonColors(
+                        containerColor = Color(0xFF0066FF),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF438EFF),
+                        disabledContentColor = Color.Black,
+                    ),
+                mail =
+                    ButtonColors(
+                        containerColor = Color(0xFFD30808),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFFE84F4F),
+                        disabledContentColor = Color.White,
+                    ),
+            )
 )
 
-val DarkExtraColors = ExtraColors(
-    authButtons =
-        ExtraColors.AuthButtons(
-            google =
-                ButtonColors(
-                    containerColor = Color(0xFF000000),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFF4E4E4E),
-                    disabledContentColor = Color.Black,
-                ),
-            vk =
-                ButtonColors(
-                    containerColor = Color(0xFF0066FF),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFF438EFF),
-                    disabledContentColor = Color.Black,
-                ),
-            mail =
-                ButtonColors(
-                    containerColor = Color(0xFFD30808),
-                    contentColor = Color.White,
-                    disabledContainerColor = Color(0xFFE84F4F),
-                    disabledContentColor = Color.White,
-                ),
-    ),
+val DarkExtraColors =
+    ExtraColors(
+        authButtons =
+            ExtraColors.AuthButtons(
+                google =
+                    ButtonColors(
+                        containerColor = Color(0xFF000000),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContentColor = Color.Black,
+                    ),
+                vk =
+                    ButtonColors(
+                        containerColor = Color(0xFF0066FF),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF438EFF),
+                        disabledContentColor = Color.Black,
+                    ),
+                mail =
+                    ButtonColors(
+                        containerColor = Color(0xFFD30808),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFFE84F4F),
+                        disabledContentColor = Color.White,
+                    ),
+            ),
 )
