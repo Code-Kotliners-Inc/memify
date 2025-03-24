@@ -15,25 +15,28 @@ val AppTypography = Typography()
 
 val Typography.authButton: TextStyle
     @Composable
-    get() = titleMedium.copy(
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
+    get() = titleMedium
+        .copy(
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+        )
 
 val Typography.suggestNewAccount: TextStyle
     @Composable
-    get() = titleMedium.copy(
-        fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
+    get() = titleMedium
+        .copy(
+            fontWeight = FontWeight.Normal,
+            fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+        )
 
 val Typography.registerButton: TextStyle
     @Composable
-    get() = titleMedium.copy(
-        fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
-        textDecoration = TextDecoration.Underline,
-        color = MaterialTheme.colorScheme.onPrimary
-    )
+    get() = titleMedium
+        .copy(
+            fontWeight = FontWeight.Normal,
+            fontSize = 18.sp,
+            textDecoration = TextDecoration.Underline,
+            color = MaterialTheme.colorScheme.onPrimary,
+        )

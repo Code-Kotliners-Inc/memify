@@ -21,7 +21,7 @@ private val lightScheme = lightColorScheme(
     onPrimaryContainer = onPrimaryContainerLight,
     background = backgroundLight,
     surface = surfaceLight,
-    error = errorLight
+    error = errorLight,
 )
 
 private val darkScheme = darkColorScheme(
@@ -31,12 +31,13 @@ private val darkScheme = darkColorScheme(
     onPrimaryContainer = onPrimaryContainerDark,
     background = backgroundDark,
     surface = surfaceDark,
-    error = errorDark
+    error = errorDark,
 )
 
-
 val LocalExtraColors = staticCompositionLocalOf<ExtraColors> {
-    error("No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme.")
+    error(
+        "No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme."
+    )
 }
 
 @Composable
@@ -68,14 +69,13 @@ fun MemifyTheme(
     }
 }
 
-
 data class ExtraColors(
-    val authButtons: AuthButtons
+    val authButtons: AuthButtons,
 ) {
     data class AuthButtons(
         val mail: ButtonColors,
         val google: ButtonColors,
-        val vk: ButtonColors
+        val vk: ButtonColors,
     )
 }
 

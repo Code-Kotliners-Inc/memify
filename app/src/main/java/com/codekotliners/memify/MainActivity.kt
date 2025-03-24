@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MemifyTheme(
-                dynamicColor = false
+                dynamicColor = false,
             ) {
                 App()
             }
