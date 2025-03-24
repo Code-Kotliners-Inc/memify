@@ -43,7 +43,11 @@ enum class Tabs {
 sealed interface TabState {
     data object Loading : TabState
 
-    data class Error(val message: String) : TabState
+    data class Error(
+        val message: String,
+    ) : TabState
 
-    data class Content(val templates: List<Int>) : TabState
+    data class Content(
+        val templates: List<Int>,
+    ) : TabState
 }
