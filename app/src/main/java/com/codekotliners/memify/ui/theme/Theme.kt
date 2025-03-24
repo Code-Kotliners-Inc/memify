@@ -107,8 +107,8 @@ val LightExtraColors =
                         disabledContainerColor = Color(0xFFE84F4F),
                         disabledContentColor = Color.White,
                     ),
-            )
-)
+            ),
+    )
 
 val DarkExtraColors =
     ExtraColors(
@@ -136,4 +136,4 @@ val DarkExtraColors =
                         disabledContentColor = Color.White,
                     ),
             ),
-)
+    )
