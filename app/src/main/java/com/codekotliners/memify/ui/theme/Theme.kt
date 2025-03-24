@@ -2,36 +2,46 @@ package com.codekotliners.memify.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = Purple80,
-        secondary = PurpleGrey80,
-        tertiary = Pink80,
+private val lightScheme =
+    lightColorScheme(
+        primary = primaryLight,
+        onPrimary = onPrimaryLight,
+        primaryContainer = primaryContainerLight,
+        onPrimaryContainer = onPrimaryContainerLight,
+        background = backgroundLight,
+        surface = surfaceLight,
+        error = errorLight,
     )
 
-private val LightColorScheme =
-    lightColorScheme(
-        primary = Purple40,
-        secondary = PurpleGrey40,
-        tertiary = Pink40,
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-     */
+private val darkScheme =
+    darkColorScheme(
+        primary = primaryDark,
+        onPrimary = onPrimaryDark,
+        primaryContainer = primaryContainerDark,
+        onPrimaryContainer = onPrimaryContainerDark,
+        background = backgroundDark,
+        surface = surfaceDark,
+        error = errorDark,
     )
+
+val LocalExtraColors =
+    staticCompositionLocalOf<ExtraColors> {
+        error(
+            "No ExtraColors provided! Make sure to wrap your Composables in MemifyTheme.",
+        )
+    }
 
 @Composable
 fun MemifyTheme(
@@ -47,13 +57,83 @@ fun MemifyTheme(
                 if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             }
 
-            darkTheme -> DarkColorScheme
-            else -> LightColorScheme
+            darkTheme -> darkScheme
+            else -> lightScheme
         }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content,
+    val extraColorScheme: ExtraColors = if (darkTheme) DarkExtraColors else LightExtraColors
+
+    CompositionLocalProvider(LocalExtraColors provides extraColorScheme) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = AppTypography,
+            content = content,
+        )
+    }
+}
+
+data class ExtraColors(
+    val authButtons: AuthButtons,
+) {
+    data class AuthButtons(
+        val mail: ButtonColors,
+        val google: ButtonColors,
+        val vk: ButtonColors,
     )
 }
+
+val LightExtraColors =
+    ExtraColors(
+        authButtons =
+            ExtraColors.AuthButtons(
+                google =
+                    ButtonColors(
+                        containerColor = Color(0xFF000000),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContentColor = Color.Black,
+                    ),
+                vk =
+                    ButtonColors(
+                        containerColor = Color(0xFF0066FF),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF438EFF),
+                        disabledContentColor = Color.Black,
+                    ),
+                mail =
+                    ButtonColors(
+                        containerColor = Color(0xFFD30808),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFFE84F4F),
+                        disabledContentColor = Color.White,
+                    ),
+            ),
+    )
+
+val DarkExtraColors =
+    ExtraColors(
+        authButtons =
+            ExtraColors.AuthButtons(
+                google =
+                    ButtonColors(
+                        containerColor = Color(0xFF000000),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContentColor = Color.Black,
+                    ),
+                vk =
+                    ButtonColors(
+                        containerColor = Color(0xFF0066FF),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFF438EFF),
+                        disabledContentColor = Color.Black,
+                    ),
+                mail =
+                    ButtonColors(
+                        containerColor = Color(0xFFD30808),
+                        contentColor = Color.White,
+                        disabledContainerColor = Color(0xFFE84F4F),
+                        disabledContentColor = Color.White,
+                    ),
+            ),
+    )

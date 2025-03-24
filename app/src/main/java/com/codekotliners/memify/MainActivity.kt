@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -30,7 +31,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MemifyTheme {
+            MemifyTheme(
+                dynamicColor = false,
+            ) {
                 App()
             }
         }
@@ -44,7 +47,8 @@ fun App() {
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(MaterialTheme.colorScheme.background)
+                .systemBarsPadding(),
     ) {
         Column {
             NavHost(
