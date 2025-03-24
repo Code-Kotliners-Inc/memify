@@ -4,6 +4,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("com.vk.vkompose") version "0.6.2"
 }
 android {
     namespace = "com.codekotliners.memify"
@@ -42,7 +43,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
     packaging {
         resources {
@@ -76,4 +77,30 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+}
+
+vkompose {
+
+    skippabilityCheck {
+
+        strongSkipping {
+            // Fail compilation if there is any problem with strong skipping mode
+            strongSkippingFailFastEnabled = false // false by default
+        }
+    }
+
+    recompose {
+        isHighlighterEnabled = true
+        isLoggerEnabled = true
+    }
+
+    testTag {
+        isApplierEnabled = true
+        isDrawerEnabled = false
+        isCleanerEnabled = false
+
+        isApplierEnabled = true
+    }
+
+    sourceInformationClean = true
 }
