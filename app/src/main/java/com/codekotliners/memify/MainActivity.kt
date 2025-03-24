@@ -17,11 +17,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.domain.entities.NavRoutes
+import com.codekotliners.memify.ui.navigation.BottomNavigationBar
+import com.codekotliners.memify.ui.screens.AuthScreen
 import com.codekotliners.memify.ui.screens.CreateScreen
 import com.codekotliners.memify.ui.screens.HomeScreen
-import com.codekotliners.memify.ui.screens.ProfileScreen
 import com.codekotliners.memify.ui.theme.MemifyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,7 +58,9 @@ fun App() {
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
                 composable(NavRoutes.Create.route) { CreateScreen() }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Profile.route) { AuthScreen(navController, {}, {}, {}) }
+                composable(NavRoutes.Login.route) { }
+                composable(NavRoutes.Register.route) { }
             }
             BottomNavigationBar(navController = navController)
         }

@@ -40,7 +40,6 @@ import com.codekotliners.memify.ui.theme.authButton
 import com.codekotliners.memify.ui.theme.registerButton
 import com.codekotliners.memify.ui.theme.suggestNewAccount
 
-
 @Composable
 fun AuthScreen(
     navController: NavController,
@@ -51,67 +50,87 @@ fun AuthScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Crop,
             )
         }
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             contentAlignment = Alignment.Center,
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
-                modifier = Modifier
-                    .fillMaxSize(),
-            ) {
-                AuthButton(
-                    text = stringResource(R.string.login_google_button),
-                    icon = painterResource(id = R.drawable.google_icon),
-                    buttonColor = LocalExtraColors.current.authButtons.google,
-                    onClick = {
-                        onLogInWithGoogle()
-                    },
-                )
-
-                AuthButton(
-                    text = stringResource(R.string.login_vk_button),
-                    icon = painterResource(id = R.drawable.vk_icon),
-                    buttonColor = LocalExtraColors.current.authButtons.vk,
-                    onClick = {
-                        onLogInWithVk()
-                    },
-                )
-
-                AuthButton(
-                    text = stringResource(R.string.login_mail_button),
-                    icon = painterResource(id = R.drawable.mail_icon),
-                    buttonColor = LocalExtraColors.current.authButtons.mail,
-                    onClick = {
-                        onLogInWithMail()
-                    },
-                )
-
-                NoAccountSection(
-                    onRegisterClick = { navController.navigate(NavRoutes.Register.route) }
-                )
-            }
+            LogInMethods(
+                navController = navController,
+                onLogInWithGoogle = onLogInWithGoogle,
+                onLogInWithMail = onLogInWithMail,
+                onLogInWithVk = onLogInWithVk,
+            )
         }
+    }
+}
+
+@Composable
+fun LogInMethods(
+    navController: NavController,
+    onLogInWithGoogle: () -> Unit,
+    onLogInWithMail: () -> Unit,
+    onLogInWithVk: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        modifier =
+            Modifier.fillMaxSize(),
+    ) {
+        AuthButton(
+            text = stringResource(R.string.login_google_button),
+            icon = painterResource(id = R.drawable.google_icon),
+            buttonColor = LocalExtraColors.current.authButtons.google,
+            onClick = {
+                onLogInWithGoogle()
+            },
+        )
+
+        AuthButton(
+            text = stringResource(R.string.login_vk_button),
+            icon = painterResource(id = R.drawable.vk_icon),
+            buttonColor = LocalExtraColors.current.authButtons.vk,
+            onClick = {
+                onLogInWithVk()
+            },
+        )
+
+        AuthButton(
+            text = stringResource(R.string.login_mail_button),
+            icon = painterResource(id = R.drawable.mail_icon),
+            buttonColor = LocalExtraColors.current.authButtons.mail,
+            onClick = {
+                onLogInWithMail()
+            },
+        )
+
+        NoAccountSection(
+            onRegisterClick = {
+                navController.navigate(NavRoutes.Register.route)
+            },
+        )
     }
 }
 
@@ -130,11 +149,12 @@ fun NoAccountSection(onRegisterClick: () -> Unit) {
         Text(
             text = stringResource(R.string.register_button),
             style = MaterialTheme.typography.registerButton,
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .clickable {
-                    onRegisterClick()
-                },
+            modifier =
+                Modifier
+                    .padding(vertical = 16.dp)
+                    .clickable {
+                        onRegisterClick()
+                    },
         )
     }
 }
@@ -150,9 +170,10 @@ fun AuthButton(
         onClick = onClick,
         colors = buttonColor,
         shape = RoundedCornerShape(16.dp),
-        modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .height(58.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth(0.9f)
+                .height(58.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
