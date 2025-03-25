@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -20,13 +21,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,66 +44,68 @@ import com.codekotliners.memify.ui.theme.MemifyTheme
 fun CreateScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    val sheetState = rememberModalBottomSheetState()
-    var isSheetOpen by remember { mutableStateOf(false) }
-
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "Cringe",
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { /* здесь будет магия */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "Меню",
-                        )
-                    }
-                },
-                colors =
-                    TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    ),
-                scrollBehavior = scrollBehavior,
-            )
-        },
+        topBar = { CreateScreenTopBar(scrollBehavior) },
     ) { innerPadding ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(Modifier.height(25.dp))
+        CreateScreenContent(innerPadding)
+    }
+}
 
-            Image(
-                painter = painterResource(id = R.drawable.meme),
-                contentDescription = "Meme image",
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Surface(
-                color = Color(red = 255, green = 255, blue = 255),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.padding(4.dp),
-            ) {
-                Text(
-                    text = "Нажмите и удерживайте холст для выбора инструмента",
-                    fontFamily = FontFamily(Font(R.font.ubunturegular)),
-                    fontSize = 13.sp,
-                    fontStyle = FontStyle.Normal,
-                    textAlign = TextAlign.Center,
-                    color = Color(red = 132, green = 132, blue = 132),
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+    CenterAlignedTopAppBar(
+        title = { Text("Cringe") },
+        actions = {
+            IconButton(onClick = { /* Меню */ }) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = "Меню",
                 )
             }
+        },
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+@Composable
+fun CreateScreenContent(innerPadding: PaddingValues) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(Modifier.height(25.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.meme),
+            contentDescription = "Meme image",
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Surface(
+            color = Color.White,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.padding(4.dp),
+        ) {
+            Text(
+                text = "Нажмите и удерживайте холст для выбора инструмента",
+                fontFamily = FontFamily(Font(R.font.ubunturegular)),
+                fontSize = 13.sp,
+                fontStyle = FontStyle.Normal,
+                textAlign = TextAlign.Center,
+                color = Color.Gray,
+            )
         }
     }
 }
