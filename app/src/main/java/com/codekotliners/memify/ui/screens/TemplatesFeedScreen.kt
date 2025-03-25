@@ -17,6 +17,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,10 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.TabState
+import com.codekotliners.memify.ui.viewmodels.Tabs
 import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -47,7 +51,7 @@ fun TemplatesFeedScreen() {
                     onClick = { templatesFeedViewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = templatesFeedViewModel.resolveTabName(tab),
+                            text = resolveTabName(tab),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
@@ -133,4 +137,16 @@ fun ErrorMessage(message: String) {
 @Composable
 fun PreviewTemplatesFeed() {
     TemplatesFeedScreen()
+}
+
+@Composable
+@ReadOnlyComposable
+fun resolveTabName(tab: Tabs): String {
+    val nameRes =
+        when (tab) {
+            Tabs.BEST -> R.string.Best
+            Tabs.NEW -> R.string.New
+            Tabs.FAVOURITE -> R.string.Favourites
+        }
+    return stringResource(nameRes)
 }
