@@ -24,13 +24,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.TabState
-import com.codekotliners.memify.ui.viewmodels.Tabs
 import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -38,46 +35,36 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun TemplatesFeedScreen() {
     val templatesFeedViewModel: TemplatesFeedViewModel = viewModel()
-    val tabs =
-        listOf(
-            stringResource(R.string.Best),
-            stringResource(R.string.New),
-            stringResource(R.string.Favourites),
-        )
 
-    val tabStates by templatesFeedViewModel.tabStates.collectAsState()
+    val tabState by templatesFeedViewModel.tabStates.collectAsState()
     val selectedTab by templatesFeedViewModel.selectedTab.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTab.ordinal) {
-            tabs.forEachIndexed { index, title ->
+            tabState.forEach { (tab, _) ->
                 Tab(
-                    selected = selectedTab.ordinal == index,
-                    onClick = { templatesFeedViewModel.selectTab(Tabs.entries[index]) },
+                    selected = selectedTab.ordinal == tab.ordinal,
+                    onClick = { templatesFeedViewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = title,
+                            text = templatesFeedViewModel.resolveTabName(tab),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
                 )
             }
         }
-        when (val currentState = tabStates[selectedTab]) {
+        when (val currentState = tabState[selectedTab]) {
             is TabState.Loading -> {
-                // Показываем индикатор загрузки
                 LoadingIndicator()
             }
             is TabState.Error -> {
-                // Показываем сообщение об ошибке
                 ErrorMessage(message = currentState.message)
             }
             is TabState.Content -> {
-                // Показываем сетку шаблонов
                 TemplateGrid(templates = currentState.templates.toImmutableList())
             }
             null -> {
-                // Если состояние не определено (например, вкладка не инициализирована)
                 ErrorMessage(message = "Состояние не доступно")
             }
         }
