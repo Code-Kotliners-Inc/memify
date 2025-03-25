@@ -10,10 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -26,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +41,7 @@ import com.codekotliners.memify.App
 import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.theme.MemifyTheme
 import com.codekotliners.memify.ui.theme.authButton
+import com.codekotliners.memify.ui.theme.enterName
 import com.codekotliners.memify.ui.theme.hintText
 import com.codekotliners.memify.ui.theme.registerButton
 import com.codekotliners.memify.ui.theme.suggestNewAccount
@@ -102,10 +109,26 @@ fun SettingsLoggedScreen() {
                 text = stringResource(id = R.string.user_name),
                 style = MaterialTheme.typography.hintText,
             )
-            Spacer(modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    text = stringResource(id = R.string.user_name),
+                    style = MaterialTheme.typography.enterName,
+                    modifier = Modifier.padding(10.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = {}) {
+                    Icon(
+                        imageVector =Icons.Default.Create,
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+
+            }
 
         }
         Spacer(modifier = Modifier.height(20.dp))
+        ///
         Column(
             modifier = Modifier
                 .height(114.dp)
@@ -118,8 +141,26 @@ fun SettingsLoggedScreen() {
                 style = MaterialTheme.typography.hintText,
             )
             Spacer(modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.padding(10.dp)) {
+                IconButton(onClick = {}) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_account_circle_24),
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(id = R.string.change_photo),
+                    style = MaterialTheme.typography.suggestNewAccount,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
 
         }
+        ///
         Spacer(modifier = Modifier.height(20.dp))
         Column(
             modifier = Modifier
@@ -149,6 +190,21 @@ fun SettingsLoggedScreen() {
                 style = MaterialTheme.typography.hintText,
             )
             Spacer(modifier = Modifier.weight(1f))
+            Row(modifier = Modifier.padding(10.dp)) {
+                Text(
+                    text = stringResource(id = R.string.link_account),
+                    style = MaterialTheme.typography.suggestNewAccount,
+                    modifier = Modifier.padding(10.dp)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(onClick = {}) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_link_24),
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+            }
 
         }
         Spacer(modifier = Modifier.height(20.dp))

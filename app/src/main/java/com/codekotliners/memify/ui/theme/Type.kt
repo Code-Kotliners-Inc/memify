@@ -48,3 +48,12 @@ val Typography.hintText: TextStyle
             textDecoration = TextDecoration.Underline,
             color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
+
+val Typography.enterName: TextStyle
+    @Composable
+    get() =
+        titleMedium.copy(
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
