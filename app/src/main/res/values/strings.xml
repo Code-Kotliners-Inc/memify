@@ -5,4 +5,7 @@
     <string name="login_mail_button">Войти с помощью почты</string>
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_button">Зарегистрироваться</string>
+    <string name="Best">Лучшее</string>
+    <string name="New">Новое</string>
+    <string name="Favourites">Избранное</string>
 </resources>
