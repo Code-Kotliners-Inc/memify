@@ -3,6 +3,7 @@ package com.codekotliners.memify.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -16,7 +17,7 @@ val Typography.authButton: TextStyle
         titleMedium.copy(
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = Color.White,
         )
 
 val Typography.suggestNewAccount: TextStyle
@@ -25,7 +26,7 @@ val Typography.suggestNewAccount: TextStyle
         titleMedium.copy(
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
 val Typography.registerButton: TextStyle
@@ -35,5 +36,5 @@ val Typography.registerButton: TextStyle
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
             textDecoration = TextDecoration.Underline,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = MaterialTheme.colorScheme.onBackground,
         )
