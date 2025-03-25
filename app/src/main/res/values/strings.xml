@@ -5,11 +5,11 @@
     <string name="name_field">Имя</string>
     <string name="incorrect_format_error_message">Неверный формат</string>
     <string name="email_field">Почта</string>
-    <string name="toggle_password_visibility">Toggle Password Visibility</string>
-    <string name="toggle_confirm_password_visibility">Toggle Confirm Password Visibility</string>
+    <string name="toggle_password_visibility">Переключить видимость пароля</string>
+    <string name="toggle_confirm_password_visibility">Переключить видимость подтверждения пароля</string>
     <string name="register_button">Зарегистрироваться</string>
-    <string name="security_icon">Security Icon</string>
-    <string name="back">Back</string>
+    <string name="security_icon">Иконка о безопасности</string>
+    <string name="back">Вернуться назад</string>
     <string name="registration_title">Регистрация</string>
     <string name="go_back">Назад</string>
     <string name="login_button">Войти</string>
