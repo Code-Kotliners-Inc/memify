@@ -41,13 +41,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.theme.authButton
+import com.codekotliners.memify.ui.viewmodels.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController, onRegisterClicked: () -> Unit) {
+fun LoginScreen(navController: NavHostController) {
+    val viewModel: LoginViewModel = hiltViewModel()
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -85,7 +89,7 @@ fun LoginScreen(navController: NavHostController, onRegisterClicked: () -> Unit)
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            RegistrationForm(onRegisterClicked = onRegisterClicked)
+            RegistrationForm(onRegisterClicked = { viewModel.onRegisterClicked() })
         }
     }
 }
@@ -137,7 +141,7 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
         )
 
         Button(
-            onClick = { onRegisterClicked },
+            onClick = { onRegisterClicked() },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -155,5 +159,5 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegistrationScreen() {
-    LoginScreen(navController = NavHostController(LocalContext.current)) {}
+    LoginScreen(navController = NavHostController(LocalContext.current))
 }
