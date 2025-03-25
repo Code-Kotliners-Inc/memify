@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.domain.entities.NavRoutes
@@ -39,14 +40,14 @@ import com.codekotliners.memify.ui.theme.MemifyTheme
 import com.codekotliners.memify.ui.theme.authButton
 import com.codekotliners.memify.ui.theme.registerButton
 import com.codekotliners.memify.ui.theme.suggestNewAccount
+import com.codekotliners.memify.ui.viewmodels.AuthenticationViewModel
 
 @Composable
 fun AuthScreen(
     navController: NavController,
-    onLogInWithGoogle: () -> Unit,
-    onLogInWithMail: () -> Unit,
-    onLogInWithVk: () -> Unit,
 ) {
+    val viewModel: AuthenticationViewModel = hiltViewModel()
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -78,9 +79,9 @@ fun AuthScreen(
         ) {
             LogInMethods(
                 navController = navController,
-                onLogInWithGoogle = onLogInWithGoogle,
-                onLogInWithMail = onLogInWithMail,
-                onLogInWithVk = onLogInWithVk,
+                onLogInWithGoogle = { viewModel.onLogInWithGoogle() },
+                onLogInWithMail = { viewModel.onLogInWithMail() },
+                onLogInWithVk = { viewModel.onLogInWithVk() },
             )
         }
     }
@@ -199,6 +200,6 @@ fun AuthButton(
 @Composable
 fun AuthScreenPreview() {
     MemifyTheme {
-        AuthScreen(navController = NavController(LocalContext.current), {}, {}, {})
+        AuthScreen(navController = NavController(LocalContext.current))
     }
 }
