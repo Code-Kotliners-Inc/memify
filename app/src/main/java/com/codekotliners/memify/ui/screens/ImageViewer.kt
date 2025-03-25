@@ -38,10 +38,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.viewmodels.ImageViewerViewModel
 
 data class ImageItem(
     val title: String,
@@ -52,19 +54,17 @@ data class ImageItem(
 @Composable
 fun ImageViewerScreen(
     image: ImageItem,
-    onShareClick: () -> Unit = {},
-    onDownloadClick: () -> Unit = {},
-    onPublishClick: () -> Unit = {},
-    onTakeTemplateClick: () -> Unit = {},
 ) {
+    val viewModel: ImageViewerViewModel = hiltViewModel()
+
     Scaffold(
         topBar = {
             ImageViewerTopBar(
                 title = image.title,
-                onShareClick = onShareClick,
-                onDownloadClick = onDownloadClick,
-                onPublishClick = onPublishClick,
-                onTakeTemplateClick = onTakeTemplateClick,
+                onShareClick = { viewModel.onShareClick() },
+                onDownloadClick = { viewModel.onDownloadClick() },
+                onPublishClick = { viewModel.onPublishClick() },
+                onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
             )
         },
         modifier = Modifier.fillMaxSize(),
