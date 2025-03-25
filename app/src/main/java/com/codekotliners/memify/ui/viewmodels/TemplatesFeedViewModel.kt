@@ -1,8 +1,5 @@
 package com.codekotliners.memify.ui.viewmodels
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.codekotliners.memify.R
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,18 +23,6 @@ class TemplatesFeedViewModel : ViewModel() {
 
     fun selectTab(tab: Tabs) {
         _selectedTab.update { tab }
-    }
-
-    @Composable
-    @ReadOnlyComposable
-    fun resolveTabName(tab: Tabs): String {
-        val nameRes =
-            when (tab) {
-                Tabs.BEST -> R.string.Best
-                Tabs.NEW -> R.string.New
-                Tabs.FAVOURITE -> R.string.Favourites
-            }
-        return stringResource(nameRes)
     }
 }
 
