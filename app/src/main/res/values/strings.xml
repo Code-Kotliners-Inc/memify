@@ -5,4 +5,7 @@
     <string name="publish_action">Опубликовать</string>
     <string name="take_template_action">Взять шаблон</string>
     <string name="error_while_image_loading">Ошибка загрузки изображения</string>
+    <string name="Best">Лучшее</string>
+    <string name="New">Новое</string>
+    <string name="Favourites">Избранное</string>
 </resources>
