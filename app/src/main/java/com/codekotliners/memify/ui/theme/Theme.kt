@@ -21,7 +21,9 @@ private val lightScheme =
         primaryContainer = primaryContainerLight,
         onPrimaryContainer = onPrimaryContainerLight,
         background = backgroundLight,
+        onBackground = onBackgroundLight,
         surface = surfaceLight,
+        onSurface = onSurfaceLight,
         error = errorLight,
     )
 
@@ -32,7 +34,9 @@ private val darkScheme =
         primaryContainer = primaryContainerDark,
         onPrimaryContainer = onPrimaryContainerDark,
         background = backgroundDark,
+        onBackground = onBackgroundDark,
         surface = surfaceDark,
+        onSurface = onSurfaceDark,
         error = errorDark,
     )
 
