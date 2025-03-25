@@ -1,64 +1,80 @@
 package com.codekotliners.memify.ui.screens
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.theme.MemifyTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
+    val sheetState = rememberModalBottomSheetState()
+    var isSheetOpen by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
         topBar = {
             CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "Cringe",
+                    )
+                },
+                actions = {
+                    IconButton(onClick = { /* здесь будет магия */ }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "Меню"
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface,
                     titleContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
-                title = {
-                    Text(
-                        "Cringe",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
 
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "Localized description"
-                        )
-                    }
-                },
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -72,19 +88,38 @@ fun CreateScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            Spacer(Modifier.height(25.dp))
+
             Image(
                 painter = painterResource(id = R.drawable.meme),
                 contentDescription = "Meme image"
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
 
-            Text(
-                text = "хуй пизда моча",
-                fontSize = 30.sp,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
+            Surface (
+                color = Color(red = 255, green = 255, blue = 255),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(4.dp)
+            ) {
+                Text(
+                    text = "Нажмите и удерживайте холст для выбора инструмента",
+                    fontFamily = FontFamily(Font(R.font.ubunturegular)),
+                    fontSize = 13.sp,
+                    fontStyle = FontStyle.Normal,
+                    textAlign = TextAlign.Center,
+                    color = Color(red = 132, green = 132, blue = 132),
+                )
+            }
         }
+    }
+}
+
+@Preview(name = "Light Mode", showSystemUi = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Composable
+fun AppPreview1() {
+    MemifyTheme {
+        CreateScreen()
     }
 }
