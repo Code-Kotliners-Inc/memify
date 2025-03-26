@@ -38,8 +38,8 @@ import com.codekotliners.memify.ui.viewmodels.EmailScreenVerificationiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailScreenVerificationScreen(navController: NavHostController){
-    val viewModel : EmailScreenVerificationiViewModel = hiltViewModel()
+fun EmailScreenVerificationScreen(navController: NavHostController) {
+    val viewModel: EmailScreenVerificationiViewModel = hiltViewModel()
 
     Scaffold(
         topBar = {
@@ -65,11 +65,11 @@ fun EmailScreenVerificationScreen(navController: NavHostController){
     ) { paddingValues ->
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Введите код восстановления с электронной почты",
@@ -101,27 +101,21 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
         Button(
             onClick = { checkCodeFromEmail() },
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(52.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
                 text = "Отправить код восстановления",
                 style = MaterialTheme.typography.labelMedium,
-
-                )
+            )
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewEmailScreenVerificationScreen() {
     EmailScreenVerificationScreen(navController = NavHostController(LocalContext.current))
 }
-
-
-
-

@@ -110,7 +110,6 @@ fun EmailForm(sendRecoveryCodeBtnClick: () -> Unit) {
             Text(
                 text = "Отправить код восстановления",
                 style = MaterialTheme.typography.labelMedium,
-
             )
         }
     }

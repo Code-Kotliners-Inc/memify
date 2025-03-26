@@ -5,6 +5,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class EmailScreenVerificationiViewModel @Inject constructor() : ViewModel()  {
+class EmailScreenVerificationiViewModel @Inject constructor() : ViewModel() {
     // логика проверки кода из письма
 }
