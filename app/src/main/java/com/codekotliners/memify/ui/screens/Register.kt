@@ -156,7 +156,10 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
             onTextChanged(it)
         },
         label = { Text(label) },
-        visualTransformation = remember { if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation() },
+        visualTransformation =
+            remember {
+                if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+            },
         trailingIcon = {
             Box(
                 modifier =
