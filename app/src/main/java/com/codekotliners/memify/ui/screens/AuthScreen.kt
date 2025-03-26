@@ -45,9 +45,8 @@ import com.codekotliners.memify.ui.viewmodels.AuthenticationViewModel
 @Composable
 fun AuthScreen(
     navController: NavController,
+    viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
-    val viewModel: AuthenticationViewModel = hiltViewModel()
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
