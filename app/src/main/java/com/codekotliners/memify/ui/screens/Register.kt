@@ -148,6 +148,7 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
 fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
     var text by remember { mutableStateOf(TextFieldValue()) }
     var passwordVisible by remember { mutableStateOf(false) }
+    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
 
     OutlinedTextField(
         value = text,
@@ -156,7 +157,7 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
             onTextChanged(it)
         },
         label = { Text(label) },
-        visualTransformation = remember { if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation() },
+        visualTransformation = if (passwordVisible) VisualTransformation.None else passwordVisualTransformation,
         trailingIcon = {
             Box(
                 modifier =
