@@ -6,7 +6,6 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
 }
-
 android {
     namespace = "com.codekotliners.memify"
     compileSdk = 35
@@ -79,6 +78,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }
 
 vkompose {
