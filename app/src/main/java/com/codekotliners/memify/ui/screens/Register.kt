@@ -136,7 +136,7 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
-                stringResource(R.string.register_button),
+                text = stringResource(R.string.register_button),
                 style = MaterialTheme.typography.authButton,
             )
         }
