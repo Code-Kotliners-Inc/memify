@@ -54,9 +54,8 @@ data class ImageItem(
 @Composable
 fun ImageViewerScreen(
     image: ImageItem,
+    viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
-    val viewModel: ImageViewerViewModel = hiltViewModel()
-
     Scaffold(
         topBar = {
             ImageViewerTopBar(
