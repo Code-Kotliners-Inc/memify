@@ -29,11 +29,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.EmailScreenVerificationiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +48,7 @@ fun EmailScreenVerificationScreen(navController: NavHostController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Восстановление пароля",
+                        text = stringResource(R.string.RecoveryPassword),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
@@ -54,7 +56,7 @@ fun EmailScreenVerificationScreen(navController: NavHostController) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "go_back",
+                            contentDescription = stringResource(R.string.go_backBtn),
                         )
                     }
                 },
@@ -72,7 +74,7 @@ fun EmailScreenVerificationScreen(navController: NavHostController) {
                     .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = "Введите код восстановления с электронной почты",
+                text = stringResource(R.string.InputCodeFromEmailLabel),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -94,7 +96,7 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
         OutlinedTextField(
             value = codeFromEmail,
             onValueChange = { codeFromEmail = it },
-            label = { Text("код восстановления") },
+            label = { Text(stringResource(R.string.RecoveryCodeLabel)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -107,7 +109,7 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
-                text = "Отправить код восстановления",
+                text = stringResource(R.string.ConfirmCodeBtn),
                 style = MaterialTheme.typography.labelMedium,
             )
         }
