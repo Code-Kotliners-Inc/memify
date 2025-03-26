@@ -49,9 +49,10 @@ import com.codekotliners.memify.ui.viewmodels.RegistrationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(navController: NavHostController) {
-    val registerViewModel: RegistrationViewModel = hiltViewModel()
-
+fun RegistrationScreen(
+    navController: NavHostController,
+    registerViewModel: RegistrationViewModel = hiltViewModel(),
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -155,7 +156,7 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
             onTextChanged(it)
         },
         label = { Text(label) },
-        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = remember { if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation() },
         trailingIcon = {
             Box(
                 modifier =
