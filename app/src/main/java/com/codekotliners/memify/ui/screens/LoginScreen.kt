@@ -49,9 +49,10 @@ import com.codekotliners.memify.ui.viewmodels.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
-    val viewModel: LoginViewModel = hiltViewModel()
-
+fun LoginScreen(
+    navController: NavHostController,
+    viewModel: LoginViewModel = hiltViewModel(),
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -89,16 +90,15 @@ fun LoginScreen(navController: NavHostController) {
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            RegistrationForm(onRegisterClicked = { viewModel.onRegisterClicked() })
+            LoginForm(onLoginClicked = { viewModel.onRegisterClicked() })
         }
     }
 }
 
 @Composable
-fun RegistrationForm(onRegisterClicked: () -> Unit) {
+fun LoginForm(onLoginClicked: () -> Unit) {
     var email by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
-    var passwordVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -111,37 +111,9 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
             label = { Text(stringResource(R.string.email_field)) },
             modifier = Modifier.fillMaxWidth(),
         )
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text(stringResource(R.string.password_field)) },
-            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            trailingIcon = {
-                Box(
-                    modifier =
-                        Modifier
-                            .size(48.dp)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                            ) { passwordVisible = !passwordVisible },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        painter =
-                            painterResource(
-                                if (passwordVisible) R.drawable.visibility_off else R.drawable.visibility,
-                            ),
-                        contentDescription = stringResource(R.string.toggle_password_visibility),
-                    )
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
+        PasswordField { password = it }
         Button(
-            onClick = { onRegisterClicked() },
+            onClick = { onLoginClicked() },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -154,6 +126,44 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
             )
         }
     }
+}
+
+@Composable
+fun PasswordField(onTextChange: (TextFieldValue) -> Unit) {
+    var password by remember { mutableStateOf(TextFieldValue()) }
+    var passwordVisible by remember { mutableStateOf(false) }
+    val passwordVisualTransformation = remember { PasswordVisualTransformation() }
+
+    OutlinedTextField(
+        value = password,
+        onValueChange = {
+            password = it
+            onTextChange(it)
+        },
+        label = { Text(stringResource(R.string.password_field)) },
+        visualTransformation = if (passwordVisible) VisualTransformation.None else passwordVisualTransformation,
+        trailingIcon = {
+            Box(
+                modifier =
+                    Modifier
+                        .size(48.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                        ) { passwordVisible = !passwordVisible },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter =
+                        painterResource(
+                            if (passwordVisible) R.drawable.visibility_off else R.drawable.visibility,
+                        ),
+                    contentDescription = stringResource(R.string.toggle_password_visibility),
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+    )
 }
 
 @Preview(showBackground = true)
