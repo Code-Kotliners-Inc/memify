@@ -8,4 +8,7 @@ sealed class NavRoutes(
     data object Create : NavRoutes("Create")
 
     data object Profile : NavRoutes("Profile")
+
+
+
 }
