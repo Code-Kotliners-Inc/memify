@@ -13,4 +13,7 @@
     <string name="require_current_password">Старый пароль</string>
     <string name="require_new_password">Новый пароль</string>
     <string name="repeat_new_password">Повторите пароль</string>
+    <string name="Best">Лучшее</string>
+    <string name="New">Новое</string>
+    <string name="Favourites">Избранное</string>
 </resources>
