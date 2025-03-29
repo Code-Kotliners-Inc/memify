@@ -31,7 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Set up Firebase config
-        run: echo "${{ secrets.FIREBASE_CONFIG }}" > app/src/main/google-services.json
+        run: echo "${{ secrets.FIREBASE_CONFIG }}" > app/src/google-services.json
 
       - name: Build debug
         run: ./gradlew assembleDebug
