@@ -1,13 +1,13 @@
 package com.codekotliners.memify.domain.entities.auth
 
-sealed class Response<out T> {
-    data object Loading: Response<Nothing>()
+sealed class Response {
+    data object Loading : Response()
 
-    data class Success<out T>(
-        val data: T
-    ): Response<T>()
+    data class Success(
+        val data: Boolean,
+    ) : Response()
 
-    data class Failure<out T>(
-        val error: Exception
-    ): Response<T>()
+    data class Failure(
+        val error: Exception,
+    ) : Response()
 }
