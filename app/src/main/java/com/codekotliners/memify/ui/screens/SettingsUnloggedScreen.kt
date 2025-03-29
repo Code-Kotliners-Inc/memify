@@ -43,58 +43,72 @@ import com.codekotliners.memify.ui.theme.authButton
 import com.codekotliners.memify.ui.theme.suggestNewAccount
 
 @Composable
-fun SettingsUnLoggedScreen() {
+fun ToolBarUnlogged() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        IconButton(onClick = {}) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "back",
+                tint = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+        Text(
+            text = stringResource(id = R.string.settings_title),
+            style = MaterialTheme.typography.suggestNewAccount,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
 
+@Composable
+fun ThemeChangeUnlogged() {
+    Row(
+        modifier = Modifier
+            .height(56.dp)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
+            .padding(horizontal = 30.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(id = R.string.theme),
+            style = MaterialTheme.typography.suggestNewAccount,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            modifier = Modifier
+                .width(64.dp),
+            checked = false,
+            onCheckedChange = {},
+            colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
+        )
+    }
+}
+
+@Composable
+fun SettingsUnLoggedScreen() {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-        ) {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "back",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-                Text(
-                    text = stringResource(id = R.string.settings_title),
-                    style = MaterialTheme.typography.suggestNewAccount,
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        ToolBarUnlogged()
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            modifier = Modifier
-                .height(56.dp)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 30.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            Text(
-                text = stringResource(id = R.string.theme),
-                style = MaterialTheme.typography.suggestNewAccount,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                modifier = Modifier
-                    .width(64.dp),
-                checked = false,
-                onCheckedChange = {},
-                colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
-            )
-        }
+        ThemeChangeUnlogged()
+
         Spacer(modifier = Modifier.height(20.dp))
 
-        Button(onClick = {},
+        Button(
+            onClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -104,15 +118,8 @@ fun SettingsUnLoggedScreen() {
             Text(
                 text = stringResource(id = R.string.login),
                 style = MaterialTheme.typography.authButton,
-                )
+            )
         }
     }
 }
-@Preview(name = "Light Mode", showSystemUi = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Composable
-fun AppPreview1() {
-    MemifyTheme {
-        SettingsUnLoggedScreen()
-    }
-}
+

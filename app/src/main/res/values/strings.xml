@@ -10,4 +10,7 @@
     <string name="link_vk">Аккаунт ВК</string>
     <string name="link_account">Не привязан</string>
     <string name="change_photo">Изменить</string>
+    <string name="require_current_password">Старый пароль</string>
+    <string name="require_new_password">Новый пароль</string>
+    <string name="repeat_new_password">Повторите пароль</string>
 </resources>
