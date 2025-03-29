@@ -259,7 +259,8 @@ fun ChangePhoto() {
 fun SettingsLoggedScreen() {
     Column(
         modifier =
-            Modifier.fillMaxSize()
+            Modifier
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
