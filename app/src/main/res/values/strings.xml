@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Memify</string>
+    <string name="share_action">Поделиться</string>
+    <string name="download_action">Скачать</string>
+    <string name="publish_action">Опубликовать</string>
+    <string name="take_template_action">Взять шаблон</string>
+    <string name="error_while_image_loading">Ошибка загрузки изображения</string>
     <string name="login_google_button">Войти с помощью Google</string>
     <string name="login_vk_button">Войти с помощью VK</string>
     <string name="login_mail_button">Войти с помощью почты</string>
