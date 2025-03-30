@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Memify</string>
+    <string name="login_google_button">Войти с помощью Google</string>
+    <string name="login_vk_button">Войти с помощью VK</string>
+    <string name="login_mail_button">Войти с помощью почты</string>
+    <string name="no_account_question">Нет аккаунта?</string>
+    <string name="register_button">Зарегистрироваться</string>
     <string name="password_confirmation_field">Подтверждение пароля</string>
     <string name="password_field">Пароль</string>
     <string name="name_field">Имя</string>
@@ -7,7 +12,6 @@
     <string name="email_field">Почта</string>
     <string name="toggle_password_visibility">Переключить видимость пароля</string>
     <string name="toggle_confirm_password_visibility">Переключить видимость подтверждения пароля</string>
-    <string name="register_button">Зарегистрироваться</string>
     <string name="security_icon">Иконка о безопасности</string>
     <string name="back">Вернуться назад</string>
     <string name="registration_title">Регистрация</string>
