@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,9 +40,10 @@ import com.codekotliners.memify.ui.viewmodels.PasswordRecoveryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PasswordRecoveryScreen(navController: NavHostController) {
-    val viewModel: PasswordRecoveryViewModel = hiltViewModel()
-
+fun PasswordRecoveryScreen(
+    navController: NavHostController,
+    viewModel: PasswordRecoveryViewModel = hiltViewModel(),
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -80,7 +81,7 @@ fun PasswordRecoveryScreen(navController: NavHostController) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            EmailForm(sendRecoveryCodeBtnClick = { navController.navigate("email") })
+            EmailForm(sendRecoveryCodeBtnClick = { })
         }
     }
 }
@@ -92,7 +93,7 @@ fun EmailForm(sendRecoveryCodeBtnClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(28.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         OutlinedTextField(
             value = email,
@@ -106,7 +107,7 @@ fun EmailForm(sendRecoveryCodeBtnClick: () -> Unit) {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .wrapContentHeight(),
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(

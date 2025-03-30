@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,9 +40,10 @@ import com.codekotliners.memify.ui.viewmodels.EmailScreenVerificationiViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmailScreenVerificationScreen(navController: NavHostController) {
-    val viewModel: EmailScreenVerificationiViewModel = hiltViewModel()
-
+fun EmailCodeVerificationScreen(
+    navController: NavHostController,
+    viewModel: EmailScreenVerificationiViewModel = hiltViewModel(),
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -79,7 +80,7 @@ fun EmailScreenVerificationScreen(navController: NavHostController) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            CodeFromEmailForm(checkCodeFromEmail = { navController.navigate("email") })
+            CodeFromEmailForm(checkCodeFromEmail = { })
         }
     }
 }
@@ -91,7 +92,7 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(28.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         OutlinedTextField(
             value = codeFromEmail,
@@ -105,7 +106,7 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .wrapContentHeight(),
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
@@ -119,5 +120,5 @@ fun CodeFromEmailForm(checkCodeFromEmail: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewEmailScreenVerificationScreen() {
-    EmailScreenVerificationScreen(navController = NavHostController(LocalContext.current))
+    EmailCodeVerificationScreen(navController = NavHostController(LocalContext.current))
 }
