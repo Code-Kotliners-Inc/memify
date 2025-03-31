@@ -1,6 +1,7 @@
 package com.codekotliners.memify.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +42,10 @@ import com.codekotliners.memify.ui.theme.suggestNewAccount
 fun ToolBar() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         IconButton(onClick = {}) {
             Icon(
@@ -80,7 +84,7 @@ fun ChangeName() {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
         ) {
-            Text(text = "Сохранить", style = MaterialTheme.typography.suggestNewAccount)
+            Text(text = stringResource(id = R.string.save_button), style = MaterialTheme.typography.suggestNewAccount)
         }
     }
 }
@@ -121,6 +125,7 @@ fun PasswordChange() {
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
                 .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = stringResource(id = R.string.safety),
@@ -128,20 +133,17 @@ fun PasswordChange() {
         )
 
         PasswordField(stringResource(id = R.string.require_current_password))
-        Spacer(modifier = Modifier.height(8.dp))
 
         PasswordField(stringResource(id = R.string.require_new_password))
-        Spacer(modifier = Modifier.height(8.dp))
 
         PasswordField(stringResource(id = R.string.repeat_new_password))
-        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = { },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
         ) {
-            Text(text = "Сохранить", style = MaterialTheme.typography.suggestNewAccount)
+            Text(text = stringResource(id = R.string.save_button), style = MaterialTheme.typography.suggestNewAccount)
         }
     }
 }
@@ -264,19 +266,20 @@ fun SettingsLoggedScreen() {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         ToolBar()
-        Spacer(modifier = Modifier.height(20.dp))
+
         ThemeChange()
-        Spacer(modifier = Modifier.height(20.dp))
+
         ChangeName()
-        Spacer(modifier = Modifier.height(20.dp))
+
         ChangePhoto()
-        Spacer(modifier = Modifier.height(20.dp))
+
         PasswordChange()
-        Spacer(modifier = Modifier.height(20.dp))
+
         AddVk()
-        Spacer(modifier = Modifier.height(20.dp))
+
         Button(
             onClick = {},
             modifier =

@@ -1,6 +1,7 @@
 package com.codekotliners.memify.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -90,14 +91,11 @@ fun SettingsUnLoggedScreen() {
                 .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         ToolBarUnlogged()
 
-        Spacer(modifier = Modifier.height(20.dp))
-
         ThemeChangeUnlogged()
-
-        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {},
