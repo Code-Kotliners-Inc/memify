@@ -1,6 +1,5 @@
 package com.codekotliners.memify.ui.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.R
@@ -63,7 +62,6 @@ class TemplatesFeedViewModel @Inject constructor(
     val selectedTab: StateFlow<Tabs> = _selectedTab.asStateFlow()
 
     fun selectTab(tab: Tabs) {
-        Log.d("TemplatesFeedViewModel", "Selected tab: $tab")
         _selectedTab.update { tab }
     }
 }

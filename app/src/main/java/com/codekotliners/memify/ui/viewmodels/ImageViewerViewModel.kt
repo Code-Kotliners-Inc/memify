@@ -1,5 +1,8 @@
 package com.codekotliners.memify.ui.viewmodels
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.ImageRepository
@@ -17,6 +20,9 @@ class ImageViewerViewModel @Inject constructor(
     private val _image = MutableStateFlow<ImageItem?>(null)
     val image: StateFlow<ImageItem?> = _image
 
+    var downloadCompleted by mutableStateOf(false)
+        private set
+
     fun loadImage(id: Int) {
         viewModelScope.launch {
             _image.value = repository.getImageById(id)
@@ -29,7 +35,11 @@ class ImageViewerViewModel @Inject constructor(
 
     fun onDownloadClick() {
         viewModelScope.launch {
-            repository.loadImage(id = image.value?.id ?: 0)
+            downloadCompleted = false
+            if (image.value != null) {
+                repository.loadImage(id = image.value!!.id)
+            }
+            downloadCompleted = true
         }
     }
 

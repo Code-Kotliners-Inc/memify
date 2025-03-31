@@ -6,4 +6,6 @@ interface ApiService {
     suspend fun getImages(): List<ImageEntity>
 
     suspend fun getImageById(id: Int): ImageItem?
+
+    suspend fun setImageItemLocalPathById(id: Int, localPath: String?)
 }

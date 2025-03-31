@@ -1,6 +1,5 @@
 package com.codekotliners.memify.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +26,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,14 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.model.ImageItem
 import com.codekotliners.memify.domain.entities.NavRoutes
 import com.codekotliners.memify.ui.viewmodels.TabState
 import com.codekotliners.memify.ui.viewmodels.Tabs
 import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
+import java.io.File
 
 @Composable
 fun TemplatesFeedScreen(
@@ -103,7 +107,6 @@ fun TemplateGrid(navController: NavController, templates: List<ImageItem>) {
         contentPadding = PaddingValues(0.dp),
         content = {
             items(templates) { template ->
-                Log.d("TemplateGrid", "TemplateGrid: ${template.url}")
                 TemplateItem(navController, template)
             }
         },
@@ -112,7 +115,16 @@ fun TemplateGrid(navController: NavController, templates: List<ImageItem>) {
 
 @Composable
 fun TemplateItem(navController: NavController, template: ImageItem) {
-    val painter = rememberAsyncImagePainter(template.url)
+    val painter =
+        rememberAsyncImagePainter(
+            model =
+                ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(template.url)
+                    .diskCachePolicy(CachePolicy.DISABLED)
+                    .memoryCachePolicy(CachePolicy.DISABLED)
+                    .build(),
+        )
 
     Box {
         Image(
@@ -146,20 +158,29 @@ fun TemplateItem(navController: NavController, template: ImageItem) {
                 }
             }
             is AsyncImagePainter.State.Error -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.cloud_off),
+                if (template.localPath == null) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.cloud_off),
+                            contentDescription = null,
+                            modifier = Modifier.size(70.dp),
+                        )
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(
+                            text = stringResource(R.string.error_while_image_loading),
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
+                } else {
+                    val file = remember { File(template.localPath!!) }
+
+                    AsyncImage(
+                        model = file,
                         contentDescription = null,
-                        modifier = Modifier.size(70.dp),
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = stringResource(R.string.error_while_image_loading),
-                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             }

@@ -8,6 +8,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.codekotliners.memify.core.apiService.ApiService
 import com.codekotliners.memify.core.model.ImageItem
+import com.codekotliners.memify.mocks.mockImagesRepository
 import java.io.File
 import java.io.FileOutputStream
 
@@ -17,26 +18,19 @@ class ImageRepository(
 ) {
     suspend fun getImageItems(): List<ImageItem> {
         val images = apiService.getImages()
-
-        return images.map { image ->
-            ImageItem(id = image.id, title = image.title, url = image.url, localPath = null, width = image.width, height = image.height)
-        }
+        return mockImagesRepository
     }
 
     suspend fun getImageById(id: Int): ImageItem? = apiService.getImageById(id)
 
-    suspend fun loadImage(id: Int): ImageItem? {
+    suspend fun loadImage(id: Int) {
         val image = getImageById(id)
-        if (image == null) {
-            return null
+        if (image == null || image.localPath != null) {
+            return
         }
 
-        var localPath: String? = ""
-        if (image.localPath == null) {
-            localPath = saveImageLocally(context, image.url)
-        }
-
-        return ImageItem(id = 0, title = "lol", url = image.url, localPath = localPath, width = image.width, height = image.height)
+        var localPath: String? = saveImageLocally(context, image.url)
+        apiService.setImageItemLocalPathById(id, localPath)
     }
 
     private fun getLocalFilename(url: String): String = url.hashCode().toString() + ".jpg"

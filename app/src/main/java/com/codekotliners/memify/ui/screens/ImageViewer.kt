@@ -1,5 +1,6 @@
 package com.codekotliners.memify.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -51,10 +54,19 @@ fun ImageViewerScreen(
     id: Int,
     viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+
     val image by viewModel.image.collectAsState()
+    val downloadCompleted by remember { derivedStateOf { viewModel.downloadCompleted } }
 
     LaunchedEffect(id) {
         viewModel.loadImage(id)
+    }
+
+    LaunchedEffect(downloadCompleted) {
+        if (downloadCompleted) {
+            Toast.makeText(context, "Download completed!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     Scaffold(

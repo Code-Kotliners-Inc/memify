@@ -6,5 +6,5 @@ data class ImageItem(
     val url: String,
     val width: Int,
     val height: Int,
-    val localPath: String? = null,
+    var localPath: String? = null,
 )
