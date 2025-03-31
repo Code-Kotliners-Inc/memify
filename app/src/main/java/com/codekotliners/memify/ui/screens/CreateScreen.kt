@@ -19,12 +19,14 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
@@ -66,60 +69,29 @@ fun CreateScreen() {
         )
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
+    CreateScreenBottomSheet(
+        scaffoldState = scaffoldState,
+        bottomSheetState = bottomSheetState,
+        minHeight = minHeight,
+        maxHeight = maxHeight,
+        scrollBehavior = scrollBehavior,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateScreenBottomSheet(
+    scaffoldState: BottomSheetScaffoldState,
+    bottomSheetState: SheetState,
+    minHeight: Dp,
+    maxHeight: Dp,
+    scrollBehavior: TopAppBarScrollBehavior,
+) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
-        sheetDragHandle = {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                        .height(54.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Icon(
-                    imageVector =
-                        if (bottomSheetState.targetValue == SheetValue.Expanded) {
-                            Icons.Default.KeyboardArrowDown
-                        } else {
-                            Icons.Default.KeyboardArrowUp
-                        },
-                    contentDescription = "Свайп",
-                    modifier = Modifier.size(24.dp),
-                )
-                Text(text = "Выбрать шаблон")
-            }
-        },
-        sheetContent = {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = minHeight, max = maxHeight)
-                        .background(MaterialTheme.colorScheme.surface),
-                contentAlignment = Alignment.TopCenter,
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(text = "Здесь был один из котиков-разрабов", textAlign = TextAlign.Center)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Icon(
-                        imageVector =
-                            if (bottomSheetState.targetValue == SheetValue.Expanded) {
-                                Icons.Default.KeyboardArrowUp // Раскрыт -> стрелка вверх (тяни вверх ещё)
-                            } else {
-                                Icons.Default.KeyboardArrowDown
-                            },
-                        // Сжат -> стрелка вниз (тяни вниз)
-                        contentDescription = "Свайп",
-                        modifier = Modifier.size(24.dp),
-                    )
-                }
-            }
-        },
+        sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
+        sheetContent = { BottomSheetContent(bottomSheetState, minHeight, maxHeight) },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
@@ -128,6 +100,62 @@ fun CreateScreen() {
             topBar = { CreateScreenTopBar(scrollBehavior) },
         ) { scaffoldInnerPadding ->
             CreateScreenContent(scaffoldInnerPadding)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetHandle(bottomSheetState: SheetState) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .height(54.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(
+            imageVector =
+                if (bottomSheetState.targetValue == SheetValue.Expanded) {
+                    Icons.Default.KeyboardArrowDown
+                } else {
+                    Icons.Default.KeyboardArrowUp
+                },
+            contentDescription = "Свайп",
+            modifier = Modifier.size(24.dp),
+        )
+        Text(text = "Выбрать шаблон")
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetContent(bottomSheetState: SheetState, minHeight: Dp, maxHeight: Dp) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .heightIn(min = minHeight, max = maxHeight)
+                .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(text = "Здесь был один из котиков-разрабов", textAlign = TextAlign.Center)
+            Spacer(modifier = Modifier.height(8.dp))
+            Icon(
+                imageVector =
+                    if (bottomSheetState.targetValue == SheetValue.Expanded) {
+                        Icons.Default.KeyboardArrowUp
+                    } else {
+                        Icons.Default.KeyboardArrowDown
+                    },
+                contentDescription = "Свайп",
+                modifier = Modifier.size(24.dp),
+            )
         }
     }
 }
