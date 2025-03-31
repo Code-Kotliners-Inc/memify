@@ -105,10 +105,11 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
                 )
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
         scrollBehavior = scrollBehavior,
     )
 }
@@ -116,10 +117,11 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 @Composable
 private fun CreateScreenContent(innerPadding: PaddingValues) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(innerPadding),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(25.dp))
@@ -153,92 +155,99 @@ private fun InteractiveCanvas() {
     var selectedColor = remember { mutableStateOf(Color.Black) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .padding(horizontal = 4.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .padding(horizontal = 4.dp),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.meme),
                 contentDescription = null,
                 modifier = Modifier.matchParentSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
             Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                if (currentLine.isNotEmpty()) {
-                                    allLines.add(
-                                        ColoredLine(
-                                            points = currentLine.toList(),
-                                            color = selectedColor.value,
-                                            strokeWidth = strokeWidth.floatValue,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .pointerInput(Unit) {
+                            detectDragGestures(
+                                onDragStart = { offset ->
+                                    if (currentLine.isNotEmpty()) {
+                                        allLines.add(
+                                            ColoredLine(
+                                                points = currentLine.toList(),
+                                                color = selectedColor.value,
+                                                strokeWidth = strokeWidth.floatValue,
+                                            ),
                                         )
-                                    )
-                                }
-                                currentLine.clear()
-                                currentLine.add(offset)
-                            },
-                            onDrag = { change, _ ->
-                                change.consume()
-                                currentLine.add(change.position)
-                            },
-                            onDragEnd = {
-                                if (currentLine.isNotEmpty()) {
-                                    allLines.add(
-                                        ColoredLine(
-                                            points = currentLine.toList(),
-                                            color = selectedColor.value,
-                                            strokeWidth = strokeWidth.floatValue,
+                                    }
+                                    currentLine.clear()
+                                    currentLine.add(offset)
+                                },
+                                onDrag = { change, _ ->
+                                    change.consume()
+                                    currentLine.add(change.position)
+                                },
+                                onDragEnd = {
+                                    if (currentLine.isNotEmpty()) {
+                                        allLines.add(
+                                            ColoredLine(
+                                                points = currentLine.toList(),
+                                                color = selectedColor.value,
+                                                strokeWidth = strokeWidth.floatValue,
+                                            ),
                                         )
-                                    )
-                                }
-                            }
-                        )
-                    }
+                                    }
+                                },
+                            )
+                        },
             ) {
                 allLines.forEach { line ->
                     if (line.points.size > 1) {
                         drawPath(
-                            path = Path().apply {
-                                moveTo(line.points.first().x, line.points.first().y)
-                                line.points.forEach { point ->
-                                    lineTo(point.x, point.y)
-                                }
-                            } as Path,
+                            path =
+                                Path().apply {
+                                    moveTo(line.points.first().x, line.points.first().y)
+                                    line.points.forEach { point ->
+                                        lineTo(point.x, point.y)
+                                    }
+                                } as Path,
                             color = line.color,
-                            style = Stroke(
-                                width = line.strokeWidth,
-                                cap = StrokeCap.Round,
-                                join = StrokeJoin.Round
-                            )
+                            style =
+                                Stroke(
+                                    width = line.strokeWidth,
+                                    cap = StrokeCap.Round,
+                                    join = StrokeJoin.Round,
+                                ),
                         )
                     }
                 }
 
                 if (currentLine.size > 1) {
                     drawPath(
-                        path = Path().apply {
-                            moveTo(currentLine.first().x, currentLine.first().y)
-                            currentLine.forEach { point ->
-                                lineTo(point.x, point.y)
-                            }
-                        },
+                        path =
+                            Path().apply {
+                                moveTo(currentLine.first().x, currentLine.first().y)
+                                currentLine.forEach { point ->
+                                    lineTo(point.x, point.y)
+                                }
+                            },
                         color = selectedColor.value,
-                        style = Stroke(
-                            width = strokeWidth.floatValue,
-                            cap = StrokeCap.Round,
-                            join = StrokeJoin.Round
-                        )
+                        style =
+                            Stroke(
+                                width = strokeWidth.floatValue,
+                                cap = StrokeCap.Round,
+                                join = StrokeJoin.Round,
+                            ),
                     )
                 }
             }
@@ -255,12 +264,13 @@ private fun InteractiveCanvas() {
                 allLines.clear()
                 currentLine.clear()
             },
-            colors = ButtonColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
-                disabledContentColor = MaterialTheme.colorScheme.onSurface,
-            )
+            colors =
+                ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    disabledContainerColor = MaterialTheme.colorScheme.surfaceDim,
+                    disabledContentColor = MaterialTheme.colorScheme.onSurface,
+                ),
         ) {
             Text(
                 text = "Очистить",
@@ -280,12 +290,13 @@ private fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor:
     val colors = listOf(Color.Black, Color.Red, Color.Blue, Color.Green, Color.Magenta)
 
     Row(
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = 4.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -300,11 +311,12 @@ private fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor:
 
         // Кнопка выбора цвета
         Box(
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(30.dp)
-                .background(selectedColor.value)
-                .clickable { showColors = !showColors }
+            modifier =
+                Modifier
+                    .clip(CircleShape)
+                    .size(30.dp)
+                    .background(selectedColor.value)
+                    .clickable { showColors = !showColors },
         )
 
         DropdownMenu(
@@ -316,17 +328,18 @@ private fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor:
                 DropdownMenuItem(
                     text = {
                         Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(30.dp)
-                                .background(color)
+                            modifier =
+                                Modifier
+                                    .clip(CircleShape)
+                                    .size(30.dp)
+                                    .background(color),
                         )
                     },
                     onClick = {
                         selectedColor.value = color
                         showColors = false
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -347,32 +360,36 @@ private fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor:
             value = strokeWidth.floatValue,
             onValueChange = { strokeWidth.floatValue = it },
             valueRange = 1f..30f,
-            modifier = Modifier
-                .width(140.dp)
-                .height(20.dp),
+            modifier =
+                Modifier
+                    .width(140.dp)
+                    .height(20.dp),
             thumb = {
                 SliderDefaults.Thumb(
                     interactionSource = remember { MutableInteractionSource() },
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.primary,
-                        activeTrackColor = Color.Transparent,
-                        inactiveTrackColor = Color.Transparent
-                    ),
-                    modifier = Modifier.size(10.dp)
+                    colors =
+                        SliderDefaults.colors(
+                            thumbColor = MaterialTheme.colorScheme.primary,
+                            activeTrackColor = Color.Transparent,
+                            inactiveTrackColor = Color.Transparent,
+                        ),
+                    modifier = Modifier.size(10.dp),
                 )
             },
             track = {
                 SliderDefaults.Track(
                     sliderState = it,
-                    colors = SliderDefaults.colors(
-                        activeTrackColor = MaterialTheme.colorScheme.primary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                    ),
-                    modifier = Modifier
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
+                    colors =
+                        SliderDefaults.colors(
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                        ),
+                    modifier =
+                        Modifier
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp)),
                 )
-            }
+            },
         )
 
         Spacer(modifier = Modifier.width(10.dp))
