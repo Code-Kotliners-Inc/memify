@@ -8,4 +8,8 @@ sealed class NavRoutes(
     data object Create : NavRoutes("Create")
 
     data object Profile : NavRoutes("Profile")
+
+    data object Register : NavRoutes("Register")
+
+    data object Login : NavRoutes("Login")
 }
