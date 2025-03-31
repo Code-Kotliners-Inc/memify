@@ -12,4 +12,8 @@ sealed class NavRoutes(
     data object Register : NavRoutes("Register")
 
     data object Login : NavRoutes("Login")
+
+    data object Details : NavRoutes("Image/{id}") {
+        fun createRoute(id: Int) = "Image/$id"
+    }
 }

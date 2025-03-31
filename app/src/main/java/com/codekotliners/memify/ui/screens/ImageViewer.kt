@@ -25,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,32 +36,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.ImageViewerViewModel
 
-data class ImageItem(
-    val title: String,
-    val url: String,
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerScreen(
-    image: ImageItem,
+    id: Int,
     viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
+    val image by viewModel.image.collectAsState()
+
+    LaunchedEffect(id) {
+        viewModel.loadImage(id)
+    }
+
     Scaffold(
         topBar = {
             ImageViewerTopBar(
-                title = image.title,
+                title = image?.title ?: "",
                 onShareClick = { viewModel.onShareClick() },
                 onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
@@ -71,8 +72,7 @@ fun ImageViewerScreen(
     ) { paddingValues ->
         val painter =
             rememberAsyncImagePainter(
-                image.url,
-                imageLoader = ImageLoader(LocalContext.current),
+                model = image?.url,
             )
 
         Column(
@@ -173,24 +173,28 @@ fun ImageViewerTopBar(
                     painterResource(R.drawable.share),
                 ) {
                     onShareClick()
+                    expanded = false
                 }
                 MenuItem(
                     stringResource(R.string.download_action),
                     painterResource(R.drawable.download),
                 ) {
                     onDownloadClick()
+                    expanded = false
                 }
                 MenuItem(
                     stringResource(R.string.publish_action),
                     painterResource(R.drawable.publish),
                 ) {
                     onPublishClick()
+                    expanded = false
                 }
                 MenuItem(
                     stringResource(R.string.take_template_action),
                     painterResource(R.drawable.copy),
                 ) {
                     onTakeTemplateClick()
+                    expanded = false
                 }
             }
         },
