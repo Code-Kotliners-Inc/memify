@@ -17,8 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.domain.entities.NavRoutes
+import com.codekotliners.memify.ui.navigation.BottomNavigationBar
 import com.codekotliners.memify.ui.screens.CreateScreen
 import com.codekotliners.memify.ui.screens.HomeScreen
 import com.codekotliners.memify.ui.screens.ProfileScreen
