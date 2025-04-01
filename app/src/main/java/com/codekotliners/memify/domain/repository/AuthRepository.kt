@@ -86,8 +86,7 @@ class AuthRepositoryImpl(
         try {
             auth.sendPasswordResetEmail(email).await()
             return Response.Success(true)
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             return Response.Failure(e)
         }
     }

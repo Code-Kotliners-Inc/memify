@@ -64,7 +64,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.hilt.android)
     implementation(libs.hilt.android)
-    //kapt(libs.hilt.android.compiler)
+    // kapt(libs.hilt.android.compiler)
     ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
