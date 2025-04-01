@@ -2,6 +2,7 @@ package com.codekotliners.memify.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,80 +50,100 @@ import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.viewmodels.EmailCodeVerificationScreenViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailCodeVerificationScreen(
     navController: NavHostController,
     viewModel: EmailCodeVerificationScreenViewModel = hiltViewModel(),
 ) {
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.RecoveryPassword),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.go_backBtn),
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                },
-                colors =
-                    TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
-                    ),
-            )
-        },
+        topBar = { VerificationTopBar(navController) },
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(24.dp)
-                    .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.CheckCircle,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
+        VerificationContent(paddingValues)
+    }
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun VerificationTopBar(navController: NavHostController) {
+    CenterAlignedTopAppBar(
+        title = {
             Text(
-                text = stringResource(R.string.InputCodeFromEmailLabel),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(horizontal = 16.dp),
+                text = stringResource(R.string.RecoveryPassword),
+                style = MaterialTheme.typography.titleLarge,
             )
-
-            CodeFromEmailForm(
-                checkCodeFromEmail = { },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            TextButton(
-                onClick = { /* Handle resend code */ },
-                modifier = Modifier.padding(top = 8.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.ResendCodeBtn),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
+        },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.go_backBtn),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
-        }
+        },
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+            ),
+    )
+}
+
+@Composable
+private fun VerificationContent(paddingValues: PaddingValues) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        VerificationIcon()
+        VerificationDescription()
+        CodeFromEmailForm(
+            checkCodeFromEmail = { },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        ResendCodeButton()
+    }
+}
+
+@Composable
+private fun VerificationIcon() {
+    Icon(
+        imageVector = Icons.Default.CheckCircle,
+        contentDescription = null,
+        modifier = Modifier.size(64.dp),
+        tint = MaterialTheme.colorScheme.primary,
+    )
+}
+
+@Composable
+private fun VerificationDescription() {
+    Text(
+        text = stringResource(R.string.InputCodeFromEmailLabel),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = 16.dp),
+    )
+}
+
+@Composable
+private fun ResendCodeButton() {
+    TextButton(
+        onClick = { /* Handle resend code */ },
+        modifier = Modifier.padding(top = 8.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.ResendCodeBtn),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
 
