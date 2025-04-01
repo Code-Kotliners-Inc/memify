@@ -34,4 +34,8 @@
     <string name="ConfirmCodeBtn">Подтвердить код</string>
     <string name="RecoveryCodeLabel">код восстановления</string>
     <string name="go_backBtn">go_back</string>
+    <string name="ResendCodeBtn">Отправить код повторно</string>
+    <string name="EnterNewPassword">Введите новый пароль</string>
+    <string name="ConfirmPassword">Потвердить пароль</string>
+    <string name="NewPassword">Новый пароль</string>
 </resources>
