@@ -40,4 +40,7 @@
     <string name="New">Новое</string>
     <string name="Favourites">Избранное</string>
     <string name="save_button">Сохранить</string>
+    <string name="Width">Толщина:</string>
+    <string name="Color">Цвет:</string>
+    <string name="Clear">Очистить</string>
 </resources>
