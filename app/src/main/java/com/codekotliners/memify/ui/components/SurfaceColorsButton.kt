@@ -3,9 +3,12 @@ package com.codekotliners.memify.ui.components
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.theme.ubuntuText16Sp
 
 @Composable
 fun SurfaceColorsButton(onClick: () -> Unit) {
@@ -19,6 +22,10 @@ fun SurfaceColorsButton(onClick: () -> Unit) {
                 disabledContentColor = MaterialTheme.colorScheme.onSurface,
             ),
     ) {
-        UbuntuText16Sp(stringResource(R.string.Clear))
+        Text(
+            text = stringResource(R.string.Clear),
+            style = MaterialTheme.typography.ubuntuText16Sp,
+            textAlign = TextAlign.Center,
+        )
     }
 }

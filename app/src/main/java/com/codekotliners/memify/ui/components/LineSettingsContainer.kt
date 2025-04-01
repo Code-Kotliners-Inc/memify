@@ -3,9 +3,9 @@ package com.codekotliners.memify.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
@@ -31,8 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.theme.ubuntuText16Sp
 
 @Composable
 fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor: MutableState<Color>) {
@@ -47,37 +50,44 @@ fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor: Mutable
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        UbuntuText16Sp(stringResource(R.string.Color))
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        Box(
-            modifier =
-                Modifier
-                    .clip(CircleShape)
-                    .size(30.dp)
-                    .background(selectedColor.value)
-                    .clickable { showColors = !showColors },
+        Text(
+            text = stringResource(R.string.Color),
+            style = MaterialTheme.typography.ubuntuText16Sp,
+            textAlign = TextAlign.Center,
         )
 
-        ColorsDropdownMenu(
-            showColors = showColors,
-            onShowColorsFalse = { showColors = false },
-            onChangeSelectedColor = { color -> selectedColor.value = color },
+        Box {
+            Box(
+                modifier =
+                    Modifier
+                        .clip(CircleShape)
+                        .size(30.dp)
+                        .background(selectedColor.value)
+                        .clickable { showColors = !showColors },
+            )
+
+            ColorsDropdownMenu(
+                showColors = showColors,
+                onShowColorsFalse = { showColors = false },
+                onChangeSelectedColor = { color -> selectedColor.value = color },
+            )
+        }
+
+        Text(
+            text = stringResource(R.string.Width),
+            style = MaterialTheme.typography.ubuntuText16Sp,
+            textAlign = TextAlign.Center,
         )
-
-        Spacer(modifier = Modifier.width(10.dp))
-
-        UbuntuText16Sp(stringResource(R.string.Width))
-
-        Spacer(modifier = Modifier.width(10.dp))
 
         LineWidthSlider(strokeWidth)
 
-        Spacer(modifier = Modifier.width(10.dp))
-
-        UbuntuText16Sp(strokeWidth.floatValue.toInt().toString())
+        Text(
+            text = strokeWidth.floatValue.toInt().toString(),
+            style = MaterialTheme.typography.ubuntuText16Sp,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 

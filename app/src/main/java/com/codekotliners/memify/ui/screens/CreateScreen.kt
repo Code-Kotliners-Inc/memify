@@ -3,6 +3,7 @@ package com.codekotliners.memify.ui.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
 import com.codekotliners.memify.ui.components.ColoredLine
 import com.codekotliners.memify.ui.components.LineSettingsContainer
-import com.codekotliners.memify.ui.components.PaintingCanvas
+import com.codekotliners.memify.ui.components.DrawingCanvas
 import com.codekotliners.memify.ui.components.SurfaceColorsButton
 import com.codekotliners.memify.ui.theme.MemifyTheme
 
@@ -137,6 +138,7 @@ private fun InteractiveCanvas() {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Box(
             modifier =
@@ -152,14 +154,10 @@ private fun InteractiveCanvas() {
                 contentScale = ContentScale.Crop,
             )
 
-            PaintingCanvas(allLines, currentLine, strokeWidth, selectedColor)
+            DrawingCanvas(allLines, currentLine, strokeWidth, selectedColor)
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
-
         LineSettingsContainer(strokeWidth, selectedColor)
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         SurfaceColorsButton(
             onClick = {
