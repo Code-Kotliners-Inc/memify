@@ -1,13 +1,14 @@
-package com.codekotliners.memify.core
+package com.codekotliners.memify
 
 import android.content.Context
+import com.codekotliners.memify.core.model.ImageRepository
 import com.codekotliners.memify.core.apiService.ApiService
 import com.codekotliners.memify.core.apiService.FakeApiServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module

@@ -1,4 +1,4 @@
-package com.codekotliners.memify.core
+package com.codekotliners.memify.core.model
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,7 +7,6 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.codekotliners.memify.core.apiService.ApiService
-import com.codekotliners.memify.core.model.ImageItem
 import com.codekotliners.memify.mocks.mockImagesRepository
 import java.io.File
 import java.io.FileOutputStream

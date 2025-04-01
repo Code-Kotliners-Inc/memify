@@ -3,7 +3,7 @@ package com.codekotliners.memify.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.R
-import com.codekotliners.memify.core.ImageRepository
+import com.codekotliners.memify.core.model.ImageRepository
 import com.codekotliners.memify.core.model.ImageItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
