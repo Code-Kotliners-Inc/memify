@@ -3,10 +3,14 @@ package com.codekotliners.memify.ui.screens
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,10 +28,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -37,6 +47,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.components.ColoredLine
+import com.codekotliners.memify.ui.components.LineSettingsContainer
+import com.codekotliners.memify.ui.components.DrawingCanvas
+import com.codekotliners.memify.ui.components.SurfaceColorsButton
 import com.codekotliners.memify.ui.theme.MemifyTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,9 +68,16 @@ fun CreateScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
     CenterAlignedTopAppBar(
-        title = { Text("Cringe") },
+        title = {
+            Text(
+                text = "Cringe",
+                fontFamily = FontFamily(Font(R.font.ubunturegular)),
+                fontStyle = FontStyle.Normal,
+                textAlign = TextAlign.Center,
+            )
+        },
         actions = {
             IconButton(onClick = { /* Меню */ }) {
                 Icon(
@@ -75,7 +96,7 @@ fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 }
 
 @Composable
-fun CreateScreenContent(innerPadding: PaddingValues) {
+private fun CreateScreenContent(innerPadding: PaddingValues) {
     Column(
         modifier =
             Modifier
@@ -86,10 +107,7 @@ fun CreateScreenContent(innerPadding: PaddingValues) {
     ) {
         Spacer(Modifier.height(25.dp))
 
-        Image(
-            painter = painterResource(id = R.drawable.meme),
-            contentDescription = "Meme image",
-        )
+        InteractiveCanvas()
 
         Spacer(Modifier.height(8.dp))
 
@@ -107,6 +125,46 @@ fun CreateScreenContent(innerPadding: PaddingValues) {
                 color = Color.Gray,
             )
         }
+    }
+}
+
+@Composable
+private fun InteractiveCanvas() {
+    val allLines = remember { mutableStateListOf<ColoredLine>() }
+    var currentLine = remember { mutableStateListOf<Offset>() }
+    var strokeWidth = remember { mutableFloatStateOf(5f) }
+    var selectedColor = remember { mutableStateOf(Color.Black) }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .padding(horizontal = 4.dp),
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.meme),
+                contentDescription = null,
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop,
+            )
+
+            DrawingCanvas(allLines, currentLine, strokeWidth, selectedColor)
+        }
+
+        LineSettingsContainer(strokeWidth, selectedColor)
+
+        SurfaceColorsButton(
+            onClick = {
+                allLines.clear()
+                currentLine.clear()
+            },
+        )
     }
 }
 
