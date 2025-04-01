@@ -120,6 +120,6 @@ fun EmailForm(sendRecoveryCodeBtnClick: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewRegistrationScreen() {
+fun PreviewPasswordRecoveryScreen() {
     PasswordRecoveryScreen(navController = NavHostController(LocalContext.current))
 }
