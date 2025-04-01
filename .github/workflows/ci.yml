@@ -33,9 +33,6 @@ jobs:
       - name: Set up Firebase config
         run: echo "${{ secrets.FIREBASE_CONFIG }}" > app/src/google-services.json
 
-      - name: Check Firebase config
-        run: cat app/src/google-services.json
-
       - name: Build debug
         run: ./gradlew assembleDebug
 
