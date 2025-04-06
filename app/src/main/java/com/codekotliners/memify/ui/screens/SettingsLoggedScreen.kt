@@ -2,6 +2,7 @@ package com.codekotliners.memify.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,10 +22,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,15 +43,94 @@ import com.codekotliners.memify.ui.theme.hintText
 import com.codekotliners.memify.ui.theme.suggestNewAccount
 
 @Composable
-fun ToolBar() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+fun SettingsUnLoggedScreen() {
+    Scaffold(
+        topBar = {
+            ToolBar()
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                ThemeChange()
+                Button(
+                    onClick = {},
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.login),
+                        style = MaterialTheme.typography.authButton,
+                        modifier = Modifier.padding(10.dp),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+fun SettingsLoggedScreen() {
+    Scaffold(
+        topBar = {
+            ToolBar()
+        },
+        content = { paddingValues ->
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(paddingValues)
+                        .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+            ) {
+                ThemeChange()
+                ChangeName()
+                ChangePhoto()
+                PasswordChange()
+                AddVk()
+                Button(
+                    onClick = {},
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.logout),
+                        style = MaterialTheme.typography.authButton,
+                        modifier = Modifier.padding(10.dp),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun ToolBar() {
+    Box(
         modifier =
             Modifier
                 .fillMaxWidth()
+                .padding(vertical = 8.dp)
                 .background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = {}) {
+        IconButton(onClick = {}, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "back",
@@ -57,20 +140,18 @@ fun ToolBar() {
         Text(
             text = stringResource(id = R.string.settings_title),
             style = MaterialTheme.typography.suggestNewAccount,
-            modifier = Modifier.weight(1f),
         )
     }
 }
 
 @Composable
-fun ChangeName() {
+private fun ChangeName() {
     Column(
         modifier =
             Modifier
-                .height(162.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_name),
@@ -90,14 +171,13 @@ fun ChangeName() {
 }
 
 @Composable
-fun ThemeChange() {
+private fun ThemeChange() {
     Row(
         modifier =
             Modifier
-                .height(56.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 30.dp, vertical = 16.dp),
+                .padding(horizontal = 30.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -117,14 +197,13 @@ fun ThemeChange() {
 }
 
 @Composable
-fun PasswordChange() {
+private fun PasswordChange() {
     Column(
         modifier =
             Modifier
-                .height(302.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
@@ -132,11 +211,11 @@ fun PasswordChange() {
             style = MaterialTheme.typography.hintText,
         )
 
-        PasswordField(stringResource(id = R.string.require_current_password))
+        PasswordField(stringResource(id = R.string.require_current_password), "", {})
 
-        PasswordField(stringResource(id = R.string.require_new_password))
+        PasswordField(stringResource(id = R.string.require_new_password), "", {})
 
-        PasswordField(stringResource(id = R.string.repeat_new_password))
+        PasswordField(stringResource(id = R.string.repeat_new_password), "", {})
 
         Button(
             onClick = { },
@@ -149,12 +228,12 @@ fun PasswordChange() {
 }
 
 @Composable
-fun PasswordField(label: String) {
+private fun PasswordField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
-        value = "",
+        value = value,
+        onValueChange = onValueChange,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        onValueChange = { },
         label = {
             Text(
                 label,
@@ -171,7 +250,7 @@ fun PasswordField(label: String) {
 }
 
 @Composable
-fun NameField(label: String) {
+private fun NameField(label: String) {
     OutlinedTextField(
         value = "",
         onValueChange = { },
@@ -184,38 +263,43 @@ fun NameField(label: String) {
         modifier =
             Modifier
                 .padding(10.dp)
-                .fillMaxWidth()
-                .height(40.dp),
+                .fillMaxWidth(),
         textStyle = MaterialTheme.typography.askPassword,
     )
 }
 
 @Composable
-fun AddVk() {
+private fun AddVk() {
     Column(
         modifier =
             Modifier
-                .height(114.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = stringResource(id = R.string.link_vk),
             style = MaterialTheme.typography.hintText,
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Row(modifier = Modifier.padding(10.dp)) {
+
+        Row(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 text = stringResource(id = R.string.link_account),
                 style = MaterialTheme.typography.suggestNewAccount,
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(start = 10.dp),
             )
             Spacer(modifier = Modifier.weight(1f))
             IconButton(onClick = {}) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_link_24),
-                    contentDescription = "back",
+                    contentDescription = "link account",
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
@@ -224,25 +308,29 @@ fun AddVk() {
 }
 
 @Composable
-fun ChangePhoto() {
+private fun ChangePhoto() {
     Column(
         modifier =
             Modifier
-                .height(114.dp)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 20.dp, vertical = 16.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_photo),
             style = MaterialTheme.typography.hintText,
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Row(modifier = Modifier.padding(10.dp)) {
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(
+            modifier =
+                Modifier
+                    .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             IconButton(onClick = {}) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_account_circle_24),
-                    contentDescription = "back",
+                    contentDescription = "change photo",
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(50.dp),
                 )
@@ -251,47 +339,10 @@ fun ChangePhoto() {
             Text(
                 text = stringResource(id = R.string.change_photo),
                 style = MaterialTheme.typography.suggestNewAccount,
-                modifier = Modifier.padding(8.dp),
-            )
-        }
-    }
-}
-
-@Composable
-fun SettingsLoggedScreen() {
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        ToolBar()
-
-        ThemeChange()
-
-        ChangeName()
-
-        ChangePhoto()
-
-        PasswordChange()
-
-        AddVk()
-
-        Button(
-            onClick = {},
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
-        ) {
-            Text(
-                text = stringResource(id = R.string.logout),
-                style = MaterialTheme.typography.authButton,
+                modifier =
+                    Modifier
+                        .padding(8.dp)
+                        .weight(1f),
             )
         }
     }

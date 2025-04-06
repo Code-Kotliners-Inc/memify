@@ -16,4 +16,6 @@ interface AuthRepository {
     suspend fun firebaseVKAuth(idToken: String): Response<Boolean>
 
     suspend fun firebaseSignOut(): Response<Boolean>
+
+    suspend fun firebaseForgotPassword(email: String): Response<Boolean>
 }
