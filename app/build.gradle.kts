@@ -5,7 +5,6 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
-    id("com.google.gms.google-services")
 }
 android {
     namespace = "com.codekotliners.memify"
@@ -113,3 +112,5 @@ vkompose {
 
     sourceInformationClean = true
 }
+
+apply(plugin = "com.google.gms.google-services")
