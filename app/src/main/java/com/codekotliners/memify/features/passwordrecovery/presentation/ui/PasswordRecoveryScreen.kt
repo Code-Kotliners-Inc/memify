@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.password_recovery.presentation.ui
+package com.codekotliners.memify.features.passwordrecovery.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.password_recovery.presentation.viewmodel.PasswordRecoveryViewModel
+import com.codekotliners.memify.features.passwordrecovery.presentation.viewmodel.PasswordRecoveryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

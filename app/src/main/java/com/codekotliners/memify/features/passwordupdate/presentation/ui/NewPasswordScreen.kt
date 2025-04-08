@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.new_password.presentation.ui
+package com.codekotliners.memify.features.passwordupdate.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.new_password.presentation.viewmodel.NewPasswordScreenViewModel
+import com.codekotliners.memify.features.passwordupdate.presentation.viewmodel.NewPasswordScreenViewModel
 
 @Composable
 fun NewPasswordScreen(

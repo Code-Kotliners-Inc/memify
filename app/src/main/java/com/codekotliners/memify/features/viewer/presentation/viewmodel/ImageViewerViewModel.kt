@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.image_viewer.presentation.viewmodel
+package com.codekotliners.memify.features.viewer.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

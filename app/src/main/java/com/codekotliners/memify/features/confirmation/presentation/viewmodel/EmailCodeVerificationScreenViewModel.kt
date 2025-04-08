@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.email_code_verification.presentation.viewmodel
+package com.codekotliners.memify.features.confirmation.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

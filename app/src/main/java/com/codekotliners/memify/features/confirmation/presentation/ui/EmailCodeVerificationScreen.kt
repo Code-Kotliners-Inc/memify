@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.email_code_verification.presentation.ui
+package com.codekotliners.memify.features.confirmation.presentation.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.email_code_verification.presentation.viewmodel.EmailCodeVerificationScreenViewModel
+import com.codekotliners.memify.features.confirmation.presentation.viewmodel.EmailCodeVerificationScreenViewModel
 
 @Composable
 fun EmailCodeVerificationScreen(

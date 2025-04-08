@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.password_recovery.presentation.viewmodel
+package com.codekotliners.memify.features.passwordrecovery.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.templates_feed.presentation.viewmodel
+package com.codekotliners.memify.features.templates.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.codekotliners.memify.R

@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.image_viewer.presentation.ui
+package com.codekotliners.memify.features.viewer.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,7 +43,7 @@ import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.image_viewer.presentation.viewmodel.ImageViewerViewModel
+import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 
 data class ImageItem(
     val title: String,
