@@ -40,7 +40,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -76,45 +75,34 @@ fun HomeScreen() {
             }
         }
         when (val currentState = tabState[selectedTab]) {
-            is MainFeedTabState.Loading -> {
-                LoadingIndicator()
-            }
+            is MainFeedTabState.Loading -> LoadingIndicator()
+            is MainFeedTabState.Error -> ErrorMessage(currentState.message)
+            is MainFeedTabState.Content ->
+                MemesColumn(currentState.content.toImmutableList()) { card ->
+                    viewModel.likeClick(card)
+                }
 
-            is MainFeedTabState.Error -> {
-                ErrorMessage(message = currentState.message)
-            }
-
-            is MainFeedTabState.Content -> {
-                MemesColumn(
-                    cards = currentState.content.toImmutableList(),
-                    onLikeClick = { card -> viewModel.likeClick(card) },
-                )
-            }
-
-            null -> {
-                ErrorMessage(message = stringResource(R.string.State_unavailable_error))
-            }
+            null -> ErrorMessage(stringResource(R.string.State_unavailable_error))
         }
     }
 }
 
 @Composable
-private fun MemesColumn(cards: ImmutableList<MemeCard>, onLikeClick: (MemeCard) -> Unit) {
+private fun MemesColumn(
+    cards: ImmutableList<MemeCard>,
+    onLikeClick: (MemeCard) -> Unit,
+) {
     LazyColumn(
         modifier =
             Modifier
                 .padding(vertical = 8.dp)
                 .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
-        content = {
-            items(cards) { card ->
-                MemeCard(
-                    card = card,
-                    onLikeClick = onLikeClick,
-                )
-            }
-        },
-    )
+    ) {
+        items(cards) { card ->
+            MemeCard(card, onLikeClick)
+        }
+    }
 }
 
 @Composable
@@ -129,13 +117,11 @@ fun MemeCard(
                 .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
     ) {
-        Column(
-            modifier = Modifier.padding(8.dp),
-        ) {
+        Column(Modifier.padding(8.dp)) {
             MemeCardHeader(card)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(Modifier.height(8.dp))
             MemeCardImage(card)
             MemeCardFooter(card, onLikeClick)
         }
@@ -148,46 +134,26 @@ private fun MemeCardHeader(card: MemeCard) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        ProfileImage(card)
-        Spacer(modifier = Modifier.width(8.dp))
-        UsernameText(card)
-        Spacer(modifier = Modifier.weight(1f))
-        MenuButton()
+        Image(
+            painter = painterResource(card.author.profilePicture),
+            contentDescription = "Profile picture",
+            modifier =
+                Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = card.author.name,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+        )
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            content = { Icon(Icons.Default.MoreVert, "Menu") },
+            onClick = {},
+        )
     }
-}
-
-@Composable
-private fun ProfileImage(card: MemeCard) {
-    Image(
-        painter = painterResource(card.author.profilePicture),
-        contentDescription = "Profile picture",
-        modifier =
-            Modifier
-                .size(40.dp)
-                .clip(CircleShape),
-    )
-}
-
-@Composable
-private fun UsernameText(card: MemeCard) {
-    Text(
-        text = card.author.name,
-        fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-    )
-}
-
-@Composable
-private fun MenuButton() {
-    IconButton(
-        content = {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "Menu",
-            )
-        },
-        onClick = { /*Выпадающее меню */ },
-    )
 }
 
 @Composable
@@ -204,29 +170,20 @@ private fun MemeCardImage(card: MemeCard) {
 }
 
 @Composable
-private fun MemeCardFooter(card: MemeCard, onLikeClick: (MemeCard) -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LikeButton(card, onLikeClick)
-        LikeCount(card)
+private fun MemeCardFooter(
+    card: MemeCard,
+    onLikeClick: (MemeCard) -> Unit,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = { onLikeClick(card) }) {
+            Icon(
+                imageVector = if (card.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                contentDescription = "Like",
+                tint = if (card.isLiked) Color.Red else Color.Gray,
+            )
+        }
+        Text(text = card.likesCount.toString())
     }
-}
-
-@Composable
-private fun LikeButton(card: MemeCard, onLikeClick: (MemeCard) -> Unit) {
-    IconButton(onClick = { onLikeClick(card) }) {
-        Icon(
-            imageVector = if (card.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-            contentDescription = "Like",
-            tint = if (card.isLiked) Color.Red else Color.Gray,
-        )
-    }
-}
-
-@Composable
-private fun LikeCount(card: MemeCard) {
-    Text(text = card.likesCount.toString())
 }
 
 @Composable
@@ -252,17 +209,8 @@ private fun ErrorMessage(message: String) {
 }
 
 @Composable
-private fun resolveMainFeedTabName(tab: MainFeedTabs): String {
-    val nameRes =
-        when (tab) {
-            MainFeedTabs.POPULAR -> R.string.Popular
-            MainFeedTabs.NEW -> R.string.New
-        }
-    return stringResource(nameRes)
-}
-
-@Preview(showSystemUi = true)
-@Composable
-private fun MainFeedPreview() {
-    HomeScreen()
-}
+private fun resolveMainFeedTabName(tab: MainFeedTabs): String =
+    when (tab) {
+        MainFeedTabs.POPULAR -> stringResource(R.string.Popular)
+        MainFeedTabs.NEW -> stringResource(R.string.New)
+    }
