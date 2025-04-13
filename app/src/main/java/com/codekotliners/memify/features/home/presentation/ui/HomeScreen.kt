@@ -44,10 +44,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.ui.viewmodels.MainFeedScreenViewModel
-import com.codekotliners.memify.ui.viewmodels.MainFeedTabState
-import com.codekotliners.memify.ui.viewmodels.MainFeedTabs
-import com.codekotliners.memify.ui.viewmodels.MemeCard
+import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedScreenViewModel
+import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabState
+import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabs
+import com.codekotliners.memify.features.home.presentation.viewModel.MemeCard
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
