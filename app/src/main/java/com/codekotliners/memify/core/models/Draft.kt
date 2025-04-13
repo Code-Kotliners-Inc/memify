@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.drafts.domain.entities
+package com.codekotliners.memify.core.models
 
 data class Draft(
     val id: Int,
