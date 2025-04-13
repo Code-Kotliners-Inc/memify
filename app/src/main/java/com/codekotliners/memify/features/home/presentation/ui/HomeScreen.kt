@@ -124,9 +124,9 @@ fun MemeCard(
 ) {
     Card(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
@@ -162,9 +162,9 @@ private fun ProfileImage(card: MemeCard) {
         painter = painterResource(card.author.profilePicture),
         contentDescription = "Profile picture",
         modifier =
-        Modifier
-            .size(40.dp)
-            .clip(CircleShape),
+            Modifier
+                .size(40.dp)
+                .clip(CircleShape),
     )
 }
 
@@ -196,9 +196,9 @@ private fun MemeCardImage(card: MemeCard) {
         painter = painterResource(card.picture),
         contentDescription = "Meme image",
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp)),
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp)),
         contentScale = ContentScale.Crop,
     )
 }
