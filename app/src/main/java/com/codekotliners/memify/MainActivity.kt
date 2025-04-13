@@ -21,8 +21,8 @@ import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.navigation.BottomNavigationBar
 import com.codekotliners.memify.features.create.presentation.ui.CreateScreen
 import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
-import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import com.codekotliners.memify.core.theme.MemifyTheme
+import com.codekotliners.memify.features.drafts.presentation.ui.DraftsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,7 +58,7 @@ fun App() {
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
                 composable(NavRoutes.Create.route) { CreateScreen() }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Profile.route) { DraftsScreen() }
             }
             BottomNavigationBar(navController = navController)
         }
