@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -152,13 +151,13 @@ private fun ChangeName() {
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
                 .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(
             text = stringResource(id = R.string.user_name),
             style = MaterialTheme.typography.hintText,
         )
         NameField("MemeMaker2011")
-        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = { },
@@ -242,9 +241,8 @@ private fun PasswordField(label: String, value: String, onValueChange: (String) 
         },
         modifier =
             Modifier
-                .padding(10.dp)
-                .fillMaxWidth()
-                .height(40.dp),
+                .padding(2.dp)
+                .fillMaxWidth(),
         textStyle = MaterialTheme.typography.askPassword,
     )
 }
@@ -310,6 +308,7 @@ private fun AddVk() {
 @Composable
 private fun ChangePhoto() {
     Column(
+        verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -320,7 +319,6 @@ private fun ChangePhoto() {
             text = stringResource(id = R.string.user_photo),
             style = MaterialTheme.typography.hintText,
         )
-        Spacer(modifier = Modifier.height(10.dp))
         Row(
             modifier =
                 Modifier
