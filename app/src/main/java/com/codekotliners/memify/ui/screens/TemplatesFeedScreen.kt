@@ -30,8 +30,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.ui.viewmodels.TabState
-import com.codekotliners.memify.ui.viewmodels.Tabs
+import com.codekotliners.memify.ui.viewmodels.TemplateFeedTabState
+import com.codekotliners.memify.ui.viewmodels.TemplatesFeedTabs
 import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -59,13 +59,13 @@ fun TemplatesFeedScreen() {
             }
         }
         when (val currentState = tabState[selectedTab]) {
-            is TabState.Loading -> {
+            is TemplateFeedTabState.Loading -> {
                 LoadingIndicator()
             }
-            is TabState.Error -> {
+            is TemplateFeedTabState.Error -> {
                 ErrorMessage(message = currentState.message)
             }
-            is TabState.Content -> {
+            is TemplateFeedTabState.Content -> {
                 TemplateGrid(templates = currentState.templates.toImmutableList())
             }
             null -> {
@@ -76,7 +76,7 @@ fun TemplatesFeedScreen() {
 }
 
 @Composable
-fun TemplateGrid(templates: ImmutableList<Int>) {
+private fun TemplateGrid(templates: ImmutableList<Int>) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         modifier =
@@ -93,7 +93,7 @@ fun TemplateGrid(templates: ImmutableList<Int>) {
 }
 
 @Composable
-fun TemplateItem(image: Painter) {
+private fun TemplateItem(image: Painter) {
     Card(
         modifier =
             Modifier
@@ -112,7 +112,7 @@ fun TemplateItem(image: Painter) {
 }
 
 @Composable
-fun LoadingIndicator() {
+private fun LoadingIndicator() {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -123,7 +123,7 @@ fun LoadingIndicator() {
 }
 
 @Composable
-fun ErrorMessage(message: String) {
+private fun ErrorMessage(message: String) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -141,12 +141,12 @@ fun PreviewTemplatesFeed() {
 
 @Composable
 @ReadOnlyComposable
-fun resolveTabName(tab: Tabs): String {
+fun resolveTabName(tab: TemplatesFeedTabs): String {
     val nameRes =
         when (tab) {
-            Tabs.BEST -> R.string.Best
-            Tabs.NEW -> R.string.New
-            Tabs.FAVOURITE -> R.string.Favourites
+            TemplatesFeedTabs.BEST -> R.string.Best
+            TemplatesFeedTabs.NEW -> R.string.New
+            TemplatesFeedTabs.FAVOURITE -> R.string.Favourites
         }
     return stringResource(nameRes)
 }

@@ -41,4 +41,6 @@
     <string name="Width">Толщина:</string>
     <string name="Color">Цвет:</string>
     <string name="Clear">Очистить</string>
+    <string name="Popular">Популярное</string>
+    <string name="State_unavailable_error">Состояние не доступно</string>
 </resources>
