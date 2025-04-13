@@ -1,4 +1,4 @@
-package com.codekotliners.memify.ui.screens
+package com.codekotliners.memify.features.settings.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +26,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -36,10 +34,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
-import com.codekotliners.memify.ui.theme.askPassword
-import com.codekotliners.memify.ui.theme.authButton
-import com.codekotliners.memify.ui.theme.hintText
-import com.codekotliners.memify.ui.theme.suggestNewAccount
+import com.codekotliners.memify.core.theme.askPassword
+import com.codekotliners.memify.core.theme.authButton
+import com.codekotliners.memify.core.theme.hintText
+import com.codekotliners.memify.core.theme.suggestNewAccount
 
 @Composable
 fun SettingsUnLoggedScreen() {

@@ -4,5 +4,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
-    id("com.google.dagger.hilt.android") version "2.49" apply false
+    id("com.google.dagger.hilt.android") version "2.50" apply false
 }
