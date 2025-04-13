@@ -1,4 +1,4 @@
-package com.codekotliners.memify.ui.screens
+package com.codekotliners.memify.features.templates.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,9 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.ui.viewmodels.TemplateFeedTabState
-import com.codekotliners.memify.ui.viewmodels.TemplatesFeedTabs
-import com.codekotliners.memify.ui.viewmodels.TemplatesFeedViewModel
+import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplateFeedTabState
+import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedTabs
+import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 

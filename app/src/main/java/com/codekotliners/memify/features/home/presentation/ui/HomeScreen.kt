@@ -1,4 +1,4 @@
-package com.codekotliners.memify.ui.screens
+package com.codekotliners.memify.features.home.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -122,17 +122,11 @@ fun MemeCard(
     card: MemeCard,
     onLikeClick: (MemeCard) -> Unit,
 ) {
-    val username = card.author.name
-    val memeImage = painterResource(card.picture)
-    val profileImage = painterResource(card.author.profilePicture)
-    val likesCount = card.likesCount
-    val isLiked = card.isLiked
-
     Card(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
@@ -140,62 +134,99 @@ fun MemeCard(
         Column(
             modifier = Modifier.padding(8.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Image(
-                    painter = profileImage,
-                    contentDescription = "Profile picture",
-                    modifier =
-                        Modifier
-                            .size(40.dp)
-                            .clip(CircleShape),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = username,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu",
-                        )
-                    },
-                    onClick = { /*Выпадающее меню */ },
-                )
-            }
-
+            MemeCardHeader(card)
             Spacer(modifier = Modifier.height(8.dp))
-
-            Image(
-                painter = memeImage,
-                contentDescription = "Meme image",
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.Crop,
-            )
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                IconButton(onClick = { onLikeClick(card) }) {
-                    Icon(
-                        imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Like",
-                        tint = if (isLiked) Color.Red else Color.Gray,
-                    )
-                }
-                Text(text = likesCount.toString())
-            }
+            MemeCardImage(card)
+            MemeCardFooter(card, onLikeClick)
         }
     }
+}
+
+@Composable
+private fun MemeCardHeader(card: MemeCard) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        ProfileImage(card)
+        Spacer(modifier = Modifier.width(8.dp))
+        UsernameText(card)
+        Spacer(modifier = Modifier.weight(1f))
+        MenuButton()
+    }
+}
+
+@Composable
+private fun ProfileImage(card: MemeCard) {
+    Image(
+        painter = painterResource(card.author.profilePicture),
+        contentDescription = "Profile picture",
+        modifier =
+        Modifier
+            .size(40.dp)
+            .clip(CircleShape),
+    )
+}
+
+@Composable
+private fun UsernameText(card: MemeCard) {
+    Text(
+        text = card.author.name,
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+    )
+}
+
+@Composable
+private fun MenuButton() {
+    IconButton(
+        content = {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "Menu",
+            )
+        },
+        onClick = { /*Выпадающее меню */ },
+    )
+}
+
+@Composable
+private fun MemeCardImage(card: MemeCard) {
+    Image(
+        painter = painterResource(card.picture),
+        contentDescription = "Meme image",
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp)),
+        contentScale = ContentScale.Crop,
+    )
+}
+
+@Composable
+private fun MemeCardFooter(card: MemeCard, onLikeClick: (MemeCard) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        LikeButton(card, onLikeClick)
+        LikeCount(card)
+    }
+}
+
+@Composable
+private fun LikeButton(card: MemeCard, onLikeClick: (MemeCard) -> Unit) {
+    IconButton(onClick = { onLikeClick(card) }) {
+        Icon(
+            imageVector = if (card.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+            contentDescription = "Like",
+            tint = if (card.isLiked) Color.Red else Color.Gray,
+        )
+    }
+}
+
+@Composable
+private fun LikeCount(card: MemeCard) {
+    Text(text = card.likesCount.toString())
 }
 
 @Composable
