@@ -58,7 +58,6 @@ fun HomeScreen() {
     val tabState by viewModel.tabStates.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
 
-
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTab.ordinal) {
             tabState.forEach { (tab, _) ->
@@ -68,7 +67,7 @@ fun HomeScreen() {
                     text = {
                         Text(
                             text = resolveMainFeedTabName(tab),
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     },
                     selectedContentColor = MaterialTheme.colorScheme.onBackground,
@@ -88,7 +87,8 @@ fun HomeScreen() {
             is MainFeedTabState.Content -> {
                 MemesColumn(
                     cards = currentState.content.toImmutableList(),
-                    onLikeClick = { card -> viewModel.likeClick(card) })
+                    onLikeClick = { card -> viewModel.likeClick(card) },
+                )
             }
 
             null -> {
@@ -102,9 +102,9 @@ fun HomeScreen() {
 private fun MemesColumn(cards: ImmutableList<MemeCard>, onLikeClick: (MemeCard) -> Unit) {
     LazyColumn(
         modifier =
-        Modifier
-            .padding(vertical = 8.dp)
-            .fillMaxSize(),
+            Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
         content = {
             items(cards) { card ->
@@ -113,14 +113,14 @@ private fun MemesColumn(cards: ImmutableList<MemeCard>, onLikeClick: (MemeCard) 
                     onLikeClick = onLikeClick,
                 )
             }
-        }
+        },
     )
 }
 
 @Composable
 fun MemeCard(
     card: MemeCard,
-    onLikeClick: (MemeCard) -> Unit
+    onLikeClick: (MemeCard) -> Unit,
 ) {
     val username = card.author.name
     val memeImage = painterResource(card.picture)
@@ -129,66 +129,67 @@ fun MemeCard(
     val isLiked = card.isLiked
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Image(
                     painter = profileImage,
                     contentDescription = "Profile picture",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .clip(CircleShape),
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = username,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(
                     content = {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Menu"
+                            contentDescription = "Menu",
                         )
                     },
-                    onClick = { /*Выпадающее меню */ }
+                    onClick = { /*Выпадающее меню */ },
                 )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-
             Image(
                 painter = memeImage,
                 contentDescription = "Meme image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp)),
                 contentScale = ContentScale.Crop,
             )
 
-
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(onClick = { onLikeClick(card) }) {
                     Icon(
                         imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = "Like",
-                        tint = if (isLiked) Color.Red else Color.Gray
+                        tint = if (isLiked) Color.Red else Color.Gray,
                     )
                 }
                 Text(text = likesCount.toString())
