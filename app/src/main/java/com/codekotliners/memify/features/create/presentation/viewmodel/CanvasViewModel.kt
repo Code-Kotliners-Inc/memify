@@ -1,8 +1,10 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -63,5 +65,18 @@ class DrawingCanvasViewModel @Inject constructor() : ViewModel() {
     private fun saveState() {
         _history.add(allLines.toList())
         _future.clear()
+    }
+
+    // TO REMOVE
+    var iAmAPainterGodDamnIt by mutableStateOf(false)
+    var iAmAWriterGodDamnIt by mutableStateOf(false)
+    fun paintToggle() {
+        iAmAPainterGodDamnIt = !iAmAPainterGodDamnIt
+        iAmAWriterGodDamnIt = false
+    }
+
+    fun writeToggle() {
+        iAmAWriterGodDamnIt = !iAmAWriterGodDamnIt
+        iAmAPainterGodDamnIt = false
     }
 }

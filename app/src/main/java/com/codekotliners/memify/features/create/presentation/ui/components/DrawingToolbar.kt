@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LineSettingsContainer(strokeWidth: MutableFloatState, selectedColor: MutableState<Color>) {
+fun DrawingToolbar(strokeWidth: MutableFloatState, selectedColor: MutableState<Color>) {
     var showColors by remember { mutableStateOf(false) }
 
     Row(
