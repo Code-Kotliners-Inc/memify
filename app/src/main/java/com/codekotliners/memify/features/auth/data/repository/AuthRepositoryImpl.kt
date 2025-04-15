@@ -65,4 +65,13 @@ class AuthRepositoryImpl(
         } catch (e: Exception) {
             Response.Failure(e)
         }
+
+    override suspend fun firebaseForgotPassword(email: String): Response<Boolean> {
+        try {
+            auth.sendPasswordResetEmail(email).await()
+            return Response.Success(true)
+        } catch (e: Exception) {
+            return Response.Failure(e)
+        }
+    }
 }
