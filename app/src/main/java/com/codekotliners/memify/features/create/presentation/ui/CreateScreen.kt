@@ -7,15 +7,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,13 +31,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -46,12 +45,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.create.presentation.ui.components.ColoredLine
-import com.codekotliners.memify.features.create.presentation.ui.components.DrawingCanvas
-import com.codekotliners.memify.features.create.presentation.ui.components.SurfaceColorsButton
 import com.codekotliners.memify.core.theme.MemifyTheme
+import com.codekotliners.memify.features.create.presentation.ui.components.DrawingCanvas
 import com.codekotliners.memify.features.create.presentation.ui.components.LineSettingsContainer
+import com.codekotliners.memify.features.create.presentation.viewmodel.DrawingCanvasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +96,12 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 
 @Composable
 private fun CreateScreenContent(innerPadding: PaddingValues) {
+    val viewModel: DrawingCanvasViewModel = hiltViewModel()
+//    val allLines = remember { mutableStateListOf<ColoredLine>() }
+//    var currentLine = remember { mutableStateListOf<Offset>() }
+//    var strokeWidth = remember { mutableFloatStateOf(50f) }
+//    var selectedColor = remember { mutableStateOf(Color.Black) }
+
     Column(
         modifier =
             Modifier
@@ -105,11 +110,76 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
                 .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(25.dp))
+        Box(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .clip(RoundedCornerShape(50.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Button(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    onClick = { viewModel.undo() },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        )
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.baseline_undo_24),
+                        contentDescription = "undo",
+                    )
+                }
 
-        InteractiveCanvas()
+                Button(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    onClick = { viewModel.redo() },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        )
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.baseline_redo_24),
+                        contentDescription = "redo",
+                    )
+                }
 
-        Spacer(Modifier.height(8.dp))
+                Button(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    onClick = { viewModel.clearCanvas() },
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        )
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.baseline_delete_outline_24),
+                        contentDescription = "clear",
+                    )
+                }
+            }
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            InteractiveCanvas(viewModel)
+        }
 
         Surface(
             color = Color.White,
@@ -129,12 +199,7 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
 }
 
 @Composable
-private fun InteractiveCanvas() {
-    val allLines = remember { mutableStateListOf<ColoredLine>() }
-    var currentLine = remember { mutableStateListOf<Offset>() }
-    var strokeWidth = remember { mutableFloatStateOf(5f) }
-    var selectedColor = remember { mutableStateOf(Color.Black) }
-
+private fun InteractiveCanvas(viewModel: DrawingCanvasViewModel) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -145,7 +210,7 @@ private fun InteractiveCanvas() {
                 Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .padding(horizontal = 4.dp),
+                    .padding(4.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.meme),
@@ -154,17 +219,10 @@ private fun InteractiveCanvas() {
                 contentScale = ContentScale.Crop,
             )
 
-            DrawingCanvas(allLines, currentLine, strokeWidth, selectedColor)
+            DrawingCanvas(viewModel)
         }
 
-        LineSettingsContainer(strokeWidth, selectedColor)
-
-        SurfaceColorsButton(
-            onClick = {
-                allLines.clear()
-                currentLine.clear()
-            },
-        )
+        LineSettingsContainer(viewModel.strokeWidth, viewModel.selectedColor)
     }
 }
 
