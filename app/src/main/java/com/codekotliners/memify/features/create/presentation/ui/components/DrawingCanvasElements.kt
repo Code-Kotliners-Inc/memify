@@ -22,7 +22,7 @@ import com.codekotliners.memify.features.create.domain.TextElement
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun DrawingCanvas(viewModel: CanvasViewModel) {
+fun DrawingCanvasElements(viewModel: CanvasViewModel) {
     Box(
         modifier = Modifier
             .then(
@@ -49,9 +49,9 @@ fun DrawingCanvas(viewModel: CanvasViewModel) {
                     if (viewModel.currentLine.size > 1) {
                         drawPath(
                             path = createPath(viewModel.currentLine),
-                            color = viewModel.selectedColor.value,
+                            color = viewModel.currentLineColor.value,
                             style = Stroke(
-                                width = viewModel.strokeWidth.floatValue,
+                                width = viewModel.currentLineWidth.floatValue,
                                 cap = StrokeCap.Round,
                                 join = StrokeJoin.Round,
                             ),
@@ -66,9 +66,6 @@ fun DrawingCanvas(viewModel: CanvasViewModel) {
                 onPositionChange = { newPosition ->
                     viewModel.updateTextPosition(element, newPosition)
                 },
-                onSizeChange = { width, height ->
-                    viewModel.updateTextSize(element, width, height)
-                }
             )
         }
     }

@@ -38,7 +38,6 @@
     <string name="EnterNewPassword">Введите новый пароль</string>
     <string name="ConfirmPassword">Потвердить пароль</string>
     <string name="NewPassword">Новый пароль</string>
-    <string name="Width">Толщина:</string>
-    <string name="Color">Цвет:</string>
     <string name="Clear">Очистить</string>
+    <string name="HoldToChooseInstruments">Нажмите и удерживайте холст для выбора инструмента</string>
 </resources>

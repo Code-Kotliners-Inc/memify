@@ -1,4 +1,5 @@
 package com.codekotliners.memify.features.create.domain
 
-class CanvasElement {
+sealed interface CanvasElement {
+    val id: Long
 }
