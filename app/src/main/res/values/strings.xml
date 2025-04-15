@@ -1,5 +1,18 @@
 <resources>
     <string name="app_name">Memify</string>
+    <string name="settings_title">Настройки</string>
+    <string name="login">Войти в аккаунт</string>
+    <string name="theme">Тема</string>
+    <string name="user_name">Имя пользователя</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="user_photo">Фото профиля</string>
+    <string name="safety">Безопасность</string>
+    <string name="link_vk">Аккаунт ВК</string>
+    <string name="link_account">Не привязан</string>
+    <string name="change_photo">Изменить</string>
+    <string name="require_current_password">Старый пароль</string>
+    <string name="require_new_password">Новый пароль</string>
+    <string name="repeat_new_password">Повторите пароль</string>
     <string name="share_action">Поделиться</string>
     <string name="download_action">Скачать</string>
     <string name="publish_action">Опубликовать</string>
@@ -26,6 +39,7 @@
     <string name="Best">Лучшее</string>
     <string name="New">Новое</string>
     <string name="Favourites">Избранное</string>
+    <string name="save_button">Сохранить</string>
     <string name="RecoveryPassword">Восстановление пароля</string>
     <string name="InputEmailForRecovery">Введите адрес электронной почты, к которому привязан ваш аккаунт</string>
     <string name="SendRecoveryCodeBtn">Отправить код восстановления</string>
