@@ -22,7 +22,7 @@ import com.codekotliners.memify.features.create.domain.TextElement
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun DrawingCanvasElements(viewModel: CanvasViewModel) {
+fun EditingCanvasElements(viewModel: CanvasViewModel) {
     Box(
         modifier = Modifier
             .size(viewModel.imageWidth.dp, viewModel.imageHeight.dp)
