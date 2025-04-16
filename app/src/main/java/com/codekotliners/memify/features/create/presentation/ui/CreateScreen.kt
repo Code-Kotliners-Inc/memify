@@ -47,7 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsToolbar
-import com.codekotliners.memify.features.create.presentation.ui.components.DrawingCanvasElements
+import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingToolbar
 import com.codekotliners.memify.features.create.presentation.ui.components.HoldToChooseInstrumentsTextBox
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
@@ -177,7 +177,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
             modifier = Modifier.matchParentSize(),
         )
 
-        DrawingCanvasElements(viewModel)
+        EditingCanvasElements(viewModel)
 
         if (viewModel.showTextPreview) {
             Box(
