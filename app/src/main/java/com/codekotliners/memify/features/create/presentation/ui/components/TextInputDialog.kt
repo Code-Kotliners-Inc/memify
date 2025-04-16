@@ -3,21 +3,17 @@ package com.codekotliners.memify.features.create.presentation.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -25,8 +21,6 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 
 @Composable
 fun TextInputDialog(viewModel: CanvasViewModel) {
-    val focusRequester = remember { FocusRequester() }
-
     Dialog(
         onDismissRequest = { viewModel.finishWriting() },
         properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -34,8 +28,7 @@ fun TextInputDialog(viewModel: CanvasViewModel) {
         Box(
             modifier = Modifier
                 .background(Color.Transparent)
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
+                .fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
             TextField(
@@ -44,36 +37,27 @@ fun TextInputDialog(viewModel: CanvasViewModel) {
                 modifier = Modifier
                     .align(Alignment.Center)
                     .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                placeholder = {
-                    Text(
-                        text = "",
-                        color = Color.White.copy(alpha = 0.7f),
-                        textAlign = TextAlign.Center
-                    )
-                },
+                    .focusRequester(viewModel.focusRequester),
+                placeholder = { Text("") },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
                     cursorColor = Color.White,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
                 ),
-                singleLine = true,
                 textStyle = TextStyle(
                     color = viewModel.currentTextColor.value,
                     fontSize = viewModel.currentTextSize.floatValue.sp,
                     fontWeight = viewModel.currentFontWeight.value,
                     fontFamily = viewModel.currentFontFamily.value,
+                    textAlign = TextAlign.Center,
                 )
             )
         }
     }
 
     LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+        viewModel.focusRequester.requestFocus()
     }
 }

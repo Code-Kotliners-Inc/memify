@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -32,11 +33,15 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     var currentTextSize = mutableFloatStateOf(24f)
     val currentFontFamily: MutableState<FontFamily> = mutableStateOf(FontFamily.Default)
     val currentFontWeight = mutableStateOf(FontWeight.Normal)
+    val focusRequester = FocusRequester()
 
     var showTextPreview by mutableStateOf(false)
     var showColors by mutableStateOf(false)
     var showFonts by mutableStateOf(false)
     var showWeights by mutableStateOf(false)
+
+    var imageWidth by mutableFloatStateOf(1f)
+    var imageHeight by mutableFloatStateOf(1f)
 
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
@@ -99,8 +104,6 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
                     fontFamily = currentFontFamily.value,
                     fontWeight = currentFontWeight.value,
                     position = Offset(0f, 0f),
-                    width = 200f,
-                    height = 100f,
                 )
             )
         }
@@ -122,6 +125,7 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
         iAmAPainterGodDamnIt = !iAmAPainterGodDamnIt
         iAmAWriterGodDamnIt = false
     }
+
     fun writeToggle() {
         iAmAWriterGodDamnIt = !iAmAWriterGodDamnIt
         iAmAPainterGodDamnIt = false

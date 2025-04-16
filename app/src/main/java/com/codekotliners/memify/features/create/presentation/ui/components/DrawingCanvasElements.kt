@@ -5,10 +5,10 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
@@ -25,6 +25,8 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 fun DrawingCanvasElements(viewModel: CanvasViewModel) {
     Box(
         modifier = Modifier
+            .size(viewModel.imageWidth.dp, viewModel.imageHeight.dp)
+            .clipToBounds()
             .then(
                 if (viewModel.iAmAPainterGodDamnIt) {
                     Modifier.drawingCanvas(viewModel)
@@ -63,9 +65,7 @@ fun DrawingCanvasElements(viewModel: CanvasViewModel) {
         viewModel.canvasElements.filterIsInstance<TextElement>().forEach { element ->
             TextElementView(
                 element = element,
-                onPositionChange = { newPosition ->
-                    viewModel.updateTextPosition(element, newPosition)
-                },
+                viewModel = viewModel,
             )
         }
     }
@@ -82,8 +82,7 @@ private fun createPath(points: List<Offset>) = Path().apply {
 private fun Modifier.drawingCanvas(viewModel: CanvasViewModel) =
     Modifier
         .fillMaxWidth()
-        .aspectRatio(1f)
-        .clip(RoundedCornerShape(8.dp))
+        .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
         .pointerInput(Unit) {
             detectDragGestures(
                 onDragStart = { offset ->

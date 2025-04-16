@@ -30,6 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -120,6 +121,11 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
 private fun InteractiveCanvas(viewModel: CanvasViewModel) {
     val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
 
+    LaunchedEffect(R.drawable.meme) {
+        viewModel.imageWidth = imageWidth
+        viewModel.imageHeight = imageHeight
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -131,44 +137,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
             Button(onClick = { viewModel.writeToggle() }) { Text("write") }
         }
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(imageWidth / imageHeight)
-                .padding(4.dp)
-                .then(
-                    if (viewModel.iAmAWriterGodDamnIt)
-                        Modifier.clickable(onClick = { viewModel.startWriting() })
-                    else Modifier
-                )
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.meme),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.matchParentSize(),
-            )
-
-            DrawingCanvasElements(viewModel)
-
-            if (viewModel.showTextPreview) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(Alignment.Center)
-                ) {
-                    Text(
-                        text = "A",
-                        textAlign = TextAlign.Center,
-                        color = viewModel.currentTextColor.value,
-                        fontSize = viewModel.currentTextSize.floatValue.sp,
-                        fontFamily = viewModel.currentFontFamily.value,
-                        fontWeight = viewModel.currentFontWeight.value,
-                        modifier = Modifier.offset(y = (-40).dp)
-                    )
-                }
-            }
-        }
+        ImageBox(viewModel)
 
         if (viewModel.isWriting) {
             TextInputDialog(viewModel)
@@ -184,6 +153,48 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 
         AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
             TextToolbar(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun ImageBox(viewModel: CanvasViewModel) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
+            .padding(4.dp)
+            .then(
+                if (viewModel.iAmAWriterGodDamnIt)
+                    Modifier.clickable(onClick = { viewModel.startWriting() })
+                else Modifier
+            )
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.meme),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.matchParentSize(),
+        )
+
+        DrawingCanvasElements(viewModel)
+
+        if (viewModel.showTextPreview) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                Text(
+                    text = "A",
+                    textAlign = TextAlign.Center,
+                    color = viewModel.currentTextColor.value,
+                    fontSize = viewModel.currentTextSize.floatValue.sp,
+                    fontFamily = viewModel.currentFontFamily.value,
+                    fontWeight = viewModel.currentFontWeight.value,
+                    modifier = Modifier.offset(y = (-40).dp)
+                )
+            }
         }
     }
 }
