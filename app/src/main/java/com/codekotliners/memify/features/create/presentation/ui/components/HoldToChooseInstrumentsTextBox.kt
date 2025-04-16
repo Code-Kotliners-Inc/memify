@@ -22,16 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
 
-
 @Composable
 fun HoldToChooseInstrumentsTextBox() {
     Row(
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = 4.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(horizontal = 20.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {

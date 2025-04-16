@@ -7,5 +7,5 @@ data class ColoredLine(
     val points: List<Offset>,
     val color: Color,
     val strokeWidth: Float,
-    override val id: Long = System.currentTimeMillis()
+    override val id: Long = System.currentTimeMillis(),
 ) : CanvasElement

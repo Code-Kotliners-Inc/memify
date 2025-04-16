@@ -26,33 +26,37 @@ fun TextInputDialog(viewModel: CanvasViewModel) {
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Box(
-            modifier = Modifier
-                .background(Color.Transparent)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .background(Color.Transparent)
+                    .fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
             TextField(
                 value = viewModel.currentText,
                 onValueChange = { viewModel.currentText = it },
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .fillMaxWidth()
-                    .focusRequester(viewModel.focusRequester),
+                modifier =
+                    Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .focusRequester(viewModel.focusRequester),
                 placeholder = { Text("") },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    cursorColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                textStyle = TextStyle(
-                    color = viewModel.currentTextColor.value,
-                    fontSize = viewModel.currentTextSize.floatValue.sp,
-                    fontWeight = viewModel.currentFontWeight.value,
-                    fontFamily = viewModel.currentFontFamily.value,
-                    textAlign = TextAlign.Center,
-                )
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        cursorColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                textStyle =
+                    TextStyle(
+                        color = viewModel.currentTextColor.value,
+                        fontSize = viewModel.currentTextSize.floatValue.sp,
+                        fontWeight = viewModel.currentFontWeight.value,
+                        fontFamily = viewModel.currentFontFamily.value,
+                        textAlign = TextAlign.Center,
+                    ),
             )
         }
     }

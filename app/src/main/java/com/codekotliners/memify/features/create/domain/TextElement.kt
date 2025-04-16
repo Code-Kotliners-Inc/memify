@@ -12,5 +12,5 @@ data class TextElement(
     val fontFamily: FontFamily,
     val fontWeight: FontWeight,
     var position: Offset,
-    override val id: Long = System.currentTimeMillis()
+    override val id: Long = System.currentTimeMillis(),
 ) : CanvasElement

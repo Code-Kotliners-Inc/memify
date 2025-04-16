@@ -25,24 +25,25 @@ import kotlin.math.roundToInt
 @Composable
 fun TextElementView(
     element: TextElement,
-    viewModel: CanvasViewModel
+    viewModel: CanvasViewModel,
 ) {
     var offset by remember { mutableStateOf(element.position) }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
-            .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        offset += dragAmount
-                        viewModel.updateTextPosition(element, offset)
-                    }
-                )
-            }
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
+                .offset { IntOffset(offset.x.roundToInt(), offset.y.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            offset += dragAmount
+                            viewModel.updateTextPosition(element, offset)
+                        },
+                    )
+                },
     ) {
         Text(
             text = element.text,

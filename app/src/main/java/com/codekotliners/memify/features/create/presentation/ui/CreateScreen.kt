@@ -87,10 +87,11 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
                 )
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
         scrollBehavior = scrollBehavior,
     )
 }
@@ -100,10 +101,11 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(innerPadding),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ActionsToolbar(viewModel)
@@ -143,7 +145,9 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
             TextInputDialog(viewModel)
         }
 
-        AnimatedVisibility(visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false)) {
+        AnimatedVisibility(
+            visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
+        ) {
             HoldToChooseInstrumentsTextBox()
         }
 
@@ -160,15 +164,18 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 @Composable
 private fun ImageBox(viewModel: CanvasViewModel) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
-            .padding(4.dp)
-            .then(
-                if (viewModel.iAmAWriterGodDamnIt)
-                    Modifier.clickable(onClick = { viewModel.startWriting() })
-                else Modifier
-            )
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
+                .padding(4.dp)
+                .then(
+                    if (viewModel.iAmAWriterGodDamnIt) {
+                        Modifier.clickable(onClick = { viewModel.startWriting() })
+                    } else {
+                        Modifier
+                    },
+                ),
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
@@ -181,9 +188,10 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 
         if (viewModel.showTextPreview) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
             ) {
                 Text(
                     text = "A",
@@ -192,7 +200,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     fontSize = viewModel.currentTextSize.floatValue.sp,
                     fontFamily = viewModel.currentFontFamily.value,
                     fontWeight = viewModel.currentFontWeight.value,
-                    modifier = Modifier.offset(y = (-40).dp)
+                    modifier = Modifier.offset(y = (-40).dp),
                 )
             }
         }

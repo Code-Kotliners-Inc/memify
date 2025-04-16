@@ -24,43 +24,47 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 @Composable
 fun EditingCanvasElements(viewModel: CanvasViewModel) {
     Box(
-        modifier = Modifier
-            .size(viewModel.imageWidth.dp, viewModel.imageHeight.dp)
-            .clipToBounds()
-            .then(
-                if (viewModel.iAmAPainterGodDamnIt) {
-                    Modifier.drawingCanvas(viewModel)
-                } else Modifier
-            )
-            .drawWithCache {
-                onDrawBehind {
-                    viewModel.canvasElements.filterIsInstance<ColoredLine>().forEach { line ->
-                        if (line.points.size > 1) {
+        modifier =
+            Modifier
+                .size(viewModel.imageWidth.dp, viewModel.imageHeight.dp)
+                .clipToBounds()
+                .then(
+                    if (viewModel.iAmAPainterGodDamnIt) {
+                        Modifier.drawingCanvas(viewModel)
+                    } else {
+                        Modifier
+                    },
+                ).drawWithCache {
+                    onDrawBehind {
+                        viewModel.canvasElements.filterIsInstance<ColoredLine>().forEach { line ->
+                            if (line.points.size > 1) {
+                                drawPath(
+                                    path = createPath(line.points),
+                                    color = line.color,
+                                    style =
+                                        Stroke(
+                                            width = line.strokeWidth,
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round,
+                                        ),
+                                )
+                            }
+                        }
+
+                        if (viewModel.currentLine.size > 1) {
                             drawPath(
-                                path = createPath(line.points),
-                                color = line.color,
-                                style = Stroke(
-                                    width = line.strokeWidth,
-                                    cap = StrokeCap.Round,
-                                    join = StrokeJoin.Round,
-                                ),
+                                path = createPath(viewModel.currentLine),
+                                color = viewModel.currentLineColor.value,
+                                style =
+                                    Stroke(
+                                        width = viewModel.currentLineWidth.floatValue,
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round,
+                                    ),
                             )
                         }
                     }
-
-                    if (viewModel.currentLine.size > 1) {
-                        drawPath(
-                            path = createPath(viewModel.currentLine),
-                            color = viewModel.currentLineColor.value,
-                            style = Stroke(
-                                width = viewModel.currentLineWidth.floatValue,
-                                cap = StrokeCap.Round,
-                                join = StrokeJoin.Round,
-                            ),
-                        )
-                    }
-                }
-            },
+                },
     ) {
         viewModel.canvasElements.filterIsInstance<TextElement>().forEach { element ->
             TextElementView(
@@ -71,12 +75,13 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
     }
 }
 
-private fun createPath(points: List<Offset>) = Path().apply {
-    if (points.isNotEmpty()) {
-        moveTo(points.first().x, points.first().y)
-        points.forEach { point -> lineTo(point.x, point.y) }
+private fun createPath(points: List<Offset>) =
+    Path().apply {
+        if (points.isNotEmpty()) {
+            moveTo(points.first().x, points.first().y)
+            points.forEach { point -> lineTo(point.x, point.y) }
+        }
     }
-}
 
 @SuppressLint("ModifierFactoryUnreferencedReceiver")
 private fun Modifier.drawingCanvas(viewModel: CanvasViewModel) =

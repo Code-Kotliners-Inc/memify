@@ -20,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CanvasViewModel @Inject constructor() : ViewModel() {
-    private val _history = mutableStateListOf<List<CanvasElement>>()
-    private val _future = mutableStateListOf<List<CanvasElement>>()
+    private val history = mutableStateListOf<List<CanvasElement>>()
+    private val future = mutableStateListOf<List<CanvasElement>>()
 
     val canvasElements = mutableStateListOf<CanvasElement>()
     val currentLine = mutableStateListOf<Offset>()
@@ -54,8 +54,8 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
                 ColoredLine(
                     points = currentLine.toList(),
                     color = currentLineColor.value,
-                    strokeWidth = currentLineWidth.floatValue
-                )
+                    strokeWidth = currentLineWidth.floatValue,
+                ),
             )
         }
         currentLine.clear()
@@ -73,24 +73,24 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun undo() {
-        if (_history.isNotEmpty()) {
-            _future.add(canvasElements.toList())
+        if (history.isNotEmpty()) {
+            future.add(canvasElements.toList())
             canvasElements.clear()
-            canvasElements.addAll(_history.removeAt(_history.lastIndex))
+            canvasElements.addAll(history.removeAt(history.lastIndex))
         }
     }
 
     fun redo() {
-        if (_future.isNotEmpty()) {
-            _history.add(canvasElements.toList())
+        if (future.isNotEmpty()) {
+            history.add(canvasElements.toList())
             canvasElements.clear()
-            canvasElements.addAll(_future.removeAt(_future.lastIndex))
+            canvasElements.addAll(future.removeAt(future.lastIndex))
         }
     }
 
     private fun saveState() {
-        _history.add(canvasElements.toList())
-        _future.clear()
+        history.add(canvasElements.toList())
+        future.clear()
     }
 
     fun finishWriting() {
@@ -104,7 +104,7 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
                     fontFamily = currentFontFamily.value,
                     fontWeight = currentFontWeight.value,
                     position = Offset(0f, 0f),
-                )
+                ),
             )
         }
         isWriting = false
@@ -121,6 +121,7 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     // TO REMOVE
     var iAmAPainterGodDamnIt by mutableStateOf(false)
     var iAmAWriterGodDamnIt by mutableStateOf(false)
+
     fun paintToggle() {
         iAmAPainterGodDamnIt = !iAmAPainterGodDamnIt
         iAmAWriterGodDamnIt = false

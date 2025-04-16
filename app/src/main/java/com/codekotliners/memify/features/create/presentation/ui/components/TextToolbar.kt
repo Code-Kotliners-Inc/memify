@@ -28,12 +28,13 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 @Composable
 fun TextToolbar(viewModel: CanvasViewModel) {
     Column(
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(vertical = 8.dp)
+        modifier =
+            Modifier
+                .padding(horizontal = 4.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(vertical = 8.dp),
     ) {
         TextFormattingButtons(viewModel)
     }
@@ -42,11 +43,12 @@ fun TextToolbar(viewModel: CanvasViewModel) {
 @Composable
 private fun TextFormattingButtons(viewModel: CanvasViewModel) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 6.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         ColorSelectionButton(viewModel)
 
@@ -56,7 +58,7 @@ private fun TextFormattingButtons(viewModel: CanvasViewModel) {
 
         ToolbarSlider(
             viewModel,
-            viewModel.currentTextSize
+            viewModel.currentTextSize,
         ) { viewModel.showTextPreview = true }
     }
 }
@@ -65,24 +67,25 @@ private fun TextFormattingButtons(viewModel: CanvasViewModel) {
 private fun ColorSelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .clickable { viewModel.showColors = !viewModel.showColors },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .clickable { viewModel.showColors = !viewModel.showColors },
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "A",
                 color = viewModel.currentTextColor.value,
                 fontSize = 18.sp,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
             )
         }
 
         ColorsDropdownMenu(
             showColors = viewModel.showColors,
             onShowColorsFalse = { viewModel.showColors = false },
-            onChangeSelectedColor = { viewModel.currentTextColor.value = it }
+            onChangeSelectedColor = { viewModel.currentTextColor.value = it },
         )
     }
 }
@@ -91,18 +94,19 @@ private fun ColorSelectionButton(viewModel: CanvasViewModel) {
 private fun FontFamilySelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .clickable { viewModel.showFonts = !viewModel.showFonts },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .clickable { viewModel.showFonts = !viewModel.showFonts },
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "F",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontFamily = viewModel.currentFontFamily.value,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
             )
         }
 
@@ -114,18 +118,19 @@ private fun FontFamilySelectionButton(viewModel: CanvasViewModel) {
 private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
-            modifier = Modifier
-                .size(30.dp)
-                .clip(CircleShape)
-                .clickable { viewModel.showWeights = !viewModel.showWeights },
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .clickable { viewModel.showWeights = !viewModel.showWeights },
+            contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "W",
                 color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = viewModel.currentFontWeight.value,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp),
             )
         }
 
@@ -135,13 +140,14 @@ private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
 
 @Composable
 private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
-    val fonts = listOf(
-        FontFamily.Default to "Default",
-        FontFamily.SansSerif to "Sans",
-        FontFamily.Serif to "Serif",
-        FontFamily.Monospace to "Mono",
-        FontFamily.Cursive to "Cursive"
-    )
+    val fonts =
+        listOf(
+            FontFamily.Default to "Default",
+            FontFamily.SansSerif to "Sans",
+            FontFamily.Serif to "Serif",
+            FontFamily.Monospace to "Mono",
+            FontFamily.Cursive to "Cursive",
+        )
 
     DropdownMenu(
         expanded = viewModel.showFonts,
@@ -154,8 +160,12 @@ private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
                     Text(
                         text = name,
                         fontFamily = family,
-                        color = if (family == viewModel.currentFontFamily) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface
+                        color =
+                            if (family == viewModel.currentFontFamily) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                     )
                 },
                 onClick = {
@@ -170,12 +180,13 @@ private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
 
 @Composable
 private fun WeightsDropdownMenu(viewModel: CanvasViewModel) {
-    val weights = listOf(
-        FontWeight.Light to "Light",
-        FontWeight.Normal to "Normal",
-        FontWeight.Medium to "Medium",
-        FontWeight.Bold to "Bold",
-    )
+    val weights =
+        listOf(
+            FontWeight.Light to "Light",
+            FontWeight.Normal to "Normal",
+            FontWeight.Medium to "Medium",
+            FontWeight.Bold to "Bold",
+        )
 
     DropdownMenu(
         expanded = viewModel.showWeights,
@@ -188,8 +199,12 @@ private fun WeightsDropdownMenu(viewModel: CanvasViewModel) {
                     Text(
                         text = name,
                         fontWeight = weight,
-                        color = if (weight == viewModel.currentFontWeight.value) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.onSurface
+                        color =
+                            if (weight == viewModel.currentFontWeight.value) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
                     )
                 },
                 onClick = {

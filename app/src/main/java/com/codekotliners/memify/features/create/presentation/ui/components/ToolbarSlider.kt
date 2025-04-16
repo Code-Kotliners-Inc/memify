@@ -25,7 +25,7 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 fun ToolbarSlider(
     viewModel: CanvasViewModel,
     parameter: MutableFloatState,
-    onValueChange: () -> Unit = {}
+    onValueChange: () -> Unit = {},
 ) {
     Box {
         Slider(
@@ -38,32 +38,36 @@ fun ToolbarSlider(
                 viewModel.showTextPreview = false
             },
             valueRange = 5f..99f,
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(),
             thumb = {
                 Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .offset(y = 3.dp) // ужасный хардкод но иначе не выравнивается :)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
-                        )
+                    modifier =
+                        Modifier
+                            .size(10.dp)
+                            .offset(y = 3.dp) // ужасный хардкод но иначе не выравнивается :)
+                            .background(
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = CircleShape,
+                            ),
                 )
             },
             track = { sliderState ->
                 SliderDefaults.Track(
                     sliderState = sliderState,
-                    colors = SliderDefaults.colors(
-                        activeTrackColor = MaterialTheme.colorScheme.primary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-                    ),
-                    modifier = Modifier
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
+                    colors =
+                        SliderDefaults.colors(
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+                        ),
+                    modifier =
+                        Modifier
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp)),
                 )
-            }
+            },
         )
     }
 }

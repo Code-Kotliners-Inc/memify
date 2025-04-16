@@ -33,17 +33,19 @@ fun DrawingToolbar(viewModel: CanvasViewModel) {
     ) {
         Box {
             Box(
-                modifier = Modifier
-                    .size(30.dp)
-                    .clip(CircleShape)
-                    .clickable { viewModel.showColors = !viewModel.showColors },
-                contentAlignment = Alignment.Center
+                modifier =
+                    Modifier
+                        .size(30.dp)
+                        .clip(CircleShape)
+                        .clickable { viewModel.showColors = !viewModel.showColors },
+                contentAlignment = Alignment.Center,
             ) {
                 Box(
-                    modifier = Modifier
-                        .size((viewModel.currentLineWidth.floatValue * 0.3f).dp)
-                        .clip(CircleShape)
-                        .background(viewModel.currentLineColor.value)
+                    modifier =
+                        Modifier
+                            .size((viewModel.currentLineWidth.floatValue * 0.3f).dp)
+                            .clip(CircleShape)
+                            .background(viewModel.currentLineColor.value),
                 )
             }
 

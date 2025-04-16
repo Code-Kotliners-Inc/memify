@@ -13,13 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
-
 @Composable
 fun ActionsToolbar(viewModel: CanvasViewModel) {
     Surface(
         shape = RoundedCornerShape(50.dp),
         color = MaterialTheme.colorScheme.surface,
-        modifier = Modifier.padding(top = 10.dp)
+        modifier = Modifier.padding(top = 10.dp),
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
