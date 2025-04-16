@@ -135,8 +135,14 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
     ) {
         // TO REMOVE
         Row {
-            Button(onClick = { viewModel.paintToggle() }) { Text("paint") }
-            Button(onClick = { viewModel.writeToggle() }) { Text("write") }
+            Button(onClick = {
+                viewModel.iAmAPainterGodDamnIt = !viewModel.iAmAPainterGodDamnIt
+                viewModel.iAmAWriterGodDamnIt = false
+            }) { Text("paint") }
+            Button(onClick = {
+                viewModel.iAmAWriterGodDamnIt = !viewModel.iAmAWriterGodDamnIt
+                viewModel.iAmAPainterGodDamnIt = false
+            }) { Text("write") }
         }
 
         ImageBox(viewModel)

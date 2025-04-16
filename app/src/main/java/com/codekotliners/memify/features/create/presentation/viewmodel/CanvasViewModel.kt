@@ -121,14 +121,4 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     // TO REMOVE
     var iAmAPainterGodDamnIt by mutableStateOf(false)
     var iAmAWriterGodDamnIt by mutableStateOf(false)
-
-    fun paintToggle() {
-        iAmAPainterGodDamnIt = !iAmAPainterGodDamnIt
-        iAmAWriterGodDamnIt = false
-    }
-
-    fun writeToggle() {
-        iAmAWriterGodDamnIt = !iAmAWriterGodDamnIt
-        iAmAPainterGodDamnIt = false
-    }
 }
