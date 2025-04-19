@@ -8,6 +8,7 @@ import coil.request.ErrorResult
 import coil.request.ImageRequest
 import com.codekotliners.memify.core.database.dao.DraftsDao
 import com.codekotliners.memify.core.database.entities.DraftEntity
+import com.codekotliners.memify.core.exceptions.ImageSavingException
 import com.codekotliners.memify.core.models.Draft
 import com.codekotliners.memify.features.home.mocks.MockMeme
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,10 +19,6 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 const val IMAGE_EXTENSION = ".png"
-
-class ImageSavingException(
-    message: String,
-) : Exception(message)
 
 class DraftsRepositoryImpl @Inject constructor(
     private val draftsDao: DraftsDao,

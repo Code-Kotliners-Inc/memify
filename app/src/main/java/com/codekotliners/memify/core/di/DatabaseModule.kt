@@ -2,6 +2,7 @@ package com.codekotliners.memify.core.di
 
 import android.content.Context
 import androidx.room.Room
+import com.codekotliners.memify.core.data.DatabaseConstants
 import com.codekotliners.memify.core.database.MemifyDatabase
 import dagger.Module
 import dagger.Provides
@@ -22,6 +23,6 @@ object DatabaseModule {
             .databaseBuilder(
                 context,
                 MemifyDatabase::class.java,
-                "drafts_database.db",
+                DatabaseConstants.DRAFTS_DATABASE_NAME,
             ).build()
 }
