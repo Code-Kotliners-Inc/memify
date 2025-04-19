@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.settings.ui
+package com.codekotliners.memify.features.settings.presentation.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +26,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -130,7 +131,7 @@ private fun ToolBar() {
         IconButton(onClick = {}, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "back",
+                contentDescription = stringResource(id = R.string.go_backBtn),
                 tint = MaterialTheme.colorScheme.onBackground,
             )
         }
@@ -155,7 +156,7 @@ private fun ChangeName() {
             text = stringResource(id = R.string.user_name),
             style = MaterialTheme.typography.hintText,
         )
-        NameField("MemeMaker2011")
+        NameField(stringResource(id = R.string.name_blank))
 
         Button(
             onClick = { },
@@ -229,7 +230,7 @@ private fun PasswordField(label: String, value: String, onValueChange: (String) 
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        visualTransformation = PasswordVisualTransformation(),
+        visualTransformation = remember { PasswordVisualTransformation() },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         label = {
             Text(
@@ -295,7 +296,7 @@ private fun AddVk() {
             IconButton(onClick = {}) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_link_24),
-                    contentDescription = "link account",
+                    contentDescription = stringResource(id = R.string.link_account_hint),
                     tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
@@ -326,7 +327,7 @@ private fun ChangePhoto() {
             IconButton(onClick = {}) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_account_circle_24),
-                    contentDescription = "change photo",
+                    contentDescription = stringResource(R.string.change_photo_hint),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.size(50.dp),
                 )

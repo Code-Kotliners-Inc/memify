@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,11 +58,24 @@ fun ImageViewerScreen(
     image: ImageItem,
     viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.shareImageEvent.collect { imageUrl ->
+            val sendIntent =
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, imageUrl)
+                    type = "text/plain"
+                }
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            context.startActivity(shareIntent)
+        }
+    }
     Scaffold(
         topBar = {
             ImageViewerTopBar(
                 title = image.title,
-                onShareClick = { viewModel.onShareClick() },
+                onShareClick = { viewModel.onShareClick(image.url) },
                 onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
