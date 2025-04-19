@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class MainFeedScreenViewModel : ViewModel() {
+class HomeScreenViewModel : ViewModel() {
     private val _tabStates =
         MutableStateFlow(
             mapOf(
@@ -42,34 +42,3 @@ class MainFeedScreenViewModel : ViewModel() {
         // Логика обновления информации о карточке
     }
 }
-
-enum class MainFeedTabs {
-    POPULAR,
-    NEW,
-}
-
-sealed interface MainFeedTabState {
-    data object Loading : MainFeedTabState
-
-    data class Error(
-        val message: String,
-    ) : MainFeedTabState
-
-    data class Content(
-        val content: List<MemeCard>,
-    ) : MainFeedTabState
-}
-
-data class MemeCard(
-    val id: Long,
-    val picture: Int,
-    val likesCount: Int,
-    val isLiked: Boolean,
-    val author: Author,
-)
-
-data class Author(
-    val id: Int,
-    val profilePicture: Int,
-    val name: String,
-)

@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedScreenViewModel
+import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
 import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabState
 import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabs
 import com.codekotliners.memify.features.home.presentation.viewModel.MemeCard
@@ -53,7 +53,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun HomeScreen() {
-    val viewModel: MainFeedScreenViewModel = viewModel()
+    val viewModel: HomeScreenViewModel = viewModel()
     val tabState by viewModel.tabStates.collectAsState()
     val selectedTab by viewModel.selectedTab.collectAsState()
 
