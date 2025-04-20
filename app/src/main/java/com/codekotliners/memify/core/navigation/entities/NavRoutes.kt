@@ -9,6 +9,8 @@ sealed class NavRoutes(
 
     data object Profile : NavRoutes("Profile")
 
+    data object Auth : NavRoutes("Auth")
+
     data object Register : NavRoutes("Register")
 
     data object Login : NavRoutes("Login")

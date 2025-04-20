@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.login.presentation.ui
+package com.codekotliners.memify.features.auth.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -42,16 +42,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
-import com.codekotliners.memify.features.login.presentation.viewmodel.LoginViewModel
+import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = hiltViewModel(),
+    viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
     Scaffold(
         topBar = {
@@ -77,11 +78,11 @@ fun LoginScreen(
     ) { paddingValues ->
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-                    .verticalScroll(rememberScrollState()),
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
@@ -90,13 +91,16 @@ fun LoginScreen(
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            LoginForm(onLoginClicked = { viewModel.onRegisterClicked() })
+            LoginForm(
+                navController,
+                onLoginClicked = { email, password -> viewModel.onLogInWithMail(email, password) }
+            )
         }
     }
 }
 
 @Composable
-fun LoginForm(onLoginClicked: () -> Unit) {
+fun LoginForm(navController: NavHostController, onLoginClicked: (String, String) -> Unit) {
     var email by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
 
@@ -113,7 +117,10 @@ fun LoginForm(onLoginClicked: () -> Unit) {
         )
         PasswordField { password = it }
         Button(
-            onClick = { onLoginClicked() },
+            onClick = {
+                onLoginClicked(email.text, password.text)
+                navController.popBackStack()
+            },
             modifier =
                 Modifier
                     .fillMaxWidth()

@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.registration.presentation.ui
+package com.codekotliners.memify.features.auth.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -45,13 +45,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
-import com.codekotliners.memify.features.registration.presentation.viewmodel.RegistrationViewModel
+import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(
     navController: NavHostController,
-    registerViewModel: RegistrationViewModel = hiltViewModel(),
+    viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     Scaffold(
         topBar = {
@@ -90,13 +90,13 @@ fun RegistrationScreen(
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            RegistrationForm(onRegisterClicked = { registerViewModel.onRegisterClicked() })
+            RegistrationForm(onRegisterClicked = { email, password -> viewModel.onSignUpWithMail(email, password) })
         }
     }
 }
 
 @Composable
-fun RegistrationForm(onRegisterClicked: () -> Unit) {
+fun RegistrationForm(onRegisterClicked: (String, String) -> Unit) {
     var email by remember { mutableStateOf(TextFieldValue()) }
     var name by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
@@ -129,7 +129,7 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
         )
 
         Button(
-            onClick = { onRegisterClicked() },
+            onClick = { onRegisterClicked(email.text, password.text) },
             modifier =
                 Modifier
                     .fillMaxWidth()

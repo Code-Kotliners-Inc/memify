@@ -1,6 +1,10 @@
 package com.codekotliners.memify.features.auth.presentation.ui
 
+import android.content.Context
 import android.content.res.Configuration
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +26,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -40,48 +47,75 @@ import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.registerButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
+import kotlin.math.sign
 
 @Composable
 fun AuthScreen(
     navController: NavController,
     viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier =
+    val context = LocalContext.current
+    val signInState by viewModel.signInState.collectAsState()
+
+    val googleLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        viewModel.handleGoogleSignInResult(result)
+    }
+
+    LaunchedEffect(signInState) {
+        when (signInState) {
+            is Response.Success -> navController.navigateToHome()
+            is Response.Failure -> showError(context, (signInState as Response.Failure).error)
+            is Response.Loading -> {}
+            null -> {}
+        }
+    }
+
+    if (signInState == Response.Loading) {
+        LoaderScreen()
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier =
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.auth),
-                contentDescription = null,
+            Box(
                 modifier =
-                    Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop,
-            )
-        }
-        Box(
-            modifier =
                 Modifier
                     .fillMaxWidth()
                     .weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            LogInMethods(
-                navController = navController,
-                onLogInWithGoogle = { viewModel.onLogInWithGoogle() },
-                onLogInWithMail = { viewModel.onLogInWithMail() },
-                onLogInWithVk = { viewModel.onLogInWithVk() },
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.auth),
+                    contentDescription = null,
+                    modifier =
+                    Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+            Box(
+                modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                LogInMethods(
+                    navController = navController,
+                    onLogInWithGoogle = { googleLauncher.launch(viewModel.getGoogleSignInIntent()) },
+                    onLogInWithVk = { },
+                )
+
+                GoogleSignInHandler { idToken ->
+                    viewModel.onLogInWithGoogle(idToken)
+                }
+            }
         }
     }
 }
@@ -90,7 +124,6 @@ fun AuthScreen(
 fun LogInMethods(
     navController: NavController,
     onLogInWithGoogle: () -> Unit,
-    onLogInWithMail: () -> Unit,
     onLogInWithVk: () -> Unit,
 ) {
     Column(
@@ -103,33 +136,25 @@ fun LogInMethods(
             text = stringResource(R.string.login_google_button),
             icon = painterResource(id = R.drawable.google_icon),
             buttonColor = LocalExtraColors.current.authButtons.google,
-            onClick = {
-                onLogInWithGoogle()
-            },
+            onClick = onLogInWithGoogle,
         )
 
         AuthButton(
             text = stringResource(R.string.login_vk_button),
             icon = painterResource(id = R.drawable.vk_icon),
             buttonColor = LocalExtraColors.current.authButtons.vk,
-            onClick = {
-                onLogInWithVk()
-            },
+            onClick = onLogInWithVk,
         )
 
         AuthButton(
             text = stringResource(R.string.login_mail_button),
             icon = painterResource(id = R.drawable.mail_icon),
             buttonColor = LocalExtraColors.current.authButtons.mail,
-            onClick = {
-                onLogInWithMail()
-            },
+            onClick = { navController.navigateToEmailLogin() },
         )
 
         NoAccountSection(
-            onRegisterClick = {
-                navController.navigate(NavRoutes.Register.route)
-            },
+            onRegisterClick = { navController.navigateToRegister() },
         )
     }
 }
@@ -150,11 +175,11 @@ fun NoAccountSection(onRegisterClick: () -> Unit) {
             text = stringResource(R.string.register_button),
             style = MaterialTheme.typography.registerButton,
             modifier =
-                Modifier
-                    .padding(vertical = 16.dp)
-                    .clickable {
-                        onRegisterClick()
-                    },
+            Modifier
+                .padding(vertical = 16.dp)
+                .clickable {
+                    onRegisterClick()
+                },
         )
     }
 }
@@ -171,9 +196,9 @@ fun AuthButton(
         colors = buttonColor,
         shape = RoundedCornerShape(16.dp),
         modifier =
-            Modifier
-                .fillMaxWidth(0.9f)
-                .height(58.dp),
+        Modifier
+            .fillMaxWidth(0.9f)
+            .height(58.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -192,6 +217,29 @@ fun AuthButton(
             )
         }
     }
+}
+
+private fun NavController.navigateToHome() {
+    navigate(NavRoutes.Home.route) {
+        popUpTo(NavRoutes.Auth.route) {
+            inclusive = true
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+private fun NavController.navigateToEmailLogin() = navigate(NavRoutes.Login.route)
+
+private fun NavController.navigateToRegister() = navigate(NavRoutes.Register.route)
+
+private fun showError(context: Context, error: Throwable) {
+    Toast.makeText(
+        context,
+        context.getString(R.string.login_error_message),
+        Toast.LENGTH_LONG
+    ).show()
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
