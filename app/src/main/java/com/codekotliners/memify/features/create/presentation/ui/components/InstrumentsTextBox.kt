@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
 
 @Composable
-fun HoldToChooseInstrumentsTextBox() {
+fun InstrumentsTextBox() {
     Row(
         modifier =
             Modifier

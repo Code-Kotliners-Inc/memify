@@ -17,10 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
 
 @Composable
-fun TextInputDialog(viewModel: CanvasViewModel) {
+fun TextInputDialog() {
+    val viewModel = LocalCanvasViewModel.current
+
     Dialog(
         onDismissRequest = { viewModel.finishWriting() },
         properties = DialogProperties(usePlatformDefaultWidth = false),

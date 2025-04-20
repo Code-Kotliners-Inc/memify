@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun IconActionButton(iconResource: Int, onClick: () -> Unit) {
+fun ActionsRowButton(iconResource: Int, onClick: () -> Unit) {
     IconButton(
         onClick = onClick,
         modifier =
@@ -25,7 +25,7 @@ fun IconActionButton(iconResource: Int, onClick: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(id = iconResource),
-            contentDescription = null,
+            contentDescription = "icon",
             tint = MaterialTheme.colorScheme.onSurface,
         )
     }

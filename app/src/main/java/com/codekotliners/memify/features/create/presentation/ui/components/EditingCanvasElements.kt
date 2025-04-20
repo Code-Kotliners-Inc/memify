@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawWithCache
@@ -14,15 +16,24 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
+import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun EditingCanvasElements(viewModel: CanvasViewModel) {
+fun EditingCanvasElements() {
+    val viewModel = LocalCanvasViewModel.current
+
+    val elements by rememberUpdatedState(viewModel.canvasElements)
+    val currentLine by rememberUpdatedState(viewModel.currentLine)
+    val currentLineColor by rememberUpdatedState(viewModel.currentLineColor.value)
+    val currentLineWidth by rememberUpdatedState(viewModel.currentLineWidth.floatValue)
+
     Box(
         modifier =
             Modifier
@@ -35,29 +46,19 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
                         Modifier
                     },
                 ).drawWithCache {
-                    onDrawBehind {
-                        viewModel.canvasElements.filterIsInstance<ColoredLine>().forEach { line ->
-                            if (line.points.size > 1) {
-                                drawPath(
-                                    path = createPath(line.points),
-                                    color = line.color,
-                                    style =
-                                        Stroke(
-                                            width = line.strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round,
-                                        ),
-                                )
-                            }
-                        }
+                    val lines = elements.filterIsInstance<ColoredLine>()
+                    val currentPath = if (currentLine.size > 1) createDrawingLinePath(currentLine) else null
 
-                        if (viewModel.currentLine.size > 1) {
+                    onDrawWithContent {
+                        drawContent()
+                        drawLines(lines)
+                        currentPath?.let {
                             drawPath(
-                                path = createPath(viewModel.currentLine),
-                                color = viewModel.currentLineColor.value,
+                                path = it,
+                                color = currentLineColor,
                                 style =
                                     Stroke(
-                                        width = viewModel.currentLineWidth.floatValue,
+                                        width = currentLineWidth,
                                         cap = StrokeCap.Round,
                                         join = StrokeJoin.Round,
                                     ),
@@ -75,13 +76,30 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
     }
 }
 
-private fun createPath(points: List<Offset>) =
+private fun createDrawingLinePath(points: List<Offset>) =
     Path().apply {
         if (points.isNotEmpty()) {
             moveTo(points.first().x, points.first().y)
             points.forEach { point -> lineTo(point.x, point.y) }
         }
     }
+
+private fun DrawScope.drawLines(lines: List<ColoredLine>) {
+    lines.forEach { line ->
+        if (line.points.size > 1) {
+            drawPath(
+                path = createDrawingLinePath(line.points),
+                color = line.color,
+                style =
+                    Stroke(
+                        width = line.strokeWidth,
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round,
+                    ),
+            )
+        }
+    }
+}
 
 @SuppressLint("ModifierFactoryUnreferencedReceiver")
 private fun Modifier.drawingCanvas(viewModel: CanvasViewModel) =

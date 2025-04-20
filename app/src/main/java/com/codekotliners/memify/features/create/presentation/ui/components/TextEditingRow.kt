@@ -19,14 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.R
+import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
 
 @Composable
-fun TextToolbar(viewModel: CanvasViewModel) {
+fun TextEditingRow() {
     Column(
         modifier =
             Modifier
@@ -36,12 +38,14 @@ fun TextToolbar(viewModel: CanvasViewModel) {
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(vertical = 8.dp),
     ) {
-        TextFormattingButtons(viewModel)
+        TextFormattingButtons()
     }
 }
 
 @Composable
-private fun TextFormattingButtons(viewModel: CanvasViewModel) {
+private fun TextFormattingButtons() {
+    val viewModel = LocalCanvasViewModel.current
+
     Row(
         modifier =
             Modifier
@@ -50,21 +54,22 @@ private fun TextFormattingButtons(viewModel: CanvasViewModel) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        ColorSelectionButton(viewModel)
+        ColorSelectionButton()
 
-        FontFamilySelectionButton(viewModel)
+        FontFamilySelectionButton()
 
-        FontWeightSelectionButton(viewModel)
+        FontWeightSelectionButton()
 
-        ToolbarSlider(
-            viewModel,
+        RowSlider(
             viewModel.currentTextSize,
         ) { viewModel.showTextPreview = true }
     }
 }
 
 @Composable
-private fun ColorSelectionButton(viewModel: CanvasViewModel) {
+private fun ColorSelectionButton() {
+    val viewModel = LocalCanvasViewModel.current
+
     Box {
         Box(
             modifier =
@@ -91,7 +96,9 @@ private fun ColorSelectionButton(viewModel: CanvasViewModel) {
 }
 
 @Composable
-private fun FontFamilySelectionButton(viewModel: CanvasViewModel) {
+private fun FontFamilySelectionButton() {
+    val viewModel = LocalCanvasViewModel.current
+
     Box {
         Box(
             modifier =
@@ -110,12 +117,14 @@ private fun FontFamilySelectionButton(viewModel: CanvasViewModel) {
             )
         }
 
-        FontsDropdownMenu(viewModel)
+        FontsDropdownMenu()
     }
 }
 
 @Composable
-private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
+private fun FontWeightSelectionButton() {
+    val viewModel = LocalCanvasViewModel.current
+
     Box {
         Box(
             modifier =
@@ -134,19 +143,21 @@ private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
             )
         }
 
-        WeightsDropdownMenu(viewModel)
+        WeightsDropdownMenu()
     }
 }
 
 @Composable
-private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
+private fun FontsDropdownMenu() {
+    val viewModel = LocalCanvasViewModel.current
+
     val fonts =
         listOf(
-            FontFamily.Default to "Default",
-            FontFamily.SansSerif to "Sans",
-            FontFamily.Serif to "Serif",
-            FontFamily.Monospace to "Mono",
-            FontFamily.Cursive to "Cursive",
+            FontFamily.Default to stringResource(R.string.Default),
+            FontFamily.SansSerif to stringResource(R.string.Sans),
+            FontFamily.Serif to stringResource(R.string.Serif),
+            FontFamily.Monospace to stringResource(R.string.Mono),
+            FontFamily.Cursive to stringResource(R.string.Cursive),
         )
 
     DropdownMenu(
@@ -179,13 +190,14 @@ private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
 }
 
 @Composable
-private fun WeightsDropdownMenu(viewModel: CanvasViewModel) {
+private fun WeightsDropdownMenu() {
+    val viewModel = LocalCanvasViewModel.current
     val weights =
         listOf(
-            FontWeight.Light to "Light",
-            FontWeight.Normal to "Normal",
-            FontWeight.Medium to "Medium",
-            FontWeight.Bold to "Bold",
+            FontWeight.Light to stringResource(R.string.Light),
+            FontWeight.Normal to stringResource(R.string.Normal),
+            FontWeight.Medium to stringResource(R.string.Medium),
+            FontWeight.Bold to stringResource(R.string.Bold),
         )
 
     DropdownMenu(

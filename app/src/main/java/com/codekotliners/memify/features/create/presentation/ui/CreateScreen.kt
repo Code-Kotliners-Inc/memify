@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -46,13 +47,18 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
-import com.codekotliners.memify.features.create.presentation.ui.components.ActionsToolbar
+import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
-import com.codekotliners.memify.features.create.presentation.ui.components.DrawingToolbar
-import com.codekotliners.memify.features.create.presentation.ui.components.HoldToChooseInstrumentsTextBox
+import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
+import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
-import com.codekotliners.memify.features.create.presentation.ui.components.TextToolbar
+import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+
+val LocalCanvasViewModel =
+    compositionLocalOf<CanvasViewModel> {
+        error("No CanvasViewModel provided!")
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,27 +106,32 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 private fun CreateScreenContent(innerPadding: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
-    Column(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(innerPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    CompositionLocalProvider(
+        LocalCanvasViewModel provides viewModel,
     ) {
-        ActionsToolbar(viewModel)
-
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            InteractiveCanvas(viewModel)
+            ActionsRow()
+
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                InteractiveCanvas()
+            }
         }
     }
 }
 
 @Composable
-private fun InteractiveCanvas(viewModel: CanvasViewModel) {
+private fun InteractiveCanvas() {
+    val viewModel = LocalCanvasViewModel.current
     val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
 
     LaunchedEffect(R.drawable.meme) {
@@ -145,30 +156,32 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
             }) { Text("write") }
         }
 
-        ImageBox(viewModel)
+        ImageBox()
 
         if (viewModel.isWriting) {
-            TextInputDialog(viewModel)
+            TextInputDialog()
         }
 
         AnimatedVisibility(
             visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
         ) {
-            HoldToChooseInstrumentsTextBox()
+            InstrumentsTextBox()
         }
 
         AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
-            DrawingToolbar(viewModel)
+            DrawingRow()
         }
 
         AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
-            TextToolbar(viewModel)
+            TextEditingRow()
         }
     }
 }
 
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel) {
+private fun ImageBox() {
+    val viewModel = LocalCanvasViewModel.current
+
     Box(
         modifier =
             Modifier
@@ -190,7 +203,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
             modifier = Modifier.matchParentSize(),
         )
 
-        EditingCanvasElements(viewModel)
+        EditingCanvasElements()
 
         if (viewModel.showTextPreview) {
             Box(
@@ -206,7 +219,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     fontSize = viewModel.currentTextSize.floatValue.sp,
                     fontFamily = viewModel.currentFontFamily.value,
                     fontWeight = viewModel.currentFontWeight.value,
-                    modifier = Modifier.offset(y = (-40).dp),
+                    modifier = Modifier.padding(top = 40.dp),
                 )
             }
         }
@@ -216,7 +229,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
-fun AppPreview1() {
+fun CreateScreenPreview() {
     MemifyTheme {
         CreateScreen()
     }

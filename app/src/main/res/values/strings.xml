@@ -40,4 +40,13 @@
     <string name="NewPassword">Новый пароль</string>
     <string name="Clear">Очистить</string>
     <string name="HoldToChooseInstruments">Нажмите и удерживайте холст для выбора инструмента</string>
+    <string name="Default">Default</string>
+    <string name="Sans">Sans</string>
+    <string name="Serif">Serif</string>
+    <string name="Mono">Mono</string>
+    <string name="Cursive">Cursive</string>
+    <string name="Light">Light</string>
+    <string name="Normal">Normal</string>
+    <string name="Medium">Medium</string>
+    <string name="Bold">Bold</string>
 </resources>

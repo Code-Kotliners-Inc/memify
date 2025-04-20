@@ -11,10 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
 
 @Composable
-fun ActionsToolbar(viewModel: CanvasViewModel) {
+fun ActionsRow() {
+    val viewModel = LocalCanvasViewModel.current
+
     Surface(
         shape = RoundedCornerShape(50.dp),
         color = MaterialTheme.colorScheme.surface,
@@ -25,9 +27,9 @@ fun ActionsToolbar(viewModel: CanvasViewModel) {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconActionButton(R.drawable.baseline_undo_24) { viewModel.undo() }
-            IconActionButton(R.drawable.baseline_redo_24) { viewModel.redo() }
-            IconActionButton(R.drawable.baseline_delete_outline_24) { viewModel.clearCanvas() }
+            ActionsRowButton(R.drawable.baseline_undo_24) { viewModel.undo() }
+            ActionsRowButton(R.drawable.baseline_redo_24) { viewModel.redo() }
+            ActionsRowButton(R.drawable.baseline_delete_outline_24) { viewModel.clearCanvas() }
         }
     }
 }

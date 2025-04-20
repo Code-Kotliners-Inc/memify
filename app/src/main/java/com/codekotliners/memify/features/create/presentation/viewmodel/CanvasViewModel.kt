@@ -43,6 +43,10 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     var imageWidth by mutableFloatStateOf(1f)
     var imageHeight by mutableFloatStateOf(1f)
 
+    // TO REMOVE
+    var iAmAPainterGodDamnIt by mutableStateOf(false)
+    var iAmAWriterGodDamnIt by mutableStateOf(false)
+
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
     }
@@ -117,8 +121,4 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
             canvasElements[index] = element.copy(position = newPosition)
         }
     }
-
-    // TO REMOVE
-    var iAmAPainterGodDamnIt by mutableStateOf(false)
-    var iAmAWriterGodDamnIt by mutableStateOf(false)
 }
