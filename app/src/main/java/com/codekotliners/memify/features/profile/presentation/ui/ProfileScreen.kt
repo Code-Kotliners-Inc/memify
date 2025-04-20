@@ -53,7 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.ui.viewmodels.ProfileViewModel
+import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.min
 

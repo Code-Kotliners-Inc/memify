@@ -1,4 +1,4 @@
-package com.codekotliners.memify.ui.viewmodels
+package com.codekotliners.memify.features.profile.presentation.viewmodel
 
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
