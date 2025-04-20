@@ -59,13 +59,18 @@ import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
+) {
     val scrollState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
     val scrollOffset by remember {
         derivedStateOf {
-            min(1f, 1 - (scrollState.firstVisibleItemScrollOffset / 600f +
-                scrollState.firstVisibleItemIndex))
+            min(
+                1f,
+                1 - (scrollState.firstVisibleItemScrollOffset / 600f +
+                    scrollState.firstVisibleItemIndex),
+            )
         }
     }
 
@@ -84,14 +89,26 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                 },
                 navigationIcon = {
                     if (scrollOffset < 0.1f) {
-                        IconButton(onClick = {},) {
-                            Icon(Icons.Default.AccountCircle, contentDescription = null,)
+                        IconButton(
+                            onClick = {},
+                        ) {
+                            Icon(
+                                Icons.Default.AccountCircle,
+                                contentDescription = null,
+                            )
                         }
                     }
                 },
-                actions = { IconButton(onClick = {},) {
-                    Icon(Icons.Default.Settings, contentDescription = null,)
-                }},
+                actions = {
+                    IconButton(
+                        onClick = {},
+                    ) {
+                        Icon(
+                            Icons.Default.Settings,
+                            contentDescription = null,
+                        )
+                    }
+                },
             )
         },
         floatingActionButton = {
@@ -99,15 +116,15 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                 FloatingActionButton(
                     onClick = { scope.launch { scrollState.scrollToItem(0) } },
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = stringResource(R.string.up)
+                        contentDescription = stringResource(R.string.up),
                     )
                 }
             }
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -148,8 +165,12 @@ private fun ProfileExtended(
         Box(
             modifier = Modifier
                 .size(100.dp * scrollOffset)
-                .border(width = 1.dp, color = MaterialTheme.colorScheme.onBackground, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = CircleShape,
+                ),
+            contentAlignment = Alignment.Center,
         ) {
             Button(
                 onClick = {},
@@ -158,13 +179,13 @@ private fun ProfileExtended(
                     contentColor = MaterialTheme.colorScheme.onBackground,
                     disabledContainerColor = MaterialTheme.colorScheme.background,
                     disabledContentColor = MaterialTheme.colorScheme.onBackground,
-                )
+                ),
             ) {
                 if (viewModel.userImage != null) {
                     Image(
                         viewModel.userImage!!,
                         contentDescription = null,
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Fit,
                     )
                 } else {
                     Icon(
@@ -191,7 +212,7 @@ private fun ProfileExtended(
                 ) {
                     Text(
                         stringResource(R.string.log_in_account),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                 }
             }
@@ -200,7 +221,9 @@ private fun ProfileExtended(
 }
 
 @Composable
-private fun FeedTabBar(viewModel: ProfileViewModel) {
+private fun FeedTabBar(
+    viewModel: ProfileViewModel,
+) {
     val tabs = if (viewModel.isLoggedIn) {
         listOf(
             stringResource(R.string.liked),
@@ -227,12 +250,15 @@ private fun FeedTabBar(viewModel: ProfileViewModel) {
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier
                         .tabIndicatorOffset(tabPositions[viewModel.selectedTab])
-                        .padding(vertical = 10.dp, horizontal = 16.dp),
+                        .padding(
+                            vertical = 10.dp,
+                            horizontal = 16.dp,
+                        ),
                     height = 1.dp,
                     color = MaterialTheme.colorScheme.secondary,
                 )
             },
-            divider = { }
+            divider = { },
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
@@ -247,11 +273,19 @@ private fun FeedTabBar(viewModel: ProfileViewModel) {
 }
 
 @Composable
-fun MemesFeed(selectedTab: Int, scrollState: LazyGridState) {
+fun MemesFeed(
+    selectedTab: Int,
+    scrollState: LazyGridState,
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         state = scrollState,
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp, bottom = 0.dp)
+        modifier = Modifier.padding(
+            start = 10.dp,
+            end = 10.dp,
+            top = 10.dp,
+            bottom = 0.dp,
+        ),
     ) {
         items(100) { index ->
             MemeItem(index)
@@ -264,11 +298,11 @@ fun MemeItem(index: Int) {
     Card(
         modifier = Modifier
             .padding(6.dp)
-            .aspectRatio(1f)
+            .aspectRatio(1f),
     ) {
         Box(
             modifier = Modifier.background(Color.LightGray),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             Text("Мем $index", color = Color.White)
         }
