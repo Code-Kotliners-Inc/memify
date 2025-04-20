@@ -52,8 +52,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
+import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -61,9 +61,12 @@ import kotlin.math.min
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
+    val state = viewModel.state.value
     val scrollState = rememberLazyGridState()
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
     val scrollOffset = rememberScrollOffset(scrollState)
+
+    val isExtended = scrollOffset >= 0.1f
 
     Scaffold(
         modifier =
@@ -71,12 +74,15 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
         contentWindowInsets = WindowInsets(0.dp),
-        topBar = { ProfileTopBar(scrollOffset = scrollOffset) },
+        topBar = { ProfileTopBar(showProfile = !isExtended) },
         floatingActionButton = {
             ProfileFloatingActionButton(
-                scrollOffset = scrollOffset,
-                scope = scope,
-                scrollState = scrollState,
+                showFloatingBtn = !isExtended,
+                onBtnClick = {
+                    coroutineScope.launch {
+                        scrollState.scrollToItem(0)
+                    }
+                },
             )
         },
     ) { innerPadding ->
@@ -92,16 +98,18 @@ fun ProfileScreen(
             Box(modifier = Modifier.height(16.dp * scrollOffset))
 
             ProfileExtended(
+                isExtended = isExtended,
                 scrollOffset = scrollOffset,
-                viewModel = viewModel,
+                state = state,
+                onBtnClick = { viewModel.login() },
             )
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
 
-            FeedTabBar(viewModel = viewModel)
+            FeedTabBar(state = state, onSelectTab = { index -> viewModel.selectTab(index) })
 
             MemesFeed(
-                selectedTab = viewModel.selectedTab,
+                state = state,
                 scrollState = scrollState,
             )
         }
@@ -124,7 +132,7 @@ private fun rememberScrollOffset(scrollState: LazyGridState): Float =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileTopBar(scrollOffset: Float) {
+private fun ProfileTopBar(showProfile: Boolean) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -133,7 +141,7 @@ private fun ProfileTopBar(scrollOffset: Float) {
             )
         },
         navigationIcon = {
-            if (scrollOffset < 0.1f) {
+            if (showProfile) {
                 IconButton(
                     onClick = {},
                 ) {
@@ -159,17 +167,12 @@ private fun ProfileTopBar(scrollOffset: Float) {
 
 @Composable
 private fun ProfileFloatingActionButton(
-    scrollOffset: Float,
-    scope: CoroutineScope,
-    scrollState: LazyGridState,
+    showFloatingBtn: Boolean,
+    onBtnClick: () -> Unit,
 ) {
-    if (scrollOffset < 0.1f) {
+    if (showFloatingBtn) {
         FloatingActionButton(
-            onClick = {
-                scope.launch {
-                    scrollState.scrollToItem(0)
-                }
-            },
+            onClick = onBtnClick,
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
@@ -183,23 +186,25 @@ private fun ProfileFloatingActionButton(
 
 @Composable
 private fun ProfileExtended(
+    isExtended: Boolean,
     scrollOffset: Float,
-    viewModel: ProfileViewModel,
+    state: ProfileState,
+    onBtnClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ProfileAvatar(scrollOffset = scrollOffset, viewModel = viewModel)
+        ProfileAvatar(scrollOffset = scrollOffset, state = state)
 
         Box(modifier = Modifier.height(20.dp * scrollOffset))
 
-        if (scrollOffset >= 0.1f) {
-            if (viewModel.isLoggedIn) {
-                Text(viewModel.userName)
+        if (isExtended) {
+            if (state.isLoggedIn) {
+                Text(state.userName)
             } else {
                 Button(
-                    onClick = { viewModel.login() },
+                    onClick = onBtnClick,
                     shape = RoundedCornerShape(16.dp),
                     colors =
                         ButtonDefaults.buttonColors(
@@ -217,7 +222,7 @@ private fun ProfileExtended(
 }
 
 @Composable
-private fun ProfileAvatar(scrollOffset: Float, viewModel: ProfileViewModel) {
+private fun ProfileAvatar(scrollOffset: Float, state: ProfileState) {
     Box(
         modifier =
             Modifier
@@ -239,9 +244,9 @@ private fun ProfileAvatar(scrollOffset: Float, viewModel: ProfileViewModel) {
                     disabledContentColor = MaterialTheme.colorScheme.onBackground,
                 ),
         ) {
-            if (viewModel.userImage != null) {
+            if (state.userImage != null) {
                 Image(
-                    viewModel.userImage!!,
+                    state.userImage,
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                 )
@@ -257,11 +262,9 @@ private fun ProfileAvatar(scrollOffset: Float, viewModel: ProfileViewModel) {
 }
 
 @Composable
-private fun FeedTabBar(
-    viewModel: ProfileViewModel,
-) {
+private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
     val tabs =
-        if (viewModel.isLoggedIn) {
+        if (state.isLoggedIn) {
             listOf(
                 stringResource(R.string.liked),
                 stringResource(R.string.published),
@@ -279,7 +282,7 @@ private fun FeedTabBar(
         contentAlignment = Alignment.TopCenter,
     ) {
         ScrollableTabRow(
-            selectedTabIndex = viewModel.selectedTab,
+            selectedTabIndex = state.selectedTab,
             contentColor = MaterialTheme.colorScheme.secondary,
             containerColor = MaterialTheme.colorScheme.background,
             edgePadding = 0.dp,
@@ -288,7 +291,7 @@ private fun FeedTabBar(
                     modifier =
                         Modifier
                             .tabIndicatorOffset(
-                                tabPositions[viewModel.selectedTab],
+                                tabPositions[state.selectedTab],
                             ).padding(
                                 vertical = 10.dp,
                                 horizontal = 16.dp,
@@ -301,9 +304,9 @@ private fun FeedTabBar(
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    selected = viewModel.selectedTab == index,
+                    selected = state.selectedTab == index,
                     modifier = Modifier.padding(start = 4.dp),
-                    onClick = { viewModel.selectTab(index) },
+                    onClick = { onSelectTab(index) },
                     text = {
                         Text(title)
                     },
@@ -315,8 +318,8 @@ private fun FeedTabBar(
 
 @Composable
 fun MemesFeed(
-    selectedTab: Int,
     scrollState: LazyGridState,
+    state: ProfileState,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),

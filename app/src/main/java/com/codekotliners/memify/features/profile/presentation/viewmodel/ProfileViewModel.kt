@@ -1,31 +1,29 @@
 package com.codekotliners.memify.features.profile.presentation.viewmodel
 
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+data class ProfileState(
+    val selectedTab: Int = 0,
+    val isLoggedIn: Boolean = false,
+    val userName: String = "MemeMaker2011",
+    val userImage: ImageVector? = null,
+)
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor() : ViewModel() {
-    private val _selectedTab = mutableIntStateOf(0)
-    val selectedTab: Int get() = _selectedTab.intValue
-
-    private val _isLoggedIn = mutableStateOf(false)
-    val isLoggedIn: Boolean get() = _isLoggedIn.value
-
-    private val _userName = mutableStateOf("MemeMaker2011")
-    val userName: String get() = _userName.value
-
-    private val _userImage = mutableStateOf<ImageVector?>(null)
-    val userImage: ImageVector? get() = _userImage.value
+    private val _state = mutableStateOf(ProfileState())
+    val state: State<ProfileState> = _state
 
     fun selectTab(index: Int) {
-        _selectedTab.intValue = index
+        _state.value = _state.value.copy(selectedTab = index)
     }
 
     fun login() {
-        _isLoggedIn.value = true
+        _state.value = _state.value.copy(isLoggedIn = true)
     }
 }
