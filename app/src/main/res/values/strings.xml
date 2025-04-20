@@ -41,4 +41,11 @@
     <string name="Width">Толщина:</string>
     <string name="Color">Цвет:</string>
     <string name="Clear">Очистить</string>
+    <string name="profile">Профиль</string>
+    <string name="up">Вверх</string>
+    <string name="log_in_account">Войти в аккаунт</string>
+    <string name="liked">Понравившиеся</string>
+    <string name="published">Опубликованные</string>
+    <string name="drafts">Черновики</string>
+    <string name="created">Созданные</string>
 </resources>

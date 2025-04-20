@@ -1,5 +1,6 @@
 package com.codekotliners.memify.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -39,27 +41,33 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.codekotliners.memify.R
+import com.codekotliners.memify.ui.viewmodels.ProfileViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val scrollState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
-    val scrollOffset = min(1f, 1 - (scrollState.firstVisibleItemScrollOffset / 600f + scrollState.firstVisibleItemIndex))
-
-    var selectedTab by remember { mutableStateOf(0) }
-    val isLoggedIn by remember { mutableStateOf(false) }
+    val scrollOffset by remember {
+        derivedStateOf {
+            min(1f, 1 - (scrollState.firstVisibleItemScrollOffset / 600f +
+                scrollState.firstVisibleItemIndex))
+        }
+    }
 
     Scaffold(
         modifier = Modifier
@@ -70,7 +78,7 @@ fun ProfileScreen() {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Профиль",
+                        stringResource(R.string.profile),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
@@ -95,7 +103,7 @@ fun ProfileScreen() {
                 ) {
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = "Вверх"
+                        contentDescription = stringResource(R.string.up)
                     )
                 }
             }
@@ -111,19 +119,28 @@ fun ProfileScreen() {
         ) {
             Box(modifier = Modifier.height(16.dp * scrollOffset))
 
-            ProfileExtended(isLoggedIn, scrollOffset)
+            ProfileExtended(
+                scrollOffset = scrollOffset,
+                viewModel = viewModel,
+            )
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
 
-            FeedTabBar(selectedTab, isLoggedIn,) { newTab -> selectedTab = newTab }
+            FeedTabBar(viewModel = viewModel)
 
-            MemesFeed(selectedTab, scrollState)
+            MemesFeed(
+                selectedTab = viewModel.selectedTab,
+                scrollState = scrollState,
+            )
         }
     }
 }
 
 @Composable
-fun ProfileExtended(isLoggedIn: Boolean, scrollOffset: Float) {
+private fun ProfileExtended(
+    scrollOffset: Float,
+    viewModel: ProfileViewModel,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -134,25 +151,46 @@ fun ProfileExtended(isLoggedIn: Boolean, scrollOffset: Float) {
                 .border(width = 1.dp, color = MaterialTheme.colorScheme.onBackground, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            IconButton(onClick = {},) {
-                Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(50.dp * scrollOffset))
+            Button(
+                onClick = {},
+                colors = ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContentColor = MaterialTheme.colorScheme.onBackground,
+                )
+            ) {
+                if (viewModel.userImage != null) {
+                    Image(
+                        viewModel.userImage!!,
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(50.dp * scrollOffset),
+                    )
+                }
             }
         }
 
         Box(modifier = Modifier.height(20.dp * scrollOffset))
 
         if (scrollOffset >= 0.1f) {
-            if (isLoggedIn) {
-                Text("MemeMaker2011")
+            if (viewModel.isLoggedIn) {
+                Text(viewModel.userName)
             } else {
                 Button(
-                    onClick = {},
+                    onClick = { viewModel.login() },
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                     ),
                 ) {
-                    Text("Войти в аккаунт",
+                    Text(
+                        stringResource(R.string.log_in_account),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -162,11 +200,18 @@ fun ProfileExtended(isLoggedIn: Boolean, scrollOffset: Float) {
 }
 
 @Composable
-fun FeedTabBar(selectedTab: Int, isLoggedIn: Boolean, onClick: (Int) -> Unit) {
-    val tabs = if (isLoggedIn) {
-        listOf("Понравившиеся", "Опубликованные", "Черновики")
+private fun FeedTabBar(viewModel: ProfileViewModel) {
+    val tabs = if (viewModel.isLoggedIn) {
+        listOf(
+            stringResource(R.string.liked),
+            stringResource(R.string.published),
+            stringResource(R.string.drafts),
+        )
     } else {
-        listOf("Созданные", "Черновики")
+        listOf(
+            stringResource(R.string.created),
+            stringResource(R.string.drafts),
+        )
     }
 
     Box(
@@ -174,14 +219,14 @@ fun FeedTabBar(selectedTab: Int, isLoggedIn: Boolean, onClick: (Int) -> Unit) {
         contentAlignment = Alignment.TopCenter,
     ) {
         ScrollableTabRow(
-            selectedTabIndex = selectedTab,
+            selectedTabIndex = viewModel.selectedTab,
             contentColor = MaterialTheme.colorScheme.secondary,
             containerColor = MaterialTheme.colorScheme.background,
             edgePadding = 0.dp,
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTab])
+                        .tabIndicatorOffset(tabPositions[viewModel.selectedTab])
                         .padding(vertical = 10.dp, horizontal = 16.dp),
                     height = 1.dp,
                     color = MaterialTheme.colorScheme.secondary,
@@ -191,9 +236,9 @@ fun FeedTabBar(selectedTab: Int, isLoggedIn: Boolean, onClick: (Int) -> Unit) {
         ) {
             tabs.forEachIndexed { index, title ->
                 Tab(
-                    selected = selectedTab == index,
+                    selected = viewModel.selectedTab == index,
                     modifier = Modifier.padding(start = 4.dp),
-                    onClick = { onClick(index) },
+                    onClick = { viewModel.selectTab(index) },
                     text = { Text(title) },
                 )
             }
@@ -229,6 +274,3 @@ fun MemeItem(index: Int) {
         }
     }
 }
-
-
-
