@@ -10,7 +10,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor() : ViewModel() {
     private val _selectedTab = mutableIntStateOf(0)
-    val selectedTab: Int get() = _selectedTab.value
+    val selectedTab: Int get() = _selectedTab.intValue
 
     private val _isLoggedIn = mutableStateOf(false)
     val isLoggedIn: Boolean get() = _isLoggedIn.value
