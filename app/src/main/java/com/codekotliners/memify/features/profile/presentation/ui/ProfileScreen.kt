@@ -78,7 +78,7 @@ fun ProfileScreen(
         floatingActionButton = {
             ProfileFloatingActionButton(
                 showFloatingBtn = !isExtended,
-                onBtnClick = {
+                onScrollUpClick = {
                     coroutineScope.launch {
                         scrollState.scrollToItem(0)
                     }
@@ -101,7 +101,7 @@ fun ProfileScreen(
                 isExtended = isExtended,
                 scrollOffset = scrollOffset,
                 state = state,
-                onBtnClick = { viewModel.login() },
+                onLoginClick = { viewModel.login() },
             )
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
@@ -168,11 +168,11 @@ private fun ProfileTopBar(showProfile: Boolean) {
 @Composable
 private fun ProfileFloatingActionButton(
     showFloatingBtn: Boolean,
-    onBtnClick: () -> Unit,
+    onScrollUpClick: () -> Unit,
 ) {
     if (showFloatingBtn) {
         FloatingActionButton(
-            onClick = onBtnClick,
+            onClick = onScrollUpClick,
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
@@ -189,7 +189,7 @@ private fun ProfileExtended(
     isExtended: Boolean,
     scrollOffset: Float,
     state: ProfileState,
-    onBtnClick: () -> Unit,
+    onLoginClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -204,7 +204,7 @@ private fun ProfileExtended(
                 Text(state.userName)
             } else {
                 Button(
-                    onClick = onBtnClick,
+                    onClick = onLoginClick,
                     shape = RoundedCornerShape(16.dp),
                     colors =
                         ButtonDefaults.buttonColors(
