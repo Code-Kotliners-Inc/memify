@@ -53,10 +53,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
@@ -71,55 +71,13 @@ fun ProfileScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
         contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        stringResource(R.string.profile),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                },
-                navigationIcon = {
-                    if (scrollOffset < 0.1f) {
-                        IconButton(
-                            onClick = {},
-                        ) {
-                            Icon(
-                                Icons.Default.AccountCircle,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {},
-                    ) {
-                        Icon(
-                            Icons.Default.Settings,
-                            contentDescription = null,
-                        )
-                    }
-                },
-            )
-        },
+        topBar = { ProfileTopBar(scrollOffset = scrollOffset) },
         floatingActionButton = {
-            if (scrollOffset < 0.1f) {
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            scrollState.scrollToItem(0)
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = stringResource(R.string.up),
-                    )
-                }
-            }
+            ProfileFloatingActionButton(
+                scrollOffset = scrollOffset,
+                scope = scope,
+                scrollState = scrollState,
+            )
         },
     ) { innerPadding ->
         Column(
@@ -163,6 +121,65 @@ private fun rememberScrollOffset(scrollState: LazyGridState): Float =
             )
         }
     }.value
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTopBar(scrollOffset: Float) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                stringResource(R.string.profile),
+                style = MaterialTheme.typography.titleLarge,
+            )
+        },
+        navigationIcon = {
+            if (scrollOffset < 0.1f) {
+                IconButton(
+                    onClick = {},
+                ) {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = null,
+                    )
+                }
+            }
+        },
+        actions = {
+            IconButton(
+                onClick = {},
+            ) {
+                Icon(
+                    Icons.Default.Settings,
+                    contentDescription = null,
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun ProfileFloatingActionButton(
+    scrollOffset: Float,
+    scope: CoroutineScope,
+    scrollState: LazyGridState,
+) {
+    if (scrollOffset < 0.1f) {
+        FloatingActionButton(
+            onClick = {
+                scope.launch {
+                    scrollState.scrollToItem(0)
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+        ) {
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowUp,
+                contentDescription = stringResource(R.string.up),
+            )
+        }
+    }
+}
 
 @Composable
 private fun ProfileExtended(
