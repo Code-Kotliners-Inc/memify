@@ -42,7 +42,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -68,9 +67,9 @@ fun ProfileScreen(
 
     Scaffold(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
         contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             CenterAlignedTopAppBar(
@@ -125,10 +124,10 @@ fun ProfileScreen(
     ) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
@@ -152,19 +151,18 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun rememberScrollOffset(scrollState: LazyGridState): Float {
-    return remember {
+private fun rememberScrollOffset(scrollState: LazyGridState): Float =
+    remember {
         derivedStateOf {
             min(
                 1f,
                 1 - (
                     scrollState.firstVisibleItemScrollOffset / 600f +
                         scrollState.firstVisibleItemIndex
-                    ),
+                ),
             )
         }
     }.value
-}
 
 @Composable
 private fun ProfileExtended(
@@ -205,24 +203,24 @@ private fun ProfileExtended(
 private fun ProfileAvatar(scrollOffset: Float, viewModel: ProfileViewModel) {
     Box(
         modifier =
-        Modifier
-            .size(100.dp * scrollOffset)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onBackground,
-                shape = CircleShape,
-            ),
+            Modifier
+                .size(100.dp * scrollOffset)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    shape = CircleShape,
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Button(
             onClick = {},
             colors =
-            ButtonColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                contentColor = MaterialTheme.colorScheme.onBackground,
-                disabledContainerColor = MaterialTheme.colorScheme.background,
-                disabledContentColor = MaterialTheme.colorScheme.onBackground,
-            ),
+                ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContentColor = MaterialTheme.colorScheme.onBackground,
+                ),
         ) {
             if (viewModel.userImage != null) {
                 Image(
@@ -271,14 +269,13 @@ private fun FeedTabBar(
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier =
-                    Modifier
-                        .tabIndicatorOffset(
-                            tabPositions[viewModel.selectedTab],
-                        )
-                        .padding(
-                            vertical = 10.dp,
-                            horizontal = 16.dp,
-                        ),
+                        Modifier
+                            .tabIndicatorOffset(
+                                tabPositions[viewModel.selectedTab],
+                            ).padding(
+                                vertical = 10.dp,
+                                horizontal = 16.dp,
+                            ),
                     height = 1.dp,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -325,9 +322,9 @@ fun MemesFeed(
 fun MemeItem(index: Int) {
     Card(
         modifier =
-        Modifier
-            .padding(6.dp)
-            .aspectRatio(1f),
+            Modifier
+                .padding(6.dp)
+                .aspectRatio(1f),
     ) {
         Box(
             modifier = Modifier.background(Color.LightGray),
