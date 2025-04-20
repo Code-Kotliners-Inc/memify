@@ -68,8 +68,10 @@ fun ProfileScreen(
         derivedStateOf {
             min(
                 1f,
-                1 - (scrollState.firstVisibleItemScrollOffset / 600f +
-                    scrollState.firstVisibleItemIndex),
+                1 - (
+                    scrollState.firstVisibleItemScrollOffset / 600f +
+                        scrollState.firstVisibleItemIndex
+                    ),
             )
         }
     }
@@ -114,7 +116,11 @@ fun ProfileScreen(
         floatingActionButton = {
             if (scrollOffset < 0.1f) {
                 FloatingActionButton(
-                    onClick = { scope.launch { scrollState.scrollToItem(0) } },
+                    onClick = {
+                        scope.launch {
+                            scrollState.scrollToItem(0)
+                        }
+                    },
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                 ) {
@@ -249,7 +255,9 @@ private fun FeedTabBar(
             indicator = { tabPositions ->
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[viewModel.selectedTab])
+                        .tabIndicatorOffset(
+                            tabPositions[viewModel.selectedTab]
+                        )
                         .padding(
                             vertical = 10.dp,
                             horizontal = 16.dp,
@@ -265,7 +273,9 @@ private fun FeedTabBar(
                     selected = viewModel.selectedTab == index,
                     modifier = Modifier.padding(start = 4.dp),
                     onClick = { viewModel.selectTab(index) },
-                    text = { Text(title) },
+                    text = {
+                        Text(title)
+                    },
                 )
             }
         }
@@ -304,7 +314,10 @@ fun MemeItem(index: Int) {
             modifier = Modifier.background(Color.LightGray),
             contentAlignment = Alignment.Center,
         ) {
-            Text("Мем $index", color = Color.White)
+            Text(
+                "Мем $index",
+                color = Color.White
+            )
         }
     }
 }
