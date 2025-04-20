@@ -38,8 +38,36 @@ val Typography.registerButton: TextStyle
     get() =
         titleMedium.copy(
             fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            textDecoration = TextDecoration.Underline,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+
+val Typography.hintText: TextStyle
+    @Composable
+    get() =
+        titleMedium.copy(
+            fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
             textDecoration = TextDecoration.Underline,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+
+val Typography.enterName: TextStyle
+    @Composable
+    get() =
+        titleMedium.copy(
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+
+val Typography.askPassword: TextStyle
+    @Composable
+    get() =
+        titleMedium.copy(
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
             color = MaterialTheme.colorScheme.onBackground,
         )
 
