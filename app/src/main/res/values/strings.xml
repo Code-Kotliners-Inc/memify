@@ -63,6 +63,8 @@
     <string name="Normal">Normal</string>
     <string name="Medium">Medium</string>
     <string name="Bold">Bold</string>
+    <string name="Popular">Популярное</string>
+    <string name="State_unavailable_error">Состояние не доступно</string>
     <string name="profile">Профиль</string>
     <string name="up">Вверх</string>
     <string name="log_in_account">Войти в аккаунт</string>
