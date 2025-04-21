@@ -1,45 +1,51 @@
 package com.codekotliners.memify.features.templates.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.codekotliners.memify.R
+import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
+import com.codekotliners.memify.features.templates.presentation.state.Tab
+import com.codekotliners.memify.features.templates.presentation.state.TabState
+import com.codekotliners.memify.features.templates.presentation.state.TemplatesPageState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class TemplatesFeedViewModel : ViewModel() {
-    private val _tabStates =
-        MutableStateFlow(
-            mapOf(
-                Tabs.BEST to TabState.Content(List(8) { R.drawable.placeholder600x400 }),
-                Tabs.NEW to TabState.Loading,
-                Tabs.FAVOURITE to TabState.Error("No favourites yet"),
-            ),
-        )
-    val tabStates = _tabStates.asStateFlow()
+@HiltViewModel
+class TemplatesFeedViewModel @Inject constructor(
+    private val repository: TemplatesRepository,
+) : ViewModel() {
+    private val _pageState = MutableStateFlow(TemplatesPageState())
+    val pageState: StateFlow<TemplatesPageState> = _pageState
 
-    private val _selectedTab = MutableStateFlow(Tabs.BEST)
-    val selectedTab: StateFlow<Tabs> = _selectedTab.asStateFlow()
-
-    fun selectTab(tab: Tabs) {
-        _selectedTab.update { tab }
+    init {
+        loadDataForTab(Tab.BEST)
     }
-}
 
-enum class Tabs {
-    BEST,
-    NEW,
-    FAVOURITE,
-}
+    fun selectTab(tab: Tab) {
+        Log.d("TAG", "selectTab: ${tab.nameResId}")
+        _pageState.update { it.copy(selectedTab = tab) }
+        loadDataForTab(tab)
+    }
 
-sealed interface TabState {
-    data object Loading : TabState
-
-    data class Error(
-        val message: String,
-    ) : TabState
-
-    data class Content(
-        val templates: List<Int>,
-    ) : TabState
+    fun loadDataForTab(tab: Tab) {
+        when (tab) {
+            Tab.BEST -> {
+                _pageState.update { it.copy(bestTemplatesState = TabState.Loading) }
+                val data = repository.getBestTemplates()
+                _pageState.update { it.copy(bestTemplatesState = TabState.Content(data)) }
+            }
+            Tab.NEW -> {
+                _pageState.update { it.copy(newTemplatesState = TabState.Loading) }
+                val data = repository.getNewTemplates()
+                _pageState.update { it.copy(newTemplatesState = TabState.Content(data)) }
+            }
+            Tab.FAVOURITE -> {
+                _pageState.update { it.copy(favouriteTemplatesState = TabState.Loading) }
+                val data = repository.getFavouriteTemplates()
+                _pageState.update { it.copy(favouriteTemplatesState = TabState.Content(data)) }
+            }
+        }
+    }
 }

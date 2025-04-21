@@ -19,10 +19,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.navigation.BottomNavigationBar
-import com.codekotliners.memify.features.create.presentation.ui.CreateScreen
 import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
+import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +57,7 @@ fun App() {
                 modifier = Modifier.weight(1f),
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
-                composable(NavRoutes.Create.route) { CreateScreen() }
+                composable(NavRoutes.Create.route) { TemplatesFeedScreen() }
                 composable(NavRoutes.Profile.route) { ProfileScreen() }
             }
             BottomNavigationBar(navController = navController)

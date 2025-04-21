@@ -1,7 +1,7 @@
 package com.codekotliners.memify.features.templates.presentation.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,48 +17,46 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codekotliners.memify.R
-import com.codekotliners.memify.features.templates.presentation.viewmodel.TabState
-import com.codekotliners.memify.features.templates.presentation.viewmodel.Tabs
+import coil.compose.AsyncImage
+import com.codekotliners.memify.features.templates.domain.entities.Template
+import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun TemplatesFeedScreen() {
-    val templatesFeedViewModel: TemplatesFeedViewModel = viewModel()
-
-    val tabState by templatesFeedViewModel.tabStates.collectAsState()
-    val selectedTab by templatesFeedViewModel.selectedTab.collectAsState()
+fun TemplatesFeedScreen(
+    viewModel: TemplatesFeedViewModel = hiltViewModel(),
+) {
+    val pageState by viewModel.pageState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab.ordinal) {
-            tabState.forEach { (tab, _) ->
+        TabRow(selectedTabIndex = pageState.selectedTab.ordinal) {
+            pageState.getTabs().forEach { tab ->
                 Tab(
-                    selected = selectedTab.ordinal == tab.ordinal,
-                    onClick = { templatesFeedViewModel.selectTab(tab) },
+                    selected = pageState.selectedTab.ordinal == tab.ordinal,
+                    onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = resolveTabName(tab),
+                            text = tab.getName(LocalContext.current),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
                 )
             }
         }
-        when (val currentState = tabState[selectedTab]) {
+        when (val currentState = pageState.getCurrentState()) {
             is TabState.Loading -> {
                 LoadingIndicator()
             }
@@ -66,17 +64,14 @@ fun TemplatesFeedScreen() {
                 ErrorMessage(message = currentState.message)
             }
             is TabState.Content -> {
-                TemplateGrid(templates = currentState.templates.toImmutableList())
-            }
-            null -> {
-                ErrorMessage(message = "Состояние не доступно")
+                TemplateGrid(templates = currentState.templates)
             }
         }
     }
 }
 
 @Composable
-fun TemplateGrid(templates: ImmutableList<Int>) {
+fun TemplateGrid(templates: List<Template>) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
         modifier =
@@ -86,28 +81,39 @@ fun TemplateGrid(templates: ImmutableList<Int>) {
         contentPadding = PaddingValues(0.dp),
         content = {
             items(templates) { template ->
-                TemplateItem(image = painterResource(template))
+                TemplateItem(template = template)
             }
         },
     )
 }
 
 @Composable
-fun TemplateItem(image: Painter) {
+fun TemplateItem(template: Template) {
+    var isLoadingState by remember { mutableStateOf(false) }
     Card(
         modifier =
             Modifier
                 .padding(4.dp)
                 .fillMaxWidth(),
     ) {
-        Image(
-            painter = image,
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .fillMaxWidth(),
-            contentScale = ContentScale.Crop,
-        )
+        Box {
+            if (isLoadingState) {
+                LoadingIndicator()
+            }
+
+            AsyncImage(
+                model = template.url,
+                onLoading = { isLoadingState = true },
+                onSuccess = { isLoadingState = false },
+                onError = {
+                },
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
+                contentScale = ContentScale.Crop,
+            )
+        }
     }
 }
 
@@ -137,16 +143,4 @@ fun ErrorMessage(message: String) {
 @Composable
 fun PreviewTemplatesFeed() {
     TemplatesFeedScreen()
-}
-
-@Composable
-@ReadOnlyComposable
-fun resolveTabName(tab: Tabs): String {
-    val nameRes =
-        when (tab) {
-            Tabs.BEST -> R.string.Best
-            Tabs.NEW -> R.string.New
-            Tabs.FAVOURITE -> R.string.Favourites
-        }
-    return stringResource(nameRes)
 }
