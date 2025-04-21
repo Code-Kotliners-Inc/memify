@@ -36,7 +36,7 @@ class TemplatesFeedViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
             loadDataForTab(_pageState.value.selectedTab)
-            delay(400)
+            delay(400) // just a delay to show the pull to refresh widget
             _isRefreshing.value = false
         }
     }

@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.templates.presentation.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +15,6 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -33,6 +33,8 @@ import com.codekotliners.memify.features.templates.presentation.viewmodel.Templa
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TemplatesFeedScreen(
+    onLoginClicked: () -> Unit,
+    onTemplateSelected: (Template) -> Unit,
     viewModel: TemplatesFeedViewModel = hiltViewModel(),
 ) {
     val pageState by viewModel.pageState.collectAsState()
@@ -63,11 +65,11 @@ fun TemplatesFeedScreen(
                 is TabState.Loading -> LoadingTab()
 
                 is TabState.Error -> {
-                    ErrorTab(errorType = currentState.type) {} // TODO: login button
+                    ErrorTab(errorType = currentState.type) { onLoginClicked() }
                 }
 
                 is TabState.Content -> {
-                    TemplatesGrid(templates = currentState.templates)
+                    TemplatesGrid(templates = currentState.templates, onTemplateSelected = onTemplateSelected)
                 }
 
                 TabState.Empty -> NoContentTab()
@@ -77,9 +79,11 @@ fun TemplatesFeedScreen(
 }
 
 @Composable
-fun TemplatesGrid(templates: List<Template>) {
+fun TemplatesGrid(templates: List<Template>, onTemplateSelected: (Template) -> Unit) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
+        verticalItemSpacing = 10.dp,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier =
             Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -87,7 +91,7 @@ fun TemplatesGrid(templates: List<Template>) {
         contentPadding = PaddingValues(0.dp),
         content = {
             items(templates) { template ->
-                TemplateItem(template = template)
+                TemplateItem(template = template, onTemplateSelected = onTemplateSelected)
             }
         },
     )
@@ -96,5 +100,5 @@ fun TemplatesGrid(templates: List<Template>) {
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTemplatesFeed() {
-    TemplatesFeedScreen()
+    TemplatesFeedScreen({}, {})
 }

@@ -25,7 +25,11 @@ fun ErrorTab(errorType: ErrorType, onLoginClicked: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = stringResource(errorType.userMessageResId), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        Text(
+            text = stringResource(errorType.userMessageResId),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onLoginClicked) {
             Text(text = stringResource(R.string.log_in_account))
