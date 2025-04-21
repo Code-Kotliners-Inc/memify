@@ -40,7 +40,11 @@ object Logger {
         }
     }
 
+    fun logInfo(message: String, tag: String = "APP_INFO") = log(Level.INFO, tag, message)
+
     fun logDebug(message: String, tag: String = "APP_DEBUG") = log(Level.DEBUG, tag, message)
+
+    fun logWarning(message: String, tag: String = "APP_WARNING") = log(Level.WARNING, tag, message)
 
     fun logError(message: String, exception: Throwable? = null, tag: String = "APP_ERROR") =
         log(Level.ERROR, tag, message, exception)
