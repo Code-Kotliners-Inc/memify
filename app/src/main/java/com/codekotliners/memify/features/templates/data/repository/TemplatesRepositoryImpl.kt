@@ -11,10 +11,10 @@ class TemplatesRepositoryImpl @Inject constructor(
     private val api: TemplatesApiService,
 ) : TemplatesRepository {
     override suspend fun getBestTemplates(): Flow<List<Template>> =
-        flowOf(api.getNewTemplates())
+        flowOf(api.getBestTemplates())
 
     override suspend fun getNewTemplates(): Flow<List<Template>> =
         flowOf(api.getNewTemplates())
 
-    override suspend fun getFavouriteTemplates(): Flow<List<Template>> = flowOf(api.getNewTemplates())
+    override suspend fun getFavouriteTemplates(): Flow<List<Template>> = flowOf(api.getFavouriteTemplates())
 }

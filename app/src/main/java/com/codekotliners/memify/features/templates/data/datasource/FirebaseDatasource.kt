@@ -53,7 +53,10 @@ class FirebaseDatasource @Inject constructor() : TemplatesApiService {
     }
 
     fun getFavourites(): Query {
-        return templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, 0)  // TODO: get current user id
+        // TODO: get current user id
+        if (false)
+            return templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, 0)
+        throw IllegalStateException("User not logged in")
     }
 
     fun getNew(): Query {
@@ -72,7 +75,7 @@ class FirebaseDatasource @Inject constructor() : TemplatesApiService {
         return getTemplates(getNew())
     }
 
-    override suspend fun getFavouritesTemplates(): List<Template> {
+    override suspend fun getFavouriteTemplates(): List<Template> {
         return getTemplates(getFavourites())
     }
 }

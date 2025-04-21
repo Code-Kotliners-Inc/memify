@@ -11,12 +11,22 @@ sealed interface TabState {
     data object Loading : TabState
 
     data class Error(
-        val message: String,
+        val type: ErrorType,
     ) : TabState
 
     data class Content(
         val templates: List<Template>,
     ) : TabState
+
+    data object Empty : TabState
+}
+
+enum class ErrorType(@StringRes val userMessageResId: Int) {
+    NETWORK(R.string.network_errormessage),
+    NEED_LOGIN(R.string.need_authenticated_message),
+    UNKNOWN(R.string.unknown_error_message);
+
+    fun getMessage(context: Context): String = context.getString(userMessageResId)
 }
 
 enum class Tab(

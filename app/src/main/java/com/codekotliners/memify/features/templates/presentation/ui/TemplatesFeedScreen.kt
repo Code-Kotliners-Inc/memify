@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,11 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.codekotliners.memify.R
 import com.codekotliners.memify.features.templates.domain.entities.Template
+import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedViewModel
 
@@ -60,15 +64,29 @@ fun TemplatesFeedScreen(
                 LoadingIndicator()
             }
             is TabState.Error -> {
-                ErrorMessage(message = currentState.message)
+                ErrorScreen(errorType = currentState.type)
             }
             is TabState.Content -> {
                 TemplateGrid(templates = currentState.templates)
             }
 
-            TabState.Idle -> {
+            TabState.Idle -> {}
+
+            TabState.Empty -> {
+                EmptyScreen()
             }
         }
+    }
+}
+
+@Composable
+fun EmptyScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(text = stringResource(R.string.empty_templates_tab_message), style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -98,7 +116,12 @@ fun TemplateItem(template: Template) {
                 .padding(4.dp)
                 .fillMaxWidth(),
     ) {
-        Box {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(template.width.toFloat() / template.height.toFloat()),
+        ) {
             if (isLoadingState) {
                 LoadingIndicator()
             }
@@ -131,13 +154,13 @@ fun LoadingIndicator() {
 }
 
 @Composable
-fun ErrorMessage(message: String) {
+fun ErrorScreen(errorType: ErrorType) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = message, style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(errorType.userMessageResId), style = MaterialTheme.typography.bodyMedium)
     }
 }
 

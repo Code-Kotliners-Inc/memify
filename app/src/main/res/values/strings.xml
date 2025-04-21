@@ -68,4 +68,8 @@
     <string name="link_account_hint">link vk account</string>
     <string name="change_photo_hint">change photo</string>
     <string name="name_blank">MemeMaker2011</string>
+    <string name="network_errormessage">Ошибка во время загрузки. Проверьте подключение к сети</string>
+    <string name="need_authenticated_message">Войдите в аккаунт чтобы воспользоваться этой функцией</string>
+    <string name="unknown_error_message">Упс, что-то пошло не так, попробуйте позже</string>
+    <string name="empty_templates_tab_message">Кажется, здесь ничего нет</string>
 </resources>
