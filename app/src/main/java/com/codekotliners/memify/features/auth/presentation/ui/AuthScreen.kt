@@ -39,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.loader.content.Loader
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
@@ -48,10 +47,8 @@ import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.registerButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
-import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthState
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
-import kotlin.math.sign
 
 @Composable
 fun AuthScreen(
@@ -61,11 +58,12 @@ fun AuthScreen(
     val context = LocalContext.current
     val authState by viewModel.authState.collectAsState()
 
-    val googleLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.handleGoogleSignInResult(result)
-    }
+    val googleLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            viewModel.handleGoogleSignInResult(result)
+        }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -81,29 +79,29 @@ fun AuthScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
         ) {
             Box(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.auth),
                     contentDescription = null,
                     modifier =
-                    Modifier.fillMaxWidth(),
+                        Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Crop,
                 )
             }
             Box(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                 contentAlignment = Alignment.Center,
             ) {
                 LogInMethods(
@@ -177,11 +175,11 @@ fun NoAccountSection(onRegisterClick: () -> Unit) {
             text = stringResource(R.string.register_button),
             style = MaterialTheme.typography.registerButton,
             modifier =
-            Modifier
-                .padding(vertical = 16.dp)
-                .clickable {
-                    onRegisterClick()
-                },
+                Modifier
+                    .padding(vertical = 16.dp)
+                    .clickable {
+                        onRegisterClick()
+                    },
         )
     }
 }
@@ -198,9 +196,9 @@ fun AuthButton(
         colors = buttonColor,
         shape = RoundedCornerShape(16.dp),
         modifier =
-        Modifier
-            .fillMaxWidth(0.9f)
-            .height(58.dp),
+            Modifier
+                .fillMaxWidth(0.9f)
+                .height(58.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -237,11 +235,12 @@ private fun NavController.navigateToEmailLogin() = navigate(NavRoutes.Login.rout
 private fun NavController.navigateToRegister() = navigate(NavRoutes.Register.route)
 
 private fun showError(context: Context, error: Throwable) {
-    Toast.makeText(
-        context,
-        context.getString(R.string.login_error_message),
-        Toast.LENGTH_LONG
-    ).show()
+    Toast
+        .makeText(
+            context,
+            context.getString(R.string.login_error_message),
+            Toast.LENGTH_LONG,
+        ).show()
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)

@@ -23,16 +23,16 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : AuthRepository {
-
     private val googleSignInClient by lazy {
         GoogleSignIn.getClient(
             context,
-            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
-                .build()
+                .build(),
         )
     }
 
@@ -48,9 +48,7 @@ class AuthRepositoryImpl @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Companion.WhileSubscribed(), auth.currentUser == null)
 
-    override suspend fun getCurrentUser(): FirebaseUser? {
-        return auth.currentUser
-    }
+    override suspend fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
     override suspend fun firebaseCreateAccount(email: String, password: String) =
         try {
@@ -101,14 +99,14 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getGoogleSignInIntent(): Intent {
-        return googleSignInClient.signInIntent
-    }
+    override fun getGoogleSignInIntent(): Intent = googleSignInClient.signInIntent
 
-    override suspend fun handleGoogleSignInResult(result: ActivityResult): Response<Boolean> {
-        return try {
-            val account = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                .getResult(ApiException::class.java)
+    override suspend fun handleGoogleSignInResult(result: ActivityResult): Response<Boolean> =
+        try {
+            val account =
+                GoogleSignIn
+                    .getSignedInAccountFromIntent(result.data)
+                    .getResult(ApiException::class.java)
 
             account.idToken?.let { token ->
                 val credential = GoogleAuthProvider.getCredential(token, null)
@@ -118,5 +116,4 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Response.Failure(e)
         }
-    }
 }

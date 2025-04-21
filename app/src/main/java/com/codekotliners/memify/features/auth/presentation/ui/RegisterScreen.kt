@@ -41,17 +41,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
-import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistrationScreen(
     navController: NavHostController,
-    viewModel: AuthenticationViewModel = hiltViewModel(),
+    onRegisterClicked: (String, String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -90,7 +88,7 @@ fun RegistrationScreen(
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            RegistrationForm(onRegisterClicked = { email, password -> viewModel.onSignUpWithMail(email, password) })
+            RegistrationForm(onRegisterClicked = onRegisterClicked)
         }
     }
 }
@@ -185,5 +183,5 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewRegistrationScreen() {
-    RegistrationScreen(navController = NavHostController(LocalContext.current))
+    RegistrationScreen(navController = NavHostController(LocalContext.current), onRegisterClicked = { _, _ -> })
 }

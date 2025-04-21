@@ -1,7 +1,6 @@
 package com.codekotliners.memify.features.auth.presentation.viewmodel
 
 import android.content.Intent
-import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,19 +10,23 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 sealed class AuthState {
     data object Loading : AuthState()
+
     data object Authenticated : AuthState()
+
     data object Unauthenticated : AuthState()
-    class Error(val exception: Throwable) : AuthState()
+
+    class Error(
+        val exception: Exception,
+    ) : AuthState()
 }
 
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
 ) : ViewModel() {
     private val _signInState = MutableStateFlow<Response<Boolean>?>(null)
     val signInState: StateFlow<Response<Boolean>?> = _signInState
@@ -40,54 +43,62 @@ class AuthenticationViewModel @Inject constructor(
             _authState.value = AuthState.Loading
             try {
                 val isAuthenticated = repository.getCurrentUser() != null
-                _authState.value = if (isAuthenticated) {
-                    AuthState.Authenticated
-                } else {
-                    AuthState.Unauthenticated
-                }
+                _authState.value =
+                    if (isAuthenticated) {
+                        AuthState.Authenticated
+                    } else {
+                        AuthState.Unauthenticated
+                    }
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e)
             }
         }
     }
 
-    fun onLogInWithGoogle(idToken: String) = handleAuthRequest {
-        repository.firebaseGoogleAuth(idToken)
-    }
+    fun onLogInWithGoogle(idToken: String) =
+        handleAuthRequest {
+            repository.firebaseGoogleAuth(idToken)
+        }
 
-    fun onLogInWithMail(email: String, password: String) = handleAuthRequest {
-        repository.firebaseSignIn(email, password)
-    }
+    fun onLogInWithMail(email: String, password: String) =
+        handleAuthRequest {
+            repository.firebaseSignIn(email, password)
+        }
 
-    fun onSignUpWithMail(email: String, password: String) = handleAuthRequest {
-        repository.firebaseCreateAccount(email, password)
-    }
+    fun onSignUpWithMail(email: String, password: String) =
+        handleAuthRequest {
+            repository.firebaseCreateAccount(email, password)
+        }
 
-    fun onLogInWithVk(idToken: String) = handleAuthRequest {
-        repository.firebaseVKAuth(idToken)
-    }
+    fun onLogInWithVk(idToken: String) =
+        handleAuthRequest {
+            repository.firebaseVKAuth(idToken)
+        }
 
-    fun handleGoogleSignInResult(result: ActivityResult) = handleAuthRequest {
-        repository.handleGoogleSignInResult(result)
-    }
+    fun handleGoogleSignInResult(result: ActivityResult) =
+        handleAuthRequest {
+            repository.handleGoogleSignInResult(result)
+        }
 
     private fun handleAuthRequest(block: suspend () -> Response<Boolean>) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             _signInState.value = Response.Loading
 
-            _signInState.value = try {
-                block()
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error(e)
-                Response.Failure(e)
-            }
+            _signInState.value =
+                try {
+                    block()
+                } catch (e: Exception) {
+                    _authState.value = AuthState.Error(e)
+                    Response.Failure(e)
+                }
 
-            _authState.value = if (repository.getCurrentUser() != null) {
-                AuthState.Authenticated
-            } else {
-                AuthState.Unauthenticated
-            }
+            _authState.value =
+                if (repository.getCurrentUser() != null) {
+                    AuthState.Authenticated
+                } else {
+                    AuthState.Unauthenticated
+                }
         }
     }
 
@@ -97,7 +108,5 @@ class AuthenticationViewModel @Inject constructor(
         _authState.value = AuthState.Unauthenticated
     }
 
-    fun getGoogleSignInIntent(): Intent {
-        return repository.getGoogleSignInIntent()
-    }
+    fun getGoogleSignInIntent(): Intent = repository.getGoogleSignInIntent()
 }
