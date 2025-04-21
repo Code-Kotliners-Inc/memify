@@ -97,29 +97,29 @@ fun AuthScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier =
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
     ) {
         Box(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = null,
                 modifier =
-                Modifier.fillMaxWidth(),
+                    Modifier.fillMaxWidth(),
                 contentScale = ContentScale.Crop,
             )
         }
         Box(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
             contentAlignment = Alignment.Center,
         ) {
             LogInMethods(
