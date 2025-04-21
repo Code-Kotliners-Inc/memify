@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.loader.content.Loader
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
@@ -48,6 +49,7 @@ import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.registerButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
 import com.codekotliners.memify.features.auth.domain.entities.Response
+import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthState
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
 import kotlin.math.sign
 
@@ -57,7 +59,7 @@ fun AuthScreen(
     viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val signInState by viewModel.signInState.collectAsState()
+    val authState by viewModel.authState.collectAsState()
 
     val googleLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -65,18 +67,16 @@ fun AuthScreen(
         viewModel.handleGoogleSignInResult(result)
     }
 
-    LaunchedEffect(signInState) {
-        when (signInState) {
-            is Response.Success -> navController.navigateToHome()
-            is Response.Failure -> showError(context, (signInState as Response.Failure).error)
-            is Response.Loading -> {}
-            null -> {}
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> navController.navigateToHome()
+            is AuthState.Error -> showError(context, (authState as AuthState.Error).exception)
+            is AuthState.Loading -> {}
+            is AuthState.Unauthenticated -> {}
         }
     }
 
-    if (signInState == Response.Loading) {
-        LoaderScreen()
-    } else {
+    if (authState == AuthState.Unauthenticated) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -117,6 +117,8 @@ fun AuthScreen(
                 }
             }
         }
+    } else {
+        LoaderScreen()
     }
 }
 
