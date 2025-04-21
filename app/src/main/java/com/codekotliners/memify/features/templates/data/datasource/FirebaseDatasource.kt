@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.templates.data.datasource
 
-import android.util.Log
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_CREATED_AT
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_FAVOURITED_BY_COUNT
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_HEIGHT
@@ -38,7 +37,8 @@ class FirebaseDatasource @Inject constructor() : TemplatesApiService {
     private val templatesCollection = db.collection(TEMPLATES_COLLECTION_NAME)
 
     private suspend fun getTemplates(query: Query): List<Template> {
-        val snap = query
+        val snap =
+            query
                 .get()
                 .addOnFailureListener { exception ->
                     throw exception
@@ -54,28 +54,19 @@ class FirebaseDatasource @Inject constructor() : TemplatesApiService {
 
     fun getFavourites(): Query {
         // TODO: get current user id
-        if (false)
+        if (false) {
             return templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, 0)
+        }
         throw IllegalStateException("User not logged in")
     }
 
-    fun getNew(): Query {
-        return templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
-    }
+    fun getNew(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
 
-    fun getBest(): Query {
-        return templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
-    }
+    fun getBest(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
 
-    override suspend fun getBestTemplates(): List<Template> {
-        return getTemplates(getBest())
-    }
+    override suspend fun getBestTemplates(): List<Template> = getTemplates(getBest())
 
-    override suspend fun getNewTemplates(): List<Template> {
-        return getTemplates(getNew())
-    }
+    override suspend fun getNewTemplates(): List<Template> = getTemplates(getNew())
 
-    override suspend fun getFavouriteTemplates(): List<Template> {
-        return getTemplates(getFavourites())
-    }
+    override suspend fun getFavouriteTemplates(): List<Template> = getTemplates(getFavourites())
 }

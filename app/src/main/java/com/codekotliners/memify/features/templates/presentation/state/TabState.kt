@@ -21,10 +21,13 @@ sealed interface TabState {
     data object Empty : TabState
 }
 
-enum class ErrorType(@StringRes val userMessageResId: Int) {
+enum class ErrorType(
+    @StringRes val userMessageResId: Int,
+) {
     NETWORK(R.string.network_errormessage),
     NEED_LOGIN(R.string.need_authenticated_message),
-    UNKNOWN(R.string.unknown_error_message);
+    UNKNOWN(R.string.unknown_error_message),
+    ;
 
     fun getMessage(context: Context): String = context.getString(userMessageResId)
 }
