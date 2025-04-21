@@ -5,9 +5,11 @@ import com.google.firebase.BuildConfig
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 object Logger {
-
     enum class Level {
-        DEBUG, INFO, WARNING, ERROR
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR,
     }
 
     fun initialize(isDebug: Boolean) {
@@ -18,7 +20,7 @@ object Logger {
         level: Level,
         tag: String = "APP_LOG",
         message: String,
-        exception: Throwable? = null
+        exception: Throwable? = null,
     ) {
         if (BuildConfig.DEBUG) {
             when (level) {
