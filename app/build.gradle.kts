@@ -5,6 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
+    id("com.google.gms.google-services")
 }
 android {
     namespace = "com.codekotliners.memify"

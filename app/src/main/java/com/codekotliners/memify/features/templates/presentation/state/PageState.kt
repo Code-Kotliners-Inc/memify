@@ -1,17 +1,24 @@
 package com.codekotliners.memify.features.templates.presentation.state
 
 data class TemplatesPageState(
-    val selectedTab: Tab = Tab.BEST,
-    val bestTemplatesState: TabState = TabState.Loading,
-    val favouriteTemplatesState: TabState = TabState.Loading,
-    val newTemplatesState: TabState = TabState.Loading,
+    val selectedTab: Tab,
+    val bestTemplatesState: TabState = TabState.Idle,
+    val favouriteTemplatesState: TabState = TabState.Idle,
+    val newTemplatesState: TabState = TabState.Idle,
 ) {
-    fun getTabs(): List<Tab> = listOf(Tab.BEST, Tab.NEW, Tab.FAVOURITE)
+    fun getTabs(): List<Tab> = Tab.entries.toList()
 
     fun getCurrentState(): TabState =
         when (selectedTab) {
             Tab.BEST -> bestTemplatesState
             Tab.NEW -> newTemplatesState
             Tab.FAVOURITE -> favouriteTemplatesState
+        }
+
+    fun withUpdatedTabState(newState: TabState): TemplatesPageState =
+        when (selectedTab) {
+            Tab.BEST -> copy(bestTemplatesState = newState)
+            Tab.NEW -> copy(newTemplatesState = newState)
+            Tab.FAVOURITE -> copy(favouriteTemplatesState = newState)
         }
 }

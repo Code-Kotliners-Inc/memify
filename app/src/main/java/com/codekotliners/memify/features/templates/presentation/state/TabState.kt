@@ -6,6 +6,8 @@ import com.codekotliners.memify.features.templates.domain.entities.Template
 import com.codekotliners.memify.R
 
 sealed interface TabState {
+    object Idle : TabState
+
     data object Loading : TabState
 
     data class Error(

@@ -1,7 +1,7 @@
 package com.codekotliners.memify.features.templates.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.codekotliners.memify.features.templates.presentation.state.Tab
 import com.codekotliners.memify.features.templates.presentation.state.TabState
@@ -9,43 +9,46 @@ import com.codekotliners.memify.features.templates.presentation.state.TemplatesP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TemplatesFeedViewModel @Inject constructor(
     private val repository: TemplatesRepository,
 ) : ViewModel() {
-    private val _pageState = MutableStateFlow(TemplatesPageState())
+    private val _pageState = MutableStateFlow(TemplatesPageState(selectedTab = Tab.BEST))
     val pageState: StateFlow<TemplatesPageState> = _pageState
 
     init {
-        loadDataForTab(Tab.BEST)
+        loadDataForTab(_pageState.value.selectedTab)
     }
 
     fun selectTab(tab: Tab) {
-        Log.d("TAG", "selectTab: ${tab.nameResId}")
         _pageState.update { it.copy(selectedTab = tab) }
         loadDataForTab(tab)
     }
 
     fun loadDataForTab(tab: Tab) {
-        when (tab) {
-            Tab.BEST -> {
-                _pageState.update { it.copy(bestTemplatesState = TabState.Loading) }
-                val data = repository.getBestTemplates()
-                _pageState.update { it.copy(bestTemplatesState = TabState.Content(data)) }
-            }
-            Tab.NEW -> {
-                _pageState.update { it.copy(newTemplatesState = TabState.Loading) }
-                val data = repository.getNewTemplates()
-                _pageState.update { it.copy(newTemplatesState = TabState.Content(data)) }
-            }
-            Tab.FAVOURITE -> {
-                _pageState.update { it.copy(favouriteTemplatesState = TabState.Loading) }
-                val data = repository.getFavouriteTemplates()
-                _pageState.update { it.copy(favouriteTemplatesState = TabState.Content(data)) }
-            }
+        if (_pageState.value.getCurrentState() is TabState.Loading) return
+
+        _pageState.update { it.withUpdatedTabState(TabState.Loading) }
+
+        viewModelScope.launch {
+            val dataFlow =
+                when (tab) {
+                    Tab.BEST -> repository.getBestTemplates()
+                    Tab.NEW -> repository.getNewTemplates()
+                    Tab.FAVOURITE -> repository.getFavouriteTemplates()
+                }
+
+            dataFlow
+                .catch {
+                    _pageState.update { it.withUpdatedTabState(TabState.Error(it.toString())) }
+                }.collect { templates ->
+                    _pageState.update { it.withUpdatedTabState(TabState.Content(templates)) }
+                }
         }
     }
 }

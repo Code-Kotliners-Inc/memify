@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.codekotliners.memify.features.templates.domain.entities.Template
 import com.codekotliners.memify.features.templates.presentation.state.TabState
@@ -65,6 +64,9 @@ fun TemplatesFeedScreen(
             }
             is TabState.Content -> {
                 TemplateGrid(templates = currentState.templates)
+            }
+
+            TabState.Idle -> {
             }
         }
     }
