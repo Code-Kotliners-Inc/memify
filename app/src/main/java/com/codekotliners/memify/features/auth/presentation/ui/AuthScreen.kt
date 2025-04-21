@@ -75,56 +75,69 @@ fun AuthScreen(
     }
 
     if (authState == AuthState.Unauthenticated) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.auth),
-                    contentDescription = null,
-                    modifier =
-                        Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                contentAlignment = Alignment.Center,
-            ) {
-                LogInMethods(
-                    navController = navController,
-                    onLogInWithGoogle = { googleLauncher.launch(viewModel.getGoogleSignInIntent()) },
-                    onLogInWithVk = { },
-                )
-
-                GoogleSignInHandler { idToken ->
-                    viewModel.onLogInWithGoogle(idToken)
-                }
-            }
-        }
+        AuthScreenContent(
+            navController = navController,
+            onGoogleLauncherClick = { googleLauncher.launch(viewModel.getGoogleSignInIntent()) },
+            onVkLauncherClick = {},
+            onLogInWithGoogle = { tokenId -> viewModel.onLogInWithGoogle(tokenId) },
+        )
     } else {
         LoaderScreen()
     }
 }
 
 @Composable
+fun AuthScreenContent(
+    navController: NavController,
+    onGoogleLauncherClick: () -> Unit,
+    onVkLauncherClick: () -> Unit,
+    onLogInWithGoogle: (String) -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier =
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        Box(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.auth),
+                contentDescription = null,
+                modifier =
+                Modifier.fillMaxWidth(),
+                contentScale = ContentScale.Crop,
+            )
+        }
+        Box(
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.Center,
+        ) {
+            LogInMethods(
+                navController = navController,
+                onGoogleLauncherClick = onGoogleLauncherClick,
+                onVkLauncherClick = onVkLauncherClick,
+            )
+
+            GoogleSignInHandler { tokenId -> onLogInWithGoogle(tokenId) }
+        }
+    }
+}
+
+@Composable
 fun LogInMethods(
     navController: NavController,
-    onLogInWithGoogle: () -> Unit,
-    onLogInWithVk: () -> Unit,
+    onGoogleLauncherClick: () -> Unit,
+    onVkLauncherClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -136,14 +149,14 @@ fun LogInMethods(
             text = stringResource(R.string.login_google_button),
             icon = painterResource(id = R.drawable.google_icon),
             buttonColor = LocalExtraColors.current.authButtons.google,
-            onClick = onLogInWithGoogle,
+            onClick = onGoogleLauncherClick,
         )
 
         AuthButton(
             text = stringResource(R.string.login_vk_button),
             icon = painterResource(id = R.drawable.vk_icon),
             buttonColor = LocalExtraColors.current.authButtons.vk,
-            onClick = onLogInWithVk,
+            onClick = onVkLauncherClick,
         )
 
         AuthButton(
