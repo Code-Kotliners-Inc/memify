@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -17,11 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun TextInputDialog() {
-    val viewModel = LocalCanvasViewModel.current
+fun TextInputDialog(viewModel: CanvasViewModel) {
+    val focusRequester = FocusRequester()
 
     Dialog(
         onDismissRequest = { viewModel.finishWriting() },
@@ -41,7 +42,7 @@ fun TextInputDialog() {
                     Modifier
                         .align(Alignment.Center)
                         .fillMaxWidth()
-                        .focusRequester(viewModel.focusRequester),
+                        .focusRequester(focusRequester),
                 placeholder = { Text("") },
                 colors =
                     TextFieldDefaults.colors(
@@ -64,6 +65,6 @@ fun TextInputDialog() {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.focusRequester.requestFocus()
+        focusRequester.requestFocus()
     }
 }

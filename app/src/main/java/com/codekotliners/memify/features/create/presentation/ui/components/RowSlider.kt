@@ -18,16 +18,15 @@ import androidx.compose.runtime.MutableFloatState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowSlider(
+    viewModel: CanvasViewModel,
     parameter: MutableFloatState,
     onValueChange: () -> Unit = {},
 ) {
-    val viewModel = LocalCanvasViewModel.current
-
     Box {
         Slider(
             value = parameter.floatValue,

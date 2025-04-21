@@ -25,10 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun TextEditingRow() {
+fun TextEditingRow(viewModel: CanvasViewModel) {
     Column(
         modifier =
             Modifier
@@ -38,14 +38,12 @@ fun TextEditingRow() {
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(vertical = 8.dp),
     ) {
-        TextFormattingButtons()
+        TextFormattingButtons(viewModel)
     }
 }
 
 @Composable
-private fun TextFormattingButtons() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun TextFormattingButtons(viewModel: CanvasViewModel) {
     Row(
         modifier =
             Modifier
@@ -54,22 +52,21 @@ private fun TextFormattingButtons() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        ColorSelectionButton()
+        ColorSelectionButton(viewModel)
 
-        FontFamilySelectionButton()
+        FontFamilySelectionButton(viewModel)
 
-        FontWeightSelectionButton()
+        FontWeightSelectionButton(viewModel)
 
         RowSlider(
+            viewModel,
             viewModel.currentTextSize,
         ) { viewModel.showTextPreview = true }
     }
 }
 
 @Composable
-private fun ColorSelectionButton() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun ColorSelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
             modifier =
@@ -96,9 +93,7 @@ private fun ColorSelectionButton() {
 }
 
 @Composable
-private fun FontFamilySelectionButton() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun FontFamilySelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
             modifier =
@@ -117,14 +112,12 @@ private fun FontFamilySelectionButton() {
             )
         }
 
-        FontsDropdownMenu()
+        FontsDropdownMenu(viewModel)
     }
 }
 
 @Composable
-private fun FontWeightSelectionButton() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
     Box {
         Box(
             modifier =
@@ -143,14 +136,12 @@ private fun FontWeightSelectionButton() {
             )
         }
 
-        WeightsDropdownMenu()
+        WeightsDropdownMenu(viewModel)
     }
 }
 
 @Composable
-private fun FontsDropdownMenu() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
     val fonts =
         listOf(
             FontFamily.Default to stringResource(R.string.Default),
@@ -190,8 +181,7 @@ private fun FontsDropdownMenu() {
 }
 
 @Composable
-private fun WeightsDropdownMenu() {
-    val viewModel = LocalCanvasViewModel.current
+private fun WeightsDropdownMenu(viewModel: CanvasViewModel) {
     val weights =
         listOf(
             FontWeight.Light to stringResource(R.string.Light),

@@ -11,12 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun ActionsRow() {
-    val viewModel = LocalCanvasViewModel.current
-
+fun ActionsRow(viewModel: CanvasViewModel) {
     Surface(
         shape = RoundedCornerShape(50.dp),
         color = MaterialTheme.colorScheme.surface,

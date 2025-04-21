@@ -22,13 +22,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun EditingCanvasElements() {
-    val viewModel = LocalCanvasViewModel.current
-
+fun EditingCanvasElements(viewModel: CanvasViewModel) {
     val elements by rememberUpdatedState(viewModel.canvasElements)
     val currentLine by rememberUpdatedState(viewModel.currentLine)
     val currentLineColor by rememberUpdatedState(viewModel.currentLineColor.value)

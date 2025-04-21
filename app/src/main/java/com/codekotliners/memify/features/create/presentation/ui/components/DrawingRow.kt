@@ -16,12 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.codekotliners.memify.features.create.presentation.ui.LocalCanvasViewModel
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
-fun DrawingRow() {
-    val viewModel = LocalCanvasViewModel.current
-
+fun DrawingRow(viewModel: CanvasViewModel) {
     Row(
         modifier =
             Modifier
@@ -58,6 +56,6 @@ fun DrawingRow() {
             )
         }
 
-        RowSlider(viewModel.currentLineWidth)
+        RowSlider(viewModel, viewModel.currentLineWidth)
     }
 }

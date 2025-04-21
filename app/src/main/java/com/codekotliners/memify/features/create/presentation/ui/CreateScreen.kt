@@ -29,9 +29,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,17 +46,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
-import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
+import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
-import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
+import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
-
-val LocalCanvasViewModel =
-    compositionLocalOf<CanvasViewModel> {
-        error("No CanvasViewModel provided!")
-    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,32 +99,27 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 private fun CreateScreenContent(innerPadding: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
-    CompositionLocalProvider(
-        LocalCanvasViewModel provides viewModel,
+    Column(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            ActionsRow()
+        ActionsRow(viewModel)
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                InteractiveCanvas()
-            }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            InteractiveCanvas(viewModel)
         }
     }
 }
 
 @Composable
-private fun InteractiveCanvas() {
-    val viewModel = LocalCanvasViewModel.current
+private fun InteractiveCanvas(viewModel: CanvasViewModel) {
     val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
 
     LaunchedEffect(R.drawable.meme) {
@@ -156,10 +144,10 @@ private fun InteractiveCanvas() {
             }) { Text("write") }
         }
 
-        ImageBox()
+        ImageBox(viewModel)
 
         if (viewModel.isWriting) {
-            TextInputDialog()
+            TextInputDialog(viewModel)
         }
 
         AnimatedVisibility(
@@ -169,19 +157,17 @@ private fun InteractiveCanvas() {
         }
 
         AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
-            DrawingRow()
+            DrawingRow(viewModel)
         }
 
         AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
-            TextEditingRow()
+            TextEditingRow(viewModel)
         }
     }
 }
 
 @Composable
-private fun ImageBox() {
-    val viewModel = LocalCanvasViewModel.current
-
+private fun ImageBox(viewModel: CanvasViewModel) {
     Box(
         modifier =
             Modifier
@@ -203,7 +189,7 @@ private fun ImageBox() {
             modifier = Modifier.matchParentSize(),
         )
 
-        EditingCanvasElements()
+        EditingCanvasElements(viewModel)
 
         if (viewModel.showTextPreview) {
             Box(
