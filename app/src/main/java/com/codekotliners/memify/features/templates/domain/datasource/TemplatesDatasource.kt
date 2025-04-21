@@ -2,7 +2,7 @@ package com.codekotliners.memify.features.templates.domain.datasource
 
 import com.codekotliners.memify.features.templates.domain.entities.Template
 
-interface TemplatesApiService {
+interface TemplatesDatasource {
     suspend fun getBestTemplates(): List<Template>
 
     suspend fun getNewTemplates(): List<Template>

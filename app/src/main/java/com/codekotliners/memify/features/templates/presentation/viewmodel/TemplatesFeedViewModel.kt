@@ -50,7 +50,7 @@ class TemplatesFeedViewModel @Inject constructor(
         if (_pageState.value.getCurrentState() is TabState.Loading) return
         if (!_isRefreshing.value && _pageState.value.getCurrentState() is TabState.Content) return
 
-        _pageState.update { it.withUpdatedTabState(TabState.Loading) }
+        _pageState.update { it.updatedCurrentTabState(TabState.Loading) }
 
         viewModelScope.launch {
             val dataFlow =
@@ -74,10 +74,10 @@ class TemplatesFeedViewModel @Inject constructor(
                         }
 
                     _pageState.update {
-                        it.withUpdatedTabState(TabState.Error(errorType))
+                        it.updatedCurrentTabState(TabState.Error(errorType))
                     }
                 }.collect { templates ->
-                    _pageState.update { it.withUpdatedTabState(TabState.Content(templates)) }
+                    _pageState.update { it.updatedCurrentTabState(TabState.Content(templates)) }
                 }
         }
     }

@@ -15,7 +15,7 @@ data class TemplatesPageState(
             Tab.FAVOURITE -> favouriteTemplatesState
         }
 
-    fun withUpdatedTabState(newState: TabState): TemplatesPageState =
+    fun updatedCurrentTabState(newState: TabState): TemplatesPageState =
         when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = newState)
             Tab.NEW -> copy(newTemplatesState = newState)

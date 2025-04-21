@@ -6,7 +6,7 @@ import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_USED_COUNT
 import com.codekotliners.memify.features.templates.data.constants.TEMPLATES_COLLECTION_NAME
 import com.codekotliners.memify.features.templates.data.mappers.toTemplate
-import com.codekotliners.memify.features.templates.domain.datasource.TemplatesApiService
+import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.features.templates.domain.entities.Template
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
@@ -14,9 +14,15 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseDatasource @Inject constructor() : TemplatesApiService {
+class FirebaseDatasource @Inject constructor() : TemplatesDatasource {
     private val db = Firebase.firestore
     private val templatesCollection = db.collection(TEMPLATES_COLLECTION_NAME)
+
+    override suspend fun getBestTemplates(): List<Template> = getTemplates(getBest())
+
+    override suspend fun getNewTemplates(): List<Template> = getTemplates(getNew())
+
+    override suspend fun getFavouriteTemplates(): List<Template> = getTemplates(getFavourites())
 
     private suspend fun getTemplates(query: Query): List<Template> {
         val snap =
@@ -35,21 +41,15 @@ class FirebaseDatasource @Inject constructor() : TemplatesApiService {
         }
     }
 
-    fun getFavourites(): Query {
+    private fun getNew(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
+
+    private fun getBest(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
+
+    private fun getFavourites(): Query {
         // FIX: get current user id
         if (false) {
             return templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, 0)
         }
         throw IllegalStateException("User not logged in")
     }
-
-    fun getNew(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
-
-    fun getBest(): Query = templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
-
-    override suspend fun getBestTemplates(): List<Template> = getTemplates(getBest())
-
-    override suspend fun getNewTemplates(): List<Template> = getTemplates(getNew())
-
-    override suspend fun getFavouriteTemplates(): List<Template> = getTemplates(getFavourites())
 }
