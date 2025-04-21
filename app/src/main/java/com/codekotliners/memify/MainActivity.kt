@@ -21,8 +21,8 @@ import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.navigation.BottomNavigationBar
 import com.codekotliners.memify.features.create.presentation.ui.CreateScreen
 import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
-import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import com.codekotliners.memify.core.theme.MemifyTheme
+import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
