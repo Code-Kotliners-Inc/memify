@@ -25,12 +25,7 @@ class FirebaseDatasource @Inject constructor() : TemplatesDatasource {
     override suspend fun getFavouriteTemplates(): List<Template> = getTemplates(getFavourites())
 
     private suspend fun getTemplates(query: Query): List<Template> {
-        val snap =
-            query
-                .get()
-                .addOnFailureListener { exception ->
-                    throw exception
-                }.await()
+        val snap = query.get().await()
         return snap.documents.mapNotNull { doc ->
             try {
                 doc.toTemplate()

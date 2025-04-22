@@ -32,12 +32,20 @@ class TemplatesFeedViewModel @Inject constructor(
         loadDataForTab(_pageState.value.selectedTab)
     }
 
+    fun startRefresh() {
+        _isRefreshing.value = true
+    }
+
+    fun finishRefresh() {
+        _isRefreshing.value = false
+    }
+
     fun refresh() {
         viewModelScope.launch {
-            _isRefreshing.value = true
+            startRefresh()
             loadDataForTab(_pageState.value.selectedTab)
             delay(400) // just a delay to show the pull to refresh widget
-            _isRefreshing.value = false
+            finishRefresh()
         }
     }
 
@@ -79,6 +87,8 @@ class TemplatesFeedViewModel @Inject constructor(
                 }.collect { templates ->
                     _pageState.update { it.updatedCurrentTabState(TabState.Content(templates)) }
                 }
+
+            finishRefresh()
         }
     }
 }
