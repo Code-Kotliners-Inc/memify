@@ -1,41 +1,37 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -46,12 +42,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.features.create.presentation.ui.components.ColoredLine
-import com.codekotliners.memify.features.create.presentation.ui.components.DrawingCanvas
-import com.codekotliners.memify.features.create.presentation.ui.components.SurfaceColorsButton
 import com.codekotliners.memify.core.theme.MemifyTheme
-import com.codekotliners.memify.features.create.presentation.ui.components.LineSettingsContainer
+import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
+import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
+import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
+import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
+import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
+import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
+import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +97,8 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 
 @Composable
 private fun CreateScreenContent(innerPadding: PaddingValues) {
+    val viewModel: CanvasViewModel = hiltViewModel()
+
     Column(
         modifier =
             Modifier
@@ -105,73 +107,115 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
                 .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(25.dp))
+        ActionsRow(viewModel)
 
-        InteractiveCanvas()
-
-        Spacer(Modifier.height(8.dp))
-
-        Surface(
-            color = Color.White,
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.padding(4.dp),
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = "Нажмите и удерживайте холст для выбора инструмента",
-                fontFamily = FontFamily(Font(R.font.ubunturegular)),
-                fontSize = 13.sp,
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Center,
-                color = Color.Gray,
-            )
+            InteractiveCanvas(viewModel)
         }
     }
 }
 
 @Composable
-private fun InteractiveCanvas() {
-    val allLines = remember { mutableStateListOf<ColoredLine>() }
-    var currentLine = remember { mutableStateListOf<Offset>() }
-    var strokeWidth = remember { mutableFloatStateOf(5f) }
-    var selectedColor = remember { mutableStateOf(Color.Black) }
+private fun InteractiveCanvas(viewModel: CanvasViewModel) {
+    val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
+
+    LaunchedEffect(R.drawable.meme) {
+        viewModel.imageWidth = imageWidth
+        viewModel.imageHeight = imageHeight
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .padding(horizontal = 4.dp),
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.meme),
-                contentDescription = null,
-                modifier = Modifier.matchParentSize(),
-                contentScale = ContentScale.Crop,
-            )
-
-            DrawingCanvas(allLines, currentLine, strokeWidth, selectedColor)
+        // TO REMOVE
+        Row {
+            Button(onClick = {
+                viewModel.iAmAPainterGodDamnIt = !viewModel.iAmAPainterGodDamnIt
+                viewModel.iAmAWriterGodDamnIt = false
+            }) { Text("paint") }
+            Button(onClick = {
+                viewModel.iAmAWriterGodDamnIt = !viewModel.iAmAWriterGodDamnIt
+                viewModel.iAmAPainterGodDamnIt = false
+            }) { Text("write") }
         }
 
-        LineSettingsContainer(strokeWidth, selectedColor)
+        ImageBox(viewModel)
 
-        SurfaceColorsButton(
-            onClick = {
-                allLines.clear()
-                currentLine.clear()
-            },
+        if (viewModel.isWriting) {
+            TextInputDialog(viewModel)
+        }
+
+        AnimatedVisibility(
+            visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
+        ) {
+            InstrumentsTextBox()
+        }
+
+        AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
+            DrawingRow(viewModel)
+        }
+
+        AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
+            TextEditingRow(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun ImageBox(viewModel: CanvasViewModel) {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
+                .padding(4.dp)
+                .then(
+                    if (viewModel.iAmAWriterGodDamnIt) {
+                        Modifier.clickable(onClick = { viewModel.startWriting() })
+                    } else {
+                        Modifier
+                    },
+                ),
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.meme),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.matchParentSize(),
         )
+
+        EditingCanvasElements(viewModel)
+
+        if (viewModel.showTextPreview) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
+            ) {
+                Text(
+                    text = "A",
+                    textAlign = TextAlign.Center,
+                    color = viewModel.currentTextColor.value,
+                    fontSize = viewModel.currentTextSize.floatValue.sp,
+                    fontFamily = viewModel.currentFontFamily.value,
+                    fontWeight = viewModel.currentFontWeight.value,
+                    modifier = Modifier.padding(top = 40.dp),
+                )
+            }
+        }
     }
 }
 
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
-fun AppPreview1() {
+fun CreateScreenPreview() {
     MemifyTheme {
         CreateScreen()
     }
