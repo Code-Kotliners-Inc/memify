@@ -9,17 +9,16 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class TemplatesRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) : TemplatesRepository {
-
-
     override suspend fun getBestTemplates(): Response<List<Template>> {
         try {
-            val result = firestore
-                .collection("templates")
-                .orderBy("favouritesCount", Query.Direction.DESCENDING)
-                .get()
-                .await()
+            val result =
+                firestore
+                    .collection("templates")
+                    .orderBy("favouritesCount", Query.Direction.DESCENDING)
+                    .get()
+                    .await()
 
             val templates = documentsToTemplates(result)
 
@@ -31,10 +30,12 @@ class TemplatesRepositoryImpl @Inject constructor(
 
     override suspend fun getNewTemplates(limit: Int): Response<List<Template>> {
         try {
-            val result = firestore.collection("templates")
-                .limit(limit.toLong())
-                .get()
-                .await()
+            val result =
+                firestore
+                    .collection("templates")
+                    .limit(limit.toLong())
+                    .get()
+                    .await()
 
             val templates = documentsToTemplates(result)
 
@@ -46,10 +47,12 @@ class TemplatesRepositoryImpl @Inject constructor(
 
     override suspend fun getFavouriteTemplates(userId: String): Response<List<Template>> {
         try {
-            val result = firestore
-                .collection("templates").whereArrayContains("favouritedBy", userId)
-                .get()
-                .await()
+            val result =
+                firestore
+                    .collection("templates")
+                    .whereArrayContains("favouritedBy", userId)
+                    .get()
+                    .await()
             val templates = documentsToTemplates(result)
 
             return Response.Success(templates)
@@ -59,17 +62,15 @@ class TemplatesRepositoryImpl @Inject constructor(
     }
 
     private fun documentsToTemplates(result: QuerySnapshot): List<Template> {
-
-        val templates = result.documents.mapNotNull { document ->
-            Template(
-                templateId = document.getString("id") ?: "",
-                name = document.getString("name") ?: "",
-                templateUrl = document.getString("url") ?: "",
-                favouritesCount = document.getString("favouritesCount")?.toInt() ?: 0,
-            )
-        }
+        val templates =
+            result.documents.mapNotNull { document ->
+                Template(
+                    templateId = document.getString("id") ?: "",
+                    name = document.getString("name") ?: "",
+                    templateUrl = document.getString("url") ?: "",
+                    favouritesCount = document.getString("favouritesCount")?.toInt() ?: 0,
+                )
+            }
         return templates
     }
 }
-
-
