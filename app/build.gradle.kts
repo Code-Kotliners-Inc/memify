@@ -5,8 +5,10 @@ plugins {
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
+    id("com.google.firebase.crashlytics")
     id("com.google.gms.google-services")
 }
+
 android {
     namespace = "com.codekotliners.memify"
     compileSdk = 35
@@ -31,6 +33,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            firebaseCrashlytics {
+                mappingFileUploadEnabled = true
+            }
         }
     }
     compileOptions {
@@ -94,6 +99,8 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.google.firebase.crashlytics)
+    implementation("com.google.android.gms:play-services-auth:21.3.0")
 }
 
 vkompose {
