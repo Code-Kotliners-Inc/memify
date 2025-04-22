@@ -64,8 +64,8 @@ fun ImageViewerScreen(
             val sendIntent =
                 Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, imageUrl)
-                    type = "text/plain"
+                    putExtra(Intent.EXTRA_STREAM, imageUrl)
+                    type = "image/*"
                 }
             val shareIntent = Intent.createChooser(sendIntent, null)
             context.startActivity(shareIntent)

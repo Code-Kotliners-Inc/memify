@@ -1,7 +1,11 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
+import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.view.View
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -24,16 +29,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
@@ -52,23 +63,42 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.viewer.presentation.ui.ImageItem
+import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-
+    val showImageViewer = remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CreateScreenTopBar(scrollBehavior) },
+        topBar = { CreateScreenTopBar(scrollBehavior, onMenuClick = { showImageViewer.value = true }) },
     ) { innerPadding ->
         CreateScreenContent(innerPadding)
+        if (showImageViewer.value) {
+            Dialog(onDismissRequest = { showImageViewer.value = false }) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 4.dp
+                ) {
+                    ImageViewerScreen(
+                        image = ImageItem(
+                            title = "Мем",
+                            url = "https://example.com/meme.jpg"
+                        )
+                    )
+                }
+            }
+
+        }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -79,7 +109,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
             )
         },
         actions = {
-            IconButton(onClick = { /* Меню */ }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "Меню",
@@ -211,6 +241,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
         }
     }
 }
+
 
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)

@@ -1,5 +1,9 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.view.View
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -9,12 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.ViewModel
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
+import com.codekotliners.memify.features.viewer.presentation.ui.ImageBox
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -121,4 +127,23 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
             canvasElements[index] = element.copy(position = newPosition)
         }
     }
+
+    suspend fun createBitMap(context: Context, content: @Composable () -> Unit): Bitmap {
+        val width = imageWidth.toInt()
+        val height = imageHeight.toInt()
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        val composeView = ComposeView(context)
+        composeView.setContent {
+            content()
+        }
+        composeView.measure(
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+        )
+        composeView.layout(0, 0, width, height)
+        composeView.draw(canvas)
+        return bitmap
+    }
+
 }
