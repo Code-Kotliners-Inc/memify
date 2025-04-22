@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.login.presentation.ui
+package com.codekotliners.memify.features.auth.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,17 +41,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
-import com.codekotliners.memify.features.login.presentation.viewmodel.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController,
-    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginClicked: (String, String) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -90,13 +88,13 @@ fun LoginScreen(
                 modifier = Modifier.padding(bottom = 30.dp),
             )
 
-            LoginForm(onLoginClicked = { viewModel.onRegisterClicked() })
+            LoginForm(onLoginClicked = onLoginClicked)
         }
     }
 }
 
 @Composable
-fun LoginForm(onLoginClicked: () -> Unit) {
+fun LoginForm(onLoginClicked: (String, String) -> Unit) {
     var email by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
 
@@ -113,7 +111,9 @@ fun LoginForm(onLoginClicked: () -> Unit) {
         )
         PasswordField { password = it }
         Button(
-            onClick = { onLoginClicked() },
+            onClick = {
+                onLoginClicked(email.text, password.text)
+            },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -169,5 +169,5 @@ fun PasswordField(onTextChange: (TextFieldValue) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
-    LoginScreen(navController = NavHostController(LocalContext.current))
+    LoginScreen(navController = NavHostController(LocalContext.current), onLoginClicked = { _, _ -> })
 }
