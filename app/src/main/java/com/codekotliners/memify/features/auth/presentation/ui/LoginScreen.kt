@@ -85,7 +85,7 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = stringResource(R.string.security_icon),
-                modifier = Modifier.padding(bottom = 30.dp),
+                modifier = Modifier.padding(bottom = 30.dp).weight(0.5f),
             )
 
             LoginForm(onLoginClicked = onLoginClicked)
