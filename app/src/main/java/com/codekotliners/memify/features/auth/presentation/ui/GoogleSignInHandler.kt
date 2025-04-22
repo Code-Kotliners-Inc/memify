@@ -30,10 +30,10 @@ fun GoogleSignInHandler(
                 if (idToken != null) {
                     onTokenReceived(idToken)
                 } else {
-                    Toast.makeText(context, "ID токен не найден", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.id_token_not_found), Toast.LENGTH_SHORT).show()
                 }
             } catch (e: ApiException) {
-                Toast.makeText(context, "Google sign-in error: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.auth_error) + e.message, Toast.LENGTH_LONG).show()
             }
         }
 

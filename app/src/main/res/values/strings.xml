@@ -69,4 +69,7 @@
     <string name="change_photo_hint">change photo</string>
     <string name="name_blank">MemeMaker2011</string>
     <string name="login_error_message">Ошибка входа</string>
+    <string name="id_token_not_found">ID токен не найден</string>
+    <string name="auth_error">Ошибка авторизации:</string>
+    <string name="auth">Авторизация...</string>
 </resources>

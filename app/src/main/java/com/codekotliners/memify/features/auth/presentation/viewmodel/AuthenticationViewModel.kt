@@ -28,9 +28,6 @@ sealed class AuthState {
 class AuthenticationViewModel @Inject constructor(
     private val repository: AuthRepository,
 ) : ViewModel() {
-    private val _signInState = MutableStateFlow<Response<Boolean>?>(null)
-    val signInState: StateFlow<Response<Boolean>?> = _signInState
-
     private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
     val authState: StateFlow<AuthState> = _authState
 
@@ -83,15 +80,13 @@ class AuthenticationViewModel @Inject constructor(
     private fun handleAuthRequest(block: suspend () -> Response<Boolean>) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            _signInState.value = Response.Loading
 
-            _signInState.value =
-                try {
-                    block()
-                } catch (e: Exception) {
-                    _authState.value = AuthState.Error(e)
-                    Response.Failure(e)
-                }
+            try {
+                block()
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e)
+                Response.Failure(e)
+            }
 
             _authState.value =
                 if (repository.getCurrentUser() != null) {
@@ -104,7 +99,6 @@ class AuthenticationViewModel @Inject constructor(
 
     fun resetSignInState() {
         _authState.value = AuthState.Loading
-        _signInState.value = null
         _authState.value = AuthState.Unauthenticated
     }
 
