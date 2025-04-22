@@ -90,12 +90,11 @@ fun CreateScreen() {
         maxHeight = maxHeight,
         scrollBehavior = scrollBehavior,
     )
-
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateScreenBottomSheet (
+private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     minHeight: Dp,
@@ -152,13 +151,13 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 private fun CreateScreenContent(innerPadding: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
-    LazyColumn( // Добавлена прокрутка, так как на маленьком экране BottomSheet перекрывает InstrumentsTextBox
+    LazyColumn(
         modifier =
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(bottom = 80.dp)
+        contentPadding = PaddingValues(bottom = 80.dp),
     ) {
         item { ActionsRow(viewModel) }
         item {
@@ -166,8 +165,6 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -222,10 +219,8 @@ fun BottomSheetContent(bottomSheetState: SheetState, minHeight: Dp, maxHeight: D
                 modifier = Modifier.size(24.dp),
             )
         }
-
     }
 }
-
 
 @Composable
 private fun InteractiveCanvas(viewModel: CanvasViewModel) {
