@@ -1,7 +1,7 @@
-package com.codekotliners.memify.features.templates.di
+package com.codekotliners.memify.core.di
 
-import com.codekotliners.memify.features.templates.data.datasource.FirebaseDatasource
-import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
+import com.codekotliners.memify.core.data.datasource.FirebaseTemplatesDatasource
+import com.codekotliners.memify.core.data.datasource.TemplatesDatasource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,6 +12,6 @@ import dagger.hilt.android.components.ViewModelComponent
 abstract class DatasourceModule {
     @Binds
     abstract fun provideTemplateDatasource(
-        impl: FirebaseDatasource,
+        impl: FirebaseTemplatesDatasource,
     ): TemplatesDatasource
 }

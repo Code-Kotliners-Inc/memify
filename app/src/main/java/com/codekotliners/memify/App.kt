@@ -46,11 +46,11 @@ fun App(
         Column {
             NavHost(
                 navController,
-                startDestination = NavRoutes.Auth.route,
+                startDestination = NavRoutes.Home.route,
                 modifier = Modifier.weight(1f),
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
-                composable(NavRoutes.Create.route) { CreateScreen() }
+                composable(NavRoutes.Create.route) { CreateScreen(navController) }
                 composable(NavRoutes.Profile.route) { ProfileScreen() }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {

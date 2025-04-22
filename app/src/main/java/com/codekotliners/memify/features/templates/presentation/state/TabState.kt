@@ -2,8 +2,8 @@ package com.codekotliners.memify.features.templates.presentation.state
 
 import android.content.Context
 import androidx.annotation.StringRes
-import com.codekotliners.memify.features.templates.domain.entities.Template
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.Template
 
 sealed interface TabState {
     object Idle : TabState

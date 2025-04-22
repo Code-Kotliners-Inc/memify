@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.codekotliners.memify.features.templates.domain.entities.Template
+import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorTab
 import com.codekotliners.memify.features.templates.presentation.ui.components.LoadingTab

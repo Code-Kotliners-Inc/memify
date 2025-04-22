@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.templates.data.constants
+package com.codekotliners.memify.core.constants
 
 const val FIELD_TEMPLATE_NAME = "name"
 const val FIELD_TEMPLATE_URL = "url"

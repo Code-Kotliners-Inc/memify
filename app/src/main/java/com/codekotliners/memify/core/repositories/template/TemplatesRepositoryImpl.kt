@@ -1,76 +1,32 @@
 package com.codekotliners.memify.core.repositories.template
 
+import com.codekotliners.memify.core.data.datasource.TemplatesDatasource
 import com.codekotliners.memify.core.models.Template
-import com.codekotliners.memify.features.auth.domain.entities.Response
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
 class TemplatesRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
+    private val remoteDatasource: TemplatesDatasource,
 ) : TemplatesRepository {
-    override suspend fun getBestTemplates(): Response<List<Template>> {
-        try {
-            val result =
-                firestore
-                    .collection("templates")
-                    .orderBy("favouritesCount", Query.Direction.DESCENDING)
-                    .get()
-                    .await()
-
-            val templates = documentsToTemplates(result)
-
-            return Response.Success(templates)
-        } catch (e: Exception) {
-            return Response.Failure(e)
-        }
+    override suspend fun getBestTemplates(): Flow<List<Template>> {
+        val templates = remoteDatasource.getBestTemplates()
+        return flowOf(templates)
     }
 
-    override suspend fun getNewTemplates(limit: Int): Response<List<Template>> {
-        try {
-            val result =
-                firestore
-                    .collection("templates")
-                    .limit(limit.toLong())
-                    .get()
-                    .await()
-
-            val templates = documentsToTemplates(result)
-
-            return Response.Success(templates)
-        } catch (e: Exception) {
-            return Response.Failure(e)
-        }
+    override suspend fun getNewTemplates(): Flow<List<Template>> {
+        val templates = remoteDatasource.getNewTemplates()
+        return flowOf(templates)
     }
 
-    override suspend fun getFavouriteTemplates(userId: String): Response<List<Template>> {
-        try {
-            val result =
-                firestore
-                    .collection("templates")
-                    .whereArrayContains("favouritedBy", userId)
-                    .get()
-                    .await()
-            val templates = documentsToTemplates(result)
-
-            return Response.Success(templates)
-        } catch (e: Exception) {
-            return Response.Failure(e)
+    override suspend fun getFavouriteTemplates(): Flow<List<Template>> {
+        if (FirebaseAuth.getInstance().currentUser == null) {
+            throw IllegalStateException("User not logged in")
         }
-    }
 
-    private fun documentsToTemplates(result: QuerySnapshot): List<Template> {
-        val templates =
-            result.documents.mapNotNull { document ->
-                Template(
-                    id = document.getString("id").orEmpty(),
-                    name = document.getString("name").orEmpty(),
-                    templateUrl = document.getString("url").orEmpty(),
-                    favouritesCount = document.getString("favouritesCount")?.toIntOrNull() ?: 0,
-                )
-            }
-        return templates
+        val userId = FirebaseAuth.getInstance().currentUser!!.uid
+        val templates = remoteDatasource.getFavouriteTemplates(userId)
+        return flowOf(templates)
     }
 }

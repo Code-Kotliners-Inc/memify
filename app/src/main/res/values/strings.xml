@@ -81,7 +81,6 @@
 
     <string name="description_swipe_bottom_sheet">Свайп</string>
     <string name="choose_pattern">Выбрать шаблон</string>
-    <string name="cat_developer">Здесь был один из котиков-разрабов</string>
 
     <string name="network_errormessage">Ошибка во время загрузки. Проверьте подключение к сети</string>
     <string name="need_authenticated_message">Войдите в аккаунт чтобы воспользоваться этой функцией</string>

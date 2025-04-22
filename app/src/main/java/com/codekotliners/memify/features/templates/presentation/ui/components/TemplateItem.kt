@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -19,9 +17,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import com.codekotliners.memify.R
 import coil.request.ImageRequest
-import com.codekotliners.memify.features.templates.domain.entities.Template
+import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.Template
 
 @Composable
 fun TemplateItem(template: Template, onTemplateSelected: (Template) -> Unit) {
