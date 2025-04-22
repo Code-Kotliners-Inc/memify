@@ -11,35 +11,35 @@ class TemplatesFeedViewModel : ViewModel() {
     private val _tabStates =
         MutableStateFlow(
             mapOf(
-                Tabs.BEST to TabState.Content(List(8) { R.drawable.placeholder600x400 }),
-                Tabs.NEW to TabState.Loading,
-                Tabs.FAVOURITE to TabState.Error("No favourites yet"),
+                TemplatesFeedTabs.BEST to TemplateFeedTabState.Content(List(8) { R.drawable.placeholder600x400 }),
+                TemplatesFeedTabs.NEW to TemplateFeedTabState.Loading,
+                TemplatesFeedTabs.FAVOURITE to TemplateFeedTabState.Error("No favourites yet"),
             ),
         )
     val tabStates = _tabStates.asStateFlow()
 
-    private val _selectedTab = MutableStateFlow(Tabs.BEST)
-    val selectedTab: StateFlow<Tabs> = _selectedTab.asStateFlow()
+    private val _selectedTab = MutableStateFlow(TemplatesFeedTabs.BEST)
+    val selectedTab: StateFlow<TemplatesFeedTabs> = _selectedTab.asStateFlow()
 
-    fun selectTab(tab: Tabs) {
+    fun selectTab(tab: TemplatesFeedTabs) {
         _selectedTab.update { tab }
     }
 }
 
-enum class Tabs {
+enum class TemplatesFeedTabs {
     BEST,
     NEW,
     FAVOURITE,
 }
 
-sealed interface TabState {
-    data object Loading : TabState
+sealed interface TemplateFeedTabState {
+    data object Loading : TemplateFeedTabState
 
     data class Error(
         val message: String,
-    ) : TabState
+    ) : TemplateFeedTabState
 
     data class Content(
         val templates: List<Int>,
-    ) : TabState
+    ) : TemplateFeedTabState
 }
