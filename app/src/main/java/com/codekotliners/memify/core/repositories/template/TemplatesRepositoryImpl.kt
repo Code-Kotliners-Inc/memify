@@ -65,10 +65,10 @@ class TemplatesRepositoryImpl @Inject constructor(
         val templates =
             result.documents.mapNotNull { document ->
                 Template(
-                    templateId = document.getString("id") ?: "",
-                    name = document.getString("name") ?: "",
-                    templateUrl = document.getString("url") ?: "",
-                    favouritesCount = document.getString("favouritesCount")?.toInt() ?: 0,
+                    id = document.getString("id").orEmpty(),
+                    name = document.getString("name").orEmpty(),
+                    templateUrl = document.getString("url").orEmpty(),
+                    favouritesCount = document.getString("favouritesCount")?.toIntOrNull() ?: 0,
                 )
             }
         return templates
