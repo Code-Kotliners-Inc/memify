@@ -1,6 +1,10 @@
 package com.codekotliners.memify.features.auth.presentation.ui
 
+import android.content.Context
 import android.content.res.Configuration
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,6 +26,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -40,12 +47,51 @@ import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.registerButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthState
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
 
 @Composable
 fun AuthScreen(
     navController: NavController,
     viewModel: AuthenticationViewModel = hiltViewModel(),
+) {
+    val context = LocalContext.current
+    val authState by viewModel.authState.collectAsState()
+
+    val googleLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            viewModel.handleGoogleSignInResult(result)
+        }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> navController.navigateToHome()
+            is AuthState.Error -> showError(context, (authState as AuthState.Error).exception)
+            is AuthState.Loading -> {}
+            is AuthState.Unauthenticated -> {}
+        }
+    }
+
+    if (authState == AuthState.Unauthenticated) {
+        AuthScreenContent(
+            navController = navController,
+            onGoogleLauncherClick = { googleLauncher.launch(viewModel.getGoogleSignInIntent()) },
+            onVkLauncherClick = {},
+            onLogInWithGoogle = { tokenId -> viewModel.onLogInWithGoogle(tokenId) },
+        )
+    } else {
+        LoaderScreen()
+    }
+}
+
+@Composable
+fun AuthScreenContent(
+    navController: NavController,
+    onGoogleLauncherClick: () -> Unit,
+    onVkLauncherClick: () -> Unit,
+    onLogInWithGoogle: (String) -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,10 +124,11 @@ fun AuthScreen(
         ) {
             LogInMethods(
                 navController = navController,
-                onLogInWithGoogle = { viewModel.onLogInWithGoogle() },
-                onLogInWithMail = { viewModel.onLogInWithMail() },
-                onLogInWithVk = { viewModel.onLogInWithVk() },
+                onGoogleLauncherClick = onGoogleLauncherClick,
+                onVkLauncherClick = onVkLauncherClick,
             )
+
+            GoogleSignInHandler { tokenId -> onLogInWithGoogle(tokenId) }
         }
     }
 }
@@ -89,9 +136,8 @@ fun AuthScreen(
 @Composable
 fun LogInMethods(
     navController: NavController,
-    onLogInWithGoogle: () -> Unit,
-    onLogInWithMail: () -> Unit,
-    onLogInWithVk: () -> Unit,
+    onGoogleLauncherClick: () -> Unit,
+    onVkLauncherClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,33 +149,25 @@ fun LogInMethods(
             text = stringResource(R.string.login_google_button),
             icon = painterResource(id = R.drawable.google_icon),
             buttonColor = LocalExtraColors.current.authButtons.google,
-            onClick = {
-                onLogInWithGoogle()
-            },
+            onClick = onGoogleLauncherClick,
         )
 
         AuthButton(
             text = stringResource(R.string.login_vk_button),
             icon = painterResource(id = R.drawable.vk_icon),
             buttonColor = LocalExtraColors.current.authButtons.vk,
-            onClick = {
-                onLogInWithVk()
-            },
+            onClick = onVkLauncherClick,
         )
 
         AuthButton(
             text = stringResource(R.string.login_mail_button),
             icon = painterResource(id = R.drawable.mail_icon),
             buttonColor = LocalExtraColors.current.authButtons.mail,
-            onClick = {
-                onLogInWithMail()
-            },
+            onClick = { navController.navigateToEmailLogin() },
         )
 
         NoAccountSection(
-            onRegisterClick = {
-                navController.navigate(NavRoutes.Register.route)
-            },
+            onRegisterClick = { navController.navigateToRegister() },
         )
     }
 }
@@ -192,6 +230,30 @@ fun AuthButton(
             )
         }
     }
+}
+
+private fun NavController.navigateToHome() {
+    navigate(NavRoutes.Home.route) {
+        popUpTo(NavRoutes.Auth.route) {
+            inclusive = true
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+private fun NavController.navigateToEmailLogin() = navigate(NavRoutes.Login.route)
+
+private fun NavController.navigateToRegister() = navigate(NavRoutes.Register.route)
+
+private fun showError(context: Context, error: Throwable) {
+    Toast
+        .makeText(
+            context,
+            context.getString(R.string.login_error_message),
+            Toast.LENGTH_LONG,
+        ).show()
 }
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
