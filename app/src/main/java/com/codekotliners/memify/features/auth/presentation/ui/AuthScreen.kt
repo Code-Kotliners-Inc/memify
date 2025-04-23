@@ -104,22 +104,20 @@ fun AuthScreenContent(
         Box(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = null,
                 modifier =
                     Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
             )
         }
         Box(
             modifier =
                 Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                    .fillMaxWidth(),
             contentAlignment = Alignment.Center,
         ) {
             LogInMethods(
