@@ -26,10 +26,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -53,14 +49,10 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -81,7 +73,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.core.theme.MaterialSymbols
+import com.codekotliners.memify.core.theme.MaterialIcons
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
@@ -262,9 +254,10 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         LongPressMenu(viewModel) // вот здесь — покрывает весь экран
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -299,7 +292,6 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
     }
 }
 
-
 @Composable
 fun InteractiveImageBox(viewModel: CanvasViewModel) {
     Box(
@@ -322,9 +314,9 @@ fun InteractiveImageBox(viewModel: CanvasViewModel) {
                             } else {
                                 viewModel.showRadialMenu = false
                             }
-                        }
+                        },
                     )
-                }
+                },
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
@@ -363,60 +355,65 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
     val radius = 150.dp
-    val options = listOf(
-        Icons.Filled.Create to "Режим рисования",
-        Icons.Filled.Add to "Режим текста"
-    )
+
+    val options =
+        listOf(
+            "\uE3C9" to "Рисовать",
+            "\uE262" to "Текст",
+        )
 
     val isLeftSide = viewModel.radialMenuPosition.x < screenWidthPx / 2
-
     val angles = if (isLeftSide) listOf(0f, 300f) else listOf(180f, 240f)
 
     AnimatedVisibility(visible = viewModel.showRadialMenu, exit = fadeOut(tween(50))) {
         Popup(
             onDismissRequest = { viewModel.showRadialMenu = false },
             alignment = Alignment.TopStart,
-            offset = IntOffset(
-                viewModel.radialMenuPosition.x.toInt(),
-                viewModel.radialMenuPosition.y.toInt()
-            ),
+            offset =
+                IntOffset(
+                    viewModel.radialMenuPosition.x.toInt(),
+                    viewModel.radialMenuPosition.y.toInt(),
+                ),
             properties = PopupProperties(focusable = true),
         ) {
             Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .padding(40.dp)
+                modifier =
+                    Modifier
+                        .size(160.dp)
+                        .padding(50.dp),
             ) {
-                options.forEachIndexed { index, (icon, description) ->
+                options.forEachIndexed { index, (iconText, description) ->
                     val angle = angles[index] * (PI / 180).toFloat()
                     val offsetX = (cos(angle) * radius.value).roundToInt()
                     val offsetY = (sin(angle) * radius.value).roundToInt()
 
                     Box(
-                        modifier = Modifier
-                            .offset { IntOffset(offsetX, offsetY) }
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(Color.Black)
-                            .clickable {
-                                when (index) {
-                                    0 -> {
-                                        viewModel.clearModes()
-                                        viewModel.iAmAPainterGodDamnIt = true
+                        modifier =
+                            Modifier
+                                .offset { IntOffset(offsetX, offsetY) }
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.background)
+                                .clickable {
+                                    when (index) {
+                                        0 -> {
+                                            viewModel.clearModes()
+                                            viewModel.iAmAPainterGodDamnIt = true
+                                        }
+                                        1 -> {
+                                            viewModel.startWriting()
+                                        }
                                     }
-                                    1 -> {
-                                        viewModel.startWriting()
-                                    }
+                                    viewModel.showRadialMenu = false
                                 }
-                                viewModel.showRadialMenu = false
-                            }
-                            .padding(10.dp),
+                                .padding(10.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = description,
-                            tint = Color.White
+                        Text(
+                            text = iconText,
+                            fontFamily = MaterialIcons,
+                            fontSize = 28.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
@@ -424,8 +421,6 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
         }
     }
 }
-
-
 
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
