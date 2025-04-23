@@ -354,10 +354,11 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
 
     val radius = 150.dp
 
-    val options = listOf(
-        "\uE3C9" to "Рисовать",
-        "\uE262" to "Текст",
-    )
+    val options =
+        listOf(
+            "\uE3C9" to "Рисовать",
+            "\uE262" to "Текст",
+        )
 
     val isLeftSide = viewModel.radialMenuPosition.x < screenWidthPx / 2
     val angles = if (isLeftSide) listOf(0f, 300f) else listOf(180f, 240f)
@@ -366,23 +367,25 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
         Popup(
             onDismissRequest = { viewModel.showRadialMenu = false },
             alignment = Alignment.TopStart,
-            offset = IntOffset(
-                viewModel.radialMenuPosition.x.toInt(),
-                viewModel.radialMenuPosition.y.toInt()
-            ),
+            offset =
+                IntOffset(
+                    viewModel.radialMenuPosition.x.toInt(),
+                    viewModel.radialMenuPosition.y.toInt(),
+                ),
             properties = PopupProperties(focusable = true),
         ) {
             Box(
-                modifier = Modifier
-                    .size(160.dp)
-                    .padding(50.dp)
+                modifier =
+                    Modifier
+                        .size(160.dp)
+                        .padding(50.dp),
             ) {
                 options.forEachIndexed { index, (iconText, _) ->
                     val angle = angles[index] * (PI / 180).toFloat()
                     RadialMenuIcon(
                         iconText = iconText,
                         angle = angle,
-                        radius = radius
+                        radius = radius,
                     ) {
                         when (index) {
                             0 -> {
@@ -406,30 +409,30 @@ private fun RadialMenuIcon(
     iconText: String,
     angle: Float,
     radius: Dp,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val offsetX = (cos(angle) * radius.value).roundToInt()
     val offsetY = (sin(angle) * radius.value).roundToInt()
 
     Box(
-        modifier = Modifier
-            .offset { IntOffset(offsetX, offsetY) }
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.background)
-            .clickable { onClick() }
-            .padding(10.dp),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .offset { IntOffset(offsetX, offsetY) }
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.background)
+                .clickable { onClick() }
+                .padding(10.dp),
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = iconText,
             fontFamily = MaterialIcons,
             fontSize = 28.sp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
-
 
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
