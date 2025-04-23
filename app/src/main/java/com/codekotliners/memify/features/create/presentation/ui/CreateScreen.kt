@@ -2,9 +2,12 @@ package com.codekotliners.memify.features.create.presentation.ui
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +19,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -43,9 +51,17 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,8 +71,11 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
@@ -67,6 +86,10 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -231,60 +254,73 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         viewModel.imageHeight = imageHeight
     }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        // TO REMOVE
-        Row {
-            Button(onClick = {
-                viewModel.iAmAPainterGodDamnIt = !viewModel.iAmAPainterGodDamnIt
-                viewModel.iAmAWriterGodDamnIt = false
-            }) { Text("paint") }
-            Button(onClick = {
-                viewModel.iAmAWriterGodDamnIt = !viewModel.iAmAWriterGodDamnIt
-                viewModel.iAmAPainterGodDamnIt = false
-            }) { Text("write") }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        LongPressMenu(viewModel) // вот здесь — покрывает весь экран
 
-        ImageBox(viewModel)
-
-        if (viewModel.isWriting) {
-            TextInputDialog(viewModel)
-        }
-
-        AnimatedVisibility(
-            visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            InstrumentsTextBox()
-        }
+            Row {
+                Button(onClick = {
+                    viewModel.clearModes()
+                    viewModel.iAmAPainterGodDamnIt = true
+                }) { Text("paint") }
+                Button(onClick = {
+                    viewModel.startWriting()
+                }) { Text("write") }
+            }
 
-        AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
-            DrawingRow(viewModel)
-        }
+            InteractiveImageBox(viewModel)
 
-        AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
-            TextEditingRow(viewModel)
+            if (viewModel.isWriting) {
+                TextInputDialog(viewModel)
+            }
+
+            AnimatedVisibility(!viewModel.iAmAPainterGodDamnIt && !viewModel.iAmAWriterGodDamnIt) {
+                InstrumentsTextBox()
+            }
+
+            AnimatedVisibility(viewModel.iAmAPainterGodDamnIt) {
+                DrawingRow(viewModel)
+            }
+
+            AnimatedVisibility(viewModel.iAmAWriterGodDamnIt) {
+                TextEditingRow(viewModel)
+            }
         }
     }
 }
 
+
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel) {
+fun InteractiveImageBox(viewModel: CanvasViewModel) {
     Box(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
-                .then(
-                    if (viewModel.iAmAWriterGodDamnIt) {
-                        Modifier.clickable(onClick = { viewModel.startWriting() })
-                    } else {
-                        Modifier
-                    },
-                ),
+                .pointerInput(viewModel.iAmAWriterGodDamnIt, viewModel.isWriting) {
+                    detectTapGestures(
+                        onLongPress = { offset ->
+                            if (!viewModel.isWriting) {
+                                viewModel.showRadialMenu = true
+                                viewModel.radialMenuPosition = offset
+                            }
+                        },
+                        onTap = {
+                            if (viewModel.iAmAWriterGodDamnIt && !viewModel.isWriting) {
+                                viewModel.startWriting()
+                            } else {
+                                viewModel.showRadialMenu = false
+                            }
+                        }
+                    )
+                }
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
@@ -315,6 +351,66 @@ private fun ImageBox(viewModel: CanvasViewModel) {
         }
     }
 }
+
+@Composable
+fun LongPressMenu(viewModel: CanvasViewModel) {
+    val radius = 100.dp
+
+    val options = listOf(
+        Icons.Filled.Edit to "Режим рисования",
+        Icons.Filled.Add to "Режим текста"
+    )
+
+    AnimatedVisibility(visible = viewModel.showRadialMenu, exit = fadeOut(tween(50))) {
+        Popup(
+            onDismissRequest = { viewModel.showRadialMenu = false },
+            alignment = Alignment.TopStart,
+            offset = IntOffset(
+                viewModel.radialMenuPosition.x.toInt(),
+                viewModel.radialMenuPosition.y.toInt()
+            ),
+            properties = PopupProperties(focusable = true),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(83.dp)
+                    .padding(15.dp)
+            ) {
+                options.forEachIndexed { index, (icon, description) ->
+                    val angle = (index * (-360 / options.size)) * (PI / 180).toFloat()
+                    val offsetX = (cos(angle) * radius.value).roundToInt()
+                    val offsetY = (sin(angle) * radius.value).roundToInt()
+
+                    Box(
+                        modifier = Modifier
+                            .offset { IntOffset(offsetX, offsetY) }
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .background(Color.Black, CircleShape)
+                            .clickable {
+                                when (index) {
+                                    0 -> {
+                                        viewModel.clearModes()
+                                        viewModel.iAmAPainterGodDamnIt = true
+                                    }
+                                    1 -> {
+                                        viewModel.startWriting()
+                                    }
+                                }
+                                viewModel.showRadialMenu = false
+                            }
+                            .padding(15.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)

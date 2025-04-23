@@ -46,7 +46,7 @@ fun App(
         Column {
             NavHost(
                 navController,
-                startDestination = NavRoutes.Auth.route,
+                startDestination = NavRoutes.Create.route,
                 modifier = Modifier.weight(1f),
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }

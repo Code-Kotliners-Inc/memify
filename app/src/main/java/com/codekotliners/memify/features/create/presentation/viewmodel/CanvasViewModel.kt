@@ -47,6 +47,9 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     var iAmAPainterGodDamnIt by mutableStateOf(false)
     var iAmAWriterGodDamnIt by mutableStateOf(false)
 
+    var showRadialMenu by mutableStateOf(false)
+    var radialMenuPosition by mutableStateOf(Offset.Zero)
+
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
     }
@@ -66,8 +69,21 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun startWriting() {
+        clearModes()
+        iAmAWriterGodDamnIt = true
         isWriting = true
+        showTextPreview = true
         currentText = ""
+    }
+
+    fun clearModes() {
+        iAmAPainterGodDamnIt = false
+        iAmAWriterGodDamnIt = false
+        isWriting = false
+        showTextPreview = false
+        showColors = false
+        showFonts = false
+        showWeights = false
     }
 
     fun clearCanvas() {
