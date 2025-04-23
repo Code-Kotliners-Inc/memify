@@ -2,7 +2,7 @@
 
 set -e
 
-EDITOR_OPTION="--editorconfig=./.editorconfig"
+EDITORCONFIG_PATH_OPTION="--editorconfig=./.editorconfig"
 ROOT_FOLDER=build/bin
 VERSION=1.5.0
 KTLINT_BIN=$ROOT_FOLDER/ktlint-$VERSION
@@ -15,13 +15,13 @@ if [ ! -f "$KTLINT_BIN" ]; then
 fi
 if [ $CI ]; then
   export REVIEWDOG_GITHUB_API_TOKEN="${GITHUB_TOKEN}"
-  $KTLINT_BIN --color "$EDITOR_OPTION" --reporter=checkstyle |
+  $KTLINT_BIN --color "$EDITORCONFIG_PATH_OPTION" --reporter=checkstyle |
     reviewdog -f=checkstyle \
       -name="ktlint" \
       -reporter="github-pr-review" \
-      -fail-on-error="true"
+      -fail-level=error
 else
-  $KTLINT_BIN --color "$@" "$EDITOR_OPTION"
+  $KTLINT_BIN --color "$@" "$EDITORCONFIG_PATH_OPTION"
 fi
 
 echo "Done!"
