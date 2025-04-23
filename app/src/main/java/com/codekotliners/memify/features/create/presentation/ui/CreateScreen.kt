@@ -9,14 +9,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -33,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -45,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -88,7 +86,7 @@ fun CreateScreen(navController: NavHostController) {
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
         scrollBehavior = scrollBehavior,
-        {},
+        {}, // FIX: pass lambda to accept Template
         { navController.navigate(NavRoutes.Auth.route) },
     )
 }
@@ -106,18 +104,21 @@ private fun CreateScreenBottomSheet(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
-        sheetContent = { TemplatesFeedScreen(onLoginClick, onTemplateClick) },
+        sheetContent = {
+            TemplatesFeedScreen(onLoginClick, onTemplateClick)
+        },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .navigationBarsPadding()
-                    .padding(WindowInsets.navigationBars.asPaddingValues()),
-        ) {
-            CreateScreenContent()
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(bottom = 48.dp),
+    ) { innerPadding ->
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = { CreateScreenTopBar(scrollBehavior) },
+        ) { scaffoldInnerPadding ->
+            CreateScreenContent(scaffoldInnerPadding)
         }
     }
 }
@@ -152,12 +153,14 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 }
 
 @Composable
-private fun CreateScreenContent() {
+private fun CreateScreenContent(paddingValues: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
     LazyColumn(
         modifier =
-            Modifier.fillMaxSize(),
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = 80.dp),
     ) {
