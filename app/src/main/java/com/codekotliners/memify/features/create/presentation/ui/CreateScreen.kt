@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -29,7 +33,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -42,7 +45,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -73,8 +75,6 @@ import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeed
 @Composable
 fun CreateScreen(navController: NavHostController) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val minHeight = 800.dp
-    val maxHeight = 900.dp
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
@@ -109,12 +109,15 @@ private fun CreateScreenBottomSheet(
         sheetContent = { TemplatesFeedScreen(onLoginClick, onTemplateClick) },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
-    ) { innerPadding ->
-        Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = { CreateScreenTopBar(scrollBehavior) },
-        ) { scaffoldInnerPadding ->
-            CreateScreenContent(scaffoldInnerPadding)
+    ) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .navigationBarsPadding()
+                    .padding(WindowInsets.navigationBars.asPaddingValues()),
+        ) {
+            CreateScreenContent()
         }
     }
 }
@@ -149,14 +152,12 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues) {
+private fun CreateScreenContent() {
     val viewModel: CanvasViewModel = hiltViewModel()
 
     LazyColumn(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = 80.dp),
     ) {
