@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -63,6 +64,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -78,6 +81,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.theme.MaterialSymbols
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
@@ -354,12 +358,19 @@ fun InteractiveImageBox(viewModel: CanvasViewModel) {
 
 @Composable
 fun LongPressMenu(viewModel: CanvasViewModel) {
-    val radius = 100.dp
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
+    val radius = 150.dp
     val options = listOf(
-        Icons.Filled.Edit to "Режим рисования",
+        Icons.Filled.Create to "Режим рисования",
         Icons.Filled.Add to "Режим текста"
     )
+
+    val isLeftSide = viewModel.radialMenuPosition.x < screenWidthPx / 2
+
+    val angles = if (isLeftSide) listOf(0f, 300f) else listOf(180f, 240f)
 
     AnimatedVisibility(visible = viewModel.showRadialMenu, exit = fadeOut(tween(50))) {
         Popup(
@@ -373,11 +384,11 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(83.dp)
-                    .padding(15.dp)
+                    .size(160.dp)
+                    .padding(40.dp)
             ) {
                 options.forEachIndexed { index, (icon, description) ->
-                    val angle = (index * (-360 / options.size)) * (PI / 180).toFloat()
+                    val angle = angles[index] * (PI / 180).toFloat()
                     val offsetX = (cos(angle) * radius.value).roundToInt()
                     val offsetY = (sin(angle) * radius.value).roundToInt()
 
@@ -386,7 +397,7 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
                             .offset { IntOffset(offsetX, offsetY) }
                             .size(50.dp)
                             .clip(CircleShape)
-                            .background(Color.Black, CircleShape)
+                            .background(Color.Black)
                             .clickable {
                                 when (index) {
                                     0 -> {
@@ -399,10 +410,14 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
                                 }
                                 viewModel.showRadialMenu = false
                             }
-                            .padding(15.dp),
+                            .padding(10.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Icon(imageVector = icon, contentDescription = description, tint = Color.White)
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = description,
+                            tint = Color.White
+                        )
                     }
                 }
             }
