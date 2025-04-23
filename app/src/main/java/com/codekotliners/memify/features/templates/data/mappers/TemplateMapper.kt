@@ -1,9 +1,9 @@
-package com.codekotliners.memify.core.data.mappers
+package com.codekotliners.memify.features.templates.data.mappers
 
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_HEIGHT
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_NAME
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_URL
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_WIDTH
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_HEIGHT
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_NAME
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_URL
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_WIDTH
 import com.codekotliners.memify.core.models.Template
 import com.google.firebase.firestore.DocumentSnapshot
 

@@ -1,7 +1,7 @@
-package com.codekotliners.memify.core.di
+package com.codekotliners.memify.features.templates.di
 
-import com.codekotliners.memify.core.repositories.template.TemplatesRepositoryImpl
-import com.codekotliners.memify.core.repositories.template.TemplatesRepository
+import com.codekotliners.memify.features.templates.data.repository.TemplatesRepositoryImpl
+import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

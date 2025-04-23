@@ -1,12 +1,13 @@
-package com.codekotliners.memify.core.data.datasource
+package com.codekotliners.memify.features.templates.data.datasource
 
+import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
+import com.codekotliners.memify.features.templates.data.mappers.toTemplate
 import com.codekotliners.memify.core.logger.Logger
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_CREATED_AT
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_FAVOURITED_BY_COUNT
-import com.codekotliners.memify.core.constants.FIELD_TEMPLATE_USED_COUNT
-import com.codekotliners.memify.core.constants.TEMPLATES_COLLECTION_NAME
-import com.codekotliners.memify.core.data.mappers.toTemplate
 import com.codekotliners.memify.core.models.Template
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_CREATED_AT
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_FAVOURITED_BY_COUNT
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_USED_COUNT
+import com.codekotliners.memify.features.templates.data.constants.TEMPLATES_COLLECTION_NAME
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore

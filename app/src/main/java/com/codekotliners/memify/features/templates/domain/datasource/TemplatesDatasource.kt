@@ -1,4 +1,4 @@
-package com.codekotliners.memify.core.data.datasource
+package com.codekotliners.memify.features.templates.domain.datasource
 
 import com.codekotliners.memify.core.models.Template
 

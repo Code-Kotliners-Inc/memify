@@ -1,7 +1,8 @@
-package com.codekotliners.memify.core.repositories.template
+package com.codekotliners.memify.features.templates.data.repository
 
-import com.codekotliners.memify.core.data.datasource.TemplatesDatasource
+import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.core.models.Template
+import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

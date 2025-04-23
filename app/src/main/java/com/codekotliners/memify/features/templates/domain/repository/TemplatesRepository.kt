@@ -1,4 +1,4 @@
-package com.codekotliners.memify.core.repositories.template
+package com.codekotliners.memify.features.templates.domain.repository
 
 import com.codekotliners.memify.core.models.Template
 import kotlinx.coroutines.flow.Flow

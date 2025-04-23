@@ -2,7 +2,7 @@ package com.codekotliners.memify.features.templates.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codekotliners.memify.core.repositories.template.TemplatesRepository
+import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 import com.codekotliners.memify.features.templates.presentation.state.Tab
 import com.codekotliners.memify.features.templates.presentation.state.TabState
