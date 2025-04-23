@@ -48,8 +48,6 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -94,7 +92,8 @@ fun CreateScreen() {
     val minHeight = 800.dp
     val maxHeight = 900.dp
 
-    val bottomSheetState = rememberStandardBottomSheetState(
+    val bottomSheetState =
+        rememberStandardBottomSheetState(
             initialValue = SheetValue.PartiallyExpanded,
             confirmValueChange = { newValue ->
                 newValue != SheetValue.Hidden
@@ -156,7 +155,8 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
                 )
             }
         },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        colors =
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surface,
                 titleContentColor = MaterialTheme.colorScheme.onSurface,
             ),
@@ -169,7 +169,8 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
     LazyColumn(
-        modifier = Modifier
+        modifier =
+            Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -186,7 +187,8 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
 @Composable
 fun BottomSheetHandle(bottomSheetState: SheetState) {
     Column(
-        modifier = Modifier
+        modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
                 .height(54.dp),
@@ -250,7 +252,8 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         LongPressMenu(viewModel) // вот здесь — покрывает весь экран
 
         Column(
-            modifier = Modifier
+            modifier =
+                Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -290,7 +293,8 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 @Composable
 fun InteractiveImageBox(viewModel: CanvasViewModel) {
     Box(
-        modifier = Modifier
+        modifier =
+            Modifier
                 .fillMaxWidth()
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
@@ -323,7 +327,8 @@ fun InteractiveImageBox(viewModel: CanvasViewModel) {
 
         if (viewModel.showTextPreview) {
             Box(
-                modifier = Modifier
+                modifier =
+                    Modifier
                         .fillMaxSize()
                         .wrapContentSize(Alignment.Center),
             ) {
@@ -362,14 +367,16 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
         Popup(
             onDismissRequest = { viewModel.showRadialMenu = false },
             alignment = Alignment.TopStart,
-            offset = IntOffset(
+            offset =
+                IntOffset(
                     viewModel.radialMenuPosition.x.toInt(),
                     viewModel.radialMenuPosition.y.toInt(),
                 ),
             properties = PopupProperties(focusable = true),
         ) {
             Box(
-                modifier = Modifier
+                modifier =
+                    Modifier
                         .size(160.dp)
                         .padding(50.dp),
             ) {
@@ -379,7 +386,8 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
                     val offsetY = (sin(angle) * radius.value).roundToInt()
 
                     Box(
-                        modifier = Modifier
+                        modifier =
+                            Modifier
                                 .offset { IntOffset(offsetX, offsetY) }
                                 .size(48.dp)
                                 .clip(CircleShape)
