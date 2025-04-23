@@ -2,6 +2,7 @@
 
 set -e
 
+EDITOR_OPTION=--editorconfig=./.editorconfig
 ROOT_FOLDER=build/bin
 VERSION=1.5.0
 KTLINT_BIN=$ROOT_FOLDER/ktlint-$VERSION
@@ -18,9 +19,10 @@ if [ $CI ]; then
     reviewdog -f=checkstyle \
       -name="ktlint" \
       -reporter="github-pr-review" \
-      -fail-on-error="true"
+      -fail-on-error="true" \
+      "$EDITOR_OPTION"
 else
-  $KTLINT_BIN --color "$@"
+  $KTLINT_BIN --color "$@" "$EDITOR_OPTION"
 fi
 
 echo "Done!"
