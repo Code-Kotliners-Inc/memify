@@ -403,8 +403,7 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
                                         }
                                     }
                                     viewModel.showRadialMenu = false
-                                }
-                                .padding(10.dp),
+                                }.padding(10.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
