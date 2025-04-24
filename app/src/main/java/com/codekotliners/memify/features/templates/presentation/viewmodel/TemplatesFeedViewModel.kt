@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -62,14 +61,10 @@ class TemplatesFeedViewModel @Inject constructor(
 
         viewModelScope.launch {
             val dataFlow =
-                try {
-                    when (tab) {
-                        Tab.BEST -> repository.getBestTemplates()
-                        Tab.NEW -> repository.getNewTemplates()
-                        Tab.FAVOURITE -> repository.getFavouriteTemplates()
-                    }
-                } catch (e: Exception) {
-                    flow { throw e }
+                when (tab) {
+                    Tab.BEST -> repository.getBestTemplates()
+                    Tab.NEW -> repository.getNewTemplates()
+                    Tab.FAVOURITE -> repository.getFavouriteTemplates()
                 }
 
             dataFlow
