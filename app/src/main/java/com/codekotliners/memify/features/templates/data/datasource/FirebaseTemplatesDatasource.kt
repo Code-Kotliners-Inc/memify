@@ -12,6 +12,8 @@ import com.codekotliners.memify.features.templates.domain.datasource.TemplatesTy
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -19,7 +21,7 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
     private val db = Firebase.firestore
     private val templatesCollection = db.collection(TEMPLATES_COLLECTION_NAME)
 
-    override suspend fun getFilteredTemplates(type: TemplatesType): List<Template> {
+    override suspend fun getFilteredTemplates(type: TemplatesType): Flow<Template> {
         val queryByType =
             when (type) {
                 is TemplatesType.BEST -> queryBest()
@@ -30,17 +32,18 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
         return fetchTemplates(queryByType)
     }
 
-    private suspend fun fetchTemplates(query: Query): List<Template> {
-        val snap = query.get().await()
-        return snap.documents.mapNotNull { doc ->
-            try {
-                doc.toTemplate()
-            } catch (e: Exception) {
-                Logger.log(Logger.Level.ERROR, "Templates parsing", "Error parsing template: ${doc.id} ${e.message}")
-                null
+    private fun fetchTemplates(query: Query): Flow<Template> =
+        flow {
+            val snap = query.get().await()
+            snap.documents.forEach { doc ->
+                try {
+                    emit(doc.toTemplate())
+                } catch (e: Exception) {
+                    Logger.log(Logger.Level.ERROR, "Templates parsing", "For document: ${doc.id} ${e.message}")
+                    null
+                }
             }
         }
-    }
 
     private fun queryNew(): Query {
         return templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)

@@ -1,5 +1,7 @@
 package com.codekotliners.memify.features.templates.presentation.state
 
+import com.codekotliners.memify.core.models.Template
+
 data class TemplatesPageState(
     val selectedTab: Tab,
     val bestTemplatesState: TabState = TabState.Idle,
@@ -15,10 +17,32 @@ data class TemplatesPageState(
             Tab.FAVOURITE -> favouriteTemplatesState
         }
 
-    fun updatedCurrentTabState(newState: TabState): TemplatesPageState =
-        when (selectedTab) {
+    fun currentContent(state: TabState): List<Template> {
+        return when (state) {
+            is TabState.Idle -> emptyList<Template>()
+            is TabState.Loading -> emptyList<Template>()
+            is TabState.Error -> emptyList<Template>()
+            is TabState.Content -> {
+                return state.templates
+            }
+            is TabState.Empty -> emptyList<Template>()
+        }
+    }
+
+    fun updatedCurrentTabState(newState: TabState): TemplatesPageState {
+        return when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = newState)
             Tab.NEW -> copy(newTemplatesState = newState)
             Tab.FAVOURITE -> copy(favouriteTemplatesState = newState)
         }
+    }
+
+    fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
+        val updatedContent = { currentState: TabState -> TabState.Content(currentContent(currentState) + newTemplate) }
+        return when (selectedTab) {
+            Tab.BEST -> copy(bestTemplatesState = updatedContent(bestTemplatesState))
+            Tab.NEW -> copy(newTemplatesState = updatedContent(newTemplatesState))
+            Tab.FAVOURITE -> copy(favouriteTemplatesState = updatedContent(favouriteTemplatesState))
+        }
+    }
 }
