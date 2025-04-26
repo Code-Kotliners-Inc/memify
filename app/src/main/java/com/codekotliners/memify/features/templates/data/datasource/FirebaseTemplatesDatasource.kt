@@ -45,15 +45,12 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
             }
         }
 
-    private fun queryNew(): Query {
-        return templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
-    }
+    private fun queryNew(): Query =
+        templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
 
-    private fun queryBest(): Query {
-        return templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
-    }
+    private fun queryBest(): Query =
+        templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
 
-    private fun queryFavourites(userId: String): Query {
-        return templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
-    }
+    private fun queryFavourites(userId: String): Query =
+        templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
 }

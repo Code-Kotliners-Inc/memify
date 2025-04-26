@@ -12,13 +12,11 @@ import javax.inject.Inject
 class TemplatesRepositoryImpl @Inject constructor(
     private val remoteDatasource: TemplatesDatasource,
 ) : TemplatesRepository {
-    override suspend fun getBestTemplates(): Flow<Template> {
-        return remoteDatasource.getFilteredTemplates(TemplatesType.BEST())
-    }
+    override suspend fun getBestTemplates(): Flow<Template> =
+        remoteDatasource.getFilteredTemplates(TemplatesType.BEST())
 
-    override suspend fun getNewTemplates(): Flow<Template> {
-        return remoteDatasource.getFilteredTemplates(TemplatesType.NEW())
-    }
+    override suspend fun getNewTemplates(): Flow<Template> =
+        remoteDatasource.getFilteredTemplates(TemplatesType.NEW())
 
     override suspend fun getFavouriteTemplates(): Flow<Template> {
         if (FirebaseAuth.getInstance().currentUser == null) {

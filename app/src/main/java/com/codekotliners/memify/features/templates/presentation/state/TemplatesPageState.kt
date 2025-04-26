@@ -29,13 +29,12 @@ data class TemplatesPageState(
         }
     }
 
-    fun updatedCurrentTabState(newState: TabState): TemplatesPageState {
-        return when (selectedTab) {
+    fun updatedCurrentTabState(newState: TabState): TemplatesPageState =
+        when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = newState)
             Tab.NEW -> copy(newTemplatesState = newState)
             Tab.FAVOURITE -> copy(favouriteTemplatesState = newState)
         }
-    }
 
     fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
         val updatedContent = { currentState: TabState -> TabState.Content(currentContent(currentState) + newTemplate) }
