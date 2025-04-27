@@ -100,7 +100,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.google.firebase.crashlytics)
-    implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation(libs.firebase.storage)
+    implementation(libs.play.services.auth)
 }
 
 vkompose {
