@@ -46,8 +46,7 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
                         } else {
                             Modifier
                         },
-                    )
-                    .drawWithCache {
+                    ).drawWithCache {
                         val lines = elements.filterIsInstance<ColoredLine>()
                         val currentPath = if (currentLine.size > 1) createDrawingLinePath(currentLine) else null
 
