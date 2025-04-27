@@ -3,7 +3,7 @@ package com.codekotliners.memify.features.create.presentation.ui
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,6 +65,7 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Actio
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
+import com.codekotliners.memify.features.create.presentation.ui.components.LongPressMenu
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
@@ -205,60 +207,73 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         viewModel.imageHeight = imageHeight
     }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        // TO REMOVE
-        Row {
-            Button(onClick = {
-                viewModel.iAmAPainterGodDamnIt = !viewModel.iAmAPainterGodDamnIt
-                viewModel.iAmAWriterGodDamnIt = false
-            }) { Text("paint") }
-            Button(onClick = {
-                viewModel.iAmAWriterGodDamnIt = !viewModel.iAmAWriterGodDamnIt
-                viewModel.iAmAPainterGodDamnIt = false
-            }) { Text("write") }
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        LongPressMenu(viewModel)
 
-        ImageBox(viewModel)
-
-        if (viewModel.isWriting) {
-            TextInputDialog(viewModel)
-        }
-
-        AnimatedVisibility(
-            visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            InstrumentsTextBox()
-        }
+            Row {
+                Button(onClick = {
+                    viewModel.clearModes()
+                    viewModel.iAmAPainterGodDamnIt = true
+                }) { Text("paint") }
+                Button(onClick = {
+                    viewModel.startWriting()
+                }) { Text("write") }
+            }
 
-        AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
-            DrawingRow(viewModel)
-        }
+            InteractiveImageBox(viewModel)
 
-        AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
-            TextEditingRow(viewModel)
+            if (viewModel.isWriting) {
+                TextInputDialog(viewModel)
+            }
+
+            AnimatedVisibility(!viewModel.iAmAPainterGodDamnIt && !viewModel.iAmAWriterGodDamnIt) {
+                InstrumentsTextBox()
+            }
+
+            AnimatedVisibility(viewModel.iAmAPainterGodDamnIt) {
+                DrawingRow(viewModel)
+            }
+
+            AnimatedVisibility(viewModel.iAmAWriterGodDamnIt) {
+                TextEditingRow(viewModel)
+            }
         }
     }
 }
 
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel) {
+fun InteractiveImageBox(viewModel: CanvasViewModel) {
     Box(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
-                .then(
-                    if (viewModel.iAmAWriterGodDamnIt) {
-                        Modifier.clickable(onClick = { viewModel.startWriting() })
-                    } else {
-                        Modifier
-                    },
-                ),
+                .pointerInput(viewModel.iAmAWriterGodDamnIt, viewModel.isWriting) {
+                    detectTapGestures(
+                        onLongPress = { offset ->
+                            if (!viewModel.isWriting) {
+                                viewModel.showRadialMenu = true
+                                viewModel.radialMenuPosition = offset
+                            }
+                        },
+                        onTap = {
+                            if (viewModel.iAmAWriterGodDamnIt && !viewModel.isWriting) {
+                                viewModel.startWriting()
+                            } else {
+                                viewModel.showRadialMenu = false
+                            }
+                        },
+                    )
+                },
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
