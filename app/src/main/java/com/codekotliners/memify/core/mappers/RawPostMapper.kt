@@ -7,22 +7,22 @@ import com.codekotliners.memify.core.data.constants.FIELD_TEMPLATE_ID
 import com.codekotliners.memify.core.data.constants.FIELD_TIMESTAMP
 import com.codekotliners.memify.core.data.constants.FIELD_CREATOR_ID
 import com.codekotliners.memify.core.data.constants.FIELD_WIDTH
-import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.core.network.PostDto
 import com.google.firebase.firestore.DocumentSnapshot
 
-fun DocumentSnapshot.toPost(): Post {
+fun DocumentSnapshot.toPostDto(): PostDto {
     val liked: List<String> = parseListString(this, FIELD_LIKED)
     val templateId = parseStringField(this, FIELD_TEMPLATE_ID)
-    val userId = parseStringField(this, FIELD_CREATOR_ID)
+    val creatorId = parseStringField(this, FIELD_CREATOR_ID)
     val imageUrl = parseStringField(this, FIELD_IMAGE_URL)
     val width = parseIntField(this, FIELD_WIDTH)
     val height = parseIntField(this, FIELD_HEIGHT)
     val timestamp = getTimestamp(FIELD_TIMESTAMP)
 
-    return Post(
+    return PostDto(
         id = id,
         imageUrl = imageUrl,
-        userId = userId,
+        creatorId = creatorId,
         liked = liked,
         templateId = templateId,
         height = height,

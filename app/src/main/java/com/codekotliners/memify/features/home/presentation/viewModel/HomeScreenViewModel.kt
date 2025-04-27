@@ -1,44 +1,50 @@
 package com.codekotliners.memify.features.home.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.codekotliners.memify.R
+import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.features.home.domain.repository.PostsRepository
+import com.codekotliners.memify.features.home.presentation.state.MainFeedScreenState
+import com.codekotliners.memify.features.home.presentation.state.MainFeedTab
+import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel : ViewModel() {
-    private val _tabStates =
-        MutableStateFlow(
-            mapOf(
-                MainFeedTabs.POPULAR to
-                    MainFeedTabState.Content(
-                        List(8) {
-                            MemeCard(
-                                id = it.toLong(),
-                                picture = R.drawable.placeholder600x400,
-                                likesCount = 10,
-                                isLiked = true,
-                                author =
-                                    Author(
-                                        id = 0,
-                                        name = "JohnDoe",
-                                        profilePicture = R.drawable.profile_placeholder,
-                                    ),
-                            )
-                        },
-                    ),
-                MainFeedTabs.NEW to MainFeedTabState.Loading,
-            ),
-        )
-    val tabStates = _tabStates.asStateFlow()
-    private val _selectedTab = MutableStateFlow(MainFeedTabs.POPULAR)
-    val selectedTab = _selectedTab.asStateFlow()
 
-    fun selectTab(tab: MainFeedTabs) {
-        _selectedTab.update { tab }
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
+    private val repository: PostsRepository,
+) : ViewModel() {
+    private val _screenState = MutableStateFlow(MainFeedScreenState(selectedTab = MainFeedTab.POPULAR))
+    val screenState = _screenState.asStateFlow()
+
+    init {
+        loadDataForTab(_screenState.value.selectedTab)
     }
 
-    fun likeClick(card: MemeCard) {
+    fun selectTab(tab: MainFeedTab) {
+        _screenState.update { it.copy(selectedTab = tab) }
+        loadDataForTab(tab)
+    }
+
+    private fun loadDataForTab(tab: MainFeedTab) {
+        viewModelScope.launch {
+            _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Loading) }
+
+            val data = when(tab) {
+                MainFeedTab.POPULAR -> repository.getPosts()
+                MainFeedTab.NEW -> repository.getPosts()
+            }
+
+            _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Content(data)) }
+        }
+    }
+
+    fun likeClick(card: Post) {
         // Логика обновления информации о карточке
     }
 }

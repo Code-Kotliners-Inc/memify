@@ -1,5 +1,7 @@
 package com.codekotliners.memify.core.models
 
+import com.codekotliners.memify.core.network.PostDto
+
 data class Post(
     val id: String,
     val imageUrl: String,
@@ -8,15 +10,6 @@ data class Post(
     val templateId: String,
     val height: Int,
     val width: Int,
-) {
-    fun toMap(): Map<String, Any> =
-        mapOf(
-            "id" to id,
-            "imageUrl" to imageUrl,
-            "creatorId" to creatorId,
-            "liked" to liked,
-            "templateId" to templateId,
-            "height" to height,
-            "width" to width,
-        )
-}
+    val isLiked: Boolean,
+    val author: User
+)

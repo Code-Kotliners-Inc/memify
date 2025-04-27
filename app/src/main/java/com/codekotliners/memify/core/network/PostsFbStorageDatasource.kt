@@ -1,11 +1,11 @@
 package com.codekotliners.memify.core.network
 
 import android.net.Uri
+import android.util.Log
 import com.codekotliners.memify.core.data.constants.POSTS_COLLECTION_NAME
 import com.codekotliners.memify.core.data.constants.STORAGE_POSTS_IMAGES_DIRECTORY
 import com.codekotliners.memify.core.logger.Logger
-import com.codekotliners.memify.core.mappers.toPost
-import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.core.mappers.toPostDto
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
@@ -18,19 +18,20 @@ class PostsFbStorageDatasource @Inject constructor() : PostsDatasource {
     private val db = Firebase.firestore
     private val postsCollection = db.collection(POSTS_COLLECTION_NAME)
 
-    override suspend fun getPosts(): List<Post> {
+    override suspend fun getPosts(): List<PostDto> {
         val snap = postsCollection.get().await()
         return snap.mapNotNull { doc ->
             try {
-                doc.toPost()
+                doc.toPostDto()
             } catch (e: Exception) {
-                Logger.log(Logger.Level.ERROR, "Posts parsing", "For document: ${doc.id} ${e.message}")
+                Log.d("While converting", "${doc.id}, ${e.message}")
+
                 null
             }
         }
     }
 
-    override suspend fun uploadPost(post: Post, imageUri: Uri): Boolean {
+    override suspend fun uploadPost(post: PostDto, imageUri: Uri): Boolean {
         val firestoreDocument = postsCollection.document()
         val imageName = firestoreDocument.id
         val imageRef = postImagesRef.child(imageName)

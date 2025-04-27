@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.home.presentation.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,35 +36,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codekotliners.memify.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
 import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
-import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabState
-import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabs
-import com.codekotliners.memify.features.home.presentation.viewModel.MemeCard
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun HomeScreen() {
-    val viewModel: HomeScreenViewModel = viewModel()
-    val tabState by viewModel.tabStates.collectAsState()
-    val selectedTab by viewModel.selectedTab.collectAsState()
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = hiltViewModel()
+) {
+    val screenState by viewModel.screenState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab.ordinal) {
-            tabState.forEach { (tab, _) ->
+        TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
+            screenState.getTabs().forEach { tab ->
                 Tab(
-                    selected = selectedTab == tab,
+                    selected = screenState.selectedTab == tab,
                     onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = resolveMainFeedTabName(tab),
+                            text = tab.getName(LocalContext.current),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
@@ -74,23 +69,23 @@ fun HomeScreen() {
                 )
             }
         }
-        when (val currentState = tabState[selectedTab]) {
-            is MainFeedTabState.Loading -> LoadingIndicator()
-            is MainFeedTabState.Error -> ErrorMessage(currentState.message)
-            is MainFeedTabState.Content ->
-                MemesColumn(currentState.content.toImmutableList()) { card ->
-                    viewModel.likeClick(card)
+        when (val currentState = screenState.getCurrentTabState()) {
+            is PostsFeedTabState.Idle -> {}
+            is PostsFeedTabState.Empty -> LoadingIndicator()
+            is PostsFeedTabState.Loading -> LoadingIndicator()
+            is PostsFeedTabState.Error -> ErrorMessage(currentState.message)
+            is PostsFeedTabState.Content ->
+                MemesColumn(currentState.posts) { post ->
+                    viewModel.likeClick(post)
                 }
-
-            null -> ErrorMessage(stringResource(R.string.State_unavailable_error))
         }
     }
 }
 
 @Composable
 private fun MemesColumn(
-    cards: ImmutableList<MemeCard>,
-    onLikeClick: (MemeCard) -> Unit,
+    cards: List<Post>,
+    onLikeClick: (Post) -> Unit,
 ) {
     LazyColumn(
         modifier =
@@ -107,8 +102,8 @@ private fun MemesColumn(
 
 @Composable
 fun MemeCard(
-    card: MemeCard,
-    onLikeClick: (MemeCard) -> Unit,
+    card: Post,
+    onLikeClick: (Post) -> Unit,
 ) {
     Card(
         modifier =
@@ -129,13 +124,13 @@ fun MemeCard(
 }
 
 @Composable
-private fun MemeCardHeader(card: MemeCard) {
+private fun MemeCardHeader(card: Post) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Image(
-            painter = painterResource(card.author.profilePicture),
+        AsyncImage(
+            model = card.author.profileImageUrl,
             contentDescription = "Profile picture",
             modifier =
                 Modifier
@@ -144,7 +139,7 @@ private fun MemeCardHeader(card: MemeCard) {
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            text = card.author.name,
+            text = card.author.username,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
         )
@@ -157,9 +152,9 @@ private fun MemeCardHeader(card: MemeCard) {
 }
 
 @Composable
-private fun MemeCardImage(card: MemeCard) {
-    Image(
-        painter = painterResource(card.picture),
+private fun MemeCardImage(card: Post) {
+    AsyncImage(
+        model = card.imageUrl,
         contentDescription = "Meme image",
         modifier =
             Modifier
@@ -171,8 +166,8 @@ private fun MemeCardImage(card: MemeCard) {
 
 @Composable
 private fun MemeCardFooter(
-    card: MemeCard,
-    onLikeClick: (MemeCard) -> Unit,
+    card: Post,
+    onLikeClick: (Post) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = { onLikeClick(card) }) {
@@ -182,7 +177,7 @@ private fun MemeCardFooter(
                 tint = if (card.isLiked) Color.Red else Color.Gray,
             )
         }
-        Text(text = card.likesCount.toString())
+        Text(text = card.liked.size.toString(), color = Color.Gray)
     }
 }
 
@@ -207,10 +202,3 @@ private fun ErrorMessage(message: String) {
         Text(text = message, style = MaterialTheme.typography.bodyMedium)
     }
 }
-
-@Composable
-private fun resolveMainFeedTabName(tab: MainFeedTabs): String =
-    when (tab) {
-        MainFeedTabs.POPULAR -> stringResource(R.string.Popular)
-        MainFeedTabs.NEW -> stringResource(R.string.New)
-    }

@@ -1,10 +1,9 @@
 package com.codekotliners.memify.core.network
 
 import android.net.Uri
-import com.codekotliners.memify.core.models.Post
 
 interface PostsDatasource {
-    suspend fun getPosts(): List<Post>
+    suspend fun getPosts(): List<PostDto>
 
-    suspend fun uploadPost(post: Post, imageUri: Uri): Boolean
+    suspend fun uploadPost(post: PostDto, imageUri: Uri): Boolean
 }
