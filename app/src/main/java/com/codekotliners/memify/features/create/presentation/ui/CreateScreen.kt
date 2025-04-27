@@ -4,18 +4,17 @@ import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTapGestur
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -48,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -55,11 +55,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.Template
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
@@ -69,13 +71,12 @@ import com.codekotliners.memify.features.create.presentation.ui.components.LongP
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen() {
+fun CreateScreen(navController: NavHostController) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val minHeight = 800.dp
-    val maxHeight = 900.dp
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
@@ -88,9 +89,9 @@ fun CreateScreen() {
     CreateScreenBottomSheet(
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
-        minHeight = minHeight,
-        maxHeight = maxHeight,
         scrollBehavior = scrollBehavior,
+        {}, // FIX: pass lambda to accept Template
+        { navController.navigate(NavRoutes.Auth.route) },
     )
 }
 
@@ -99,17 +100,23 @@ fun CreateScreen() {
 private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
-    minHeight: Dp,
-    maxHeight: Dp,
     scrollBehavior: TopAppBarScrollBehavior,
+    onTemplateClick: (Template) -> Unit,
+    onLoginClick: () -> Unit,
 ) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
-        sheetContent = { BottomSheetContent(bottomSheetState, minHeight, maxHeight) },
+        sheetContent = {
+            TemplatesFeedScreen(onLoginClick, onTemplateClick)
+        },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(bottom = 48.dp),
     ) { innerPadding ->
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -150,14 +157,14 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues) {
+private fun CreateScreenContent(paddingValues: PaddingValues) {
     val viewModel: CanvasViewModel = hiltViewModel()
 
     LazyColumn(
         modifier =
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = 80.dp),
     ) {
@@ -190,37 +197,6 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
             modifier = Modifier.size(24.dp),
         )
         Text(text = stringResource(R.string.choose_pattern))
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheetContent(bottomSheetState: SheetState, minHeight: Dp, maxHeight: Dp) {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight, max = maxHeight)
-                .background(MaterialTheme.colorScheme.surface),
-        contentAlignment = Alignment.TopCenter,
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(text = stringResource(R.string.cat_developer), textAlign = TextAlign.Center)
-            Spacer(modifier = Modifier.height(8.dp))
-            Icon(
-                imageVector =
-                    if (bottomSheetState.targetValue == SheetValue.Expanded) {
-                        Icons.Default.KeyboardArrowUp
-                    } else {
-                        Icons.Default.KeyboardArrowDown
-                    },
-                contentDescription = stringResource(R.string.description_swipe_bottom_sheet),
-                modifier = Modifier.size(24.dp),
-            )
-        }
     }
 }
 
@@ -336,6 +312,6 @@ fun InteractiveImageBox(viewModel: CanvasViewModel) {
 @Composable
 fun CreateScreenPreview() {
     MemifyTheme {
-        CreateScreen()
+        CreateScreen(NavHostController(LocalContext.current))
     }
 }
