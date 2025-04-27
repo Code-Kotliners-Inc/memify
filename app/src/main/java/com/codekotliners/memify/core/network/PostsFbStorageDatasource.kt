@@ -5,6 +5,7 @@ import com.codekotliners.memify.core.data.constants.POSTS_COLLECTION_NAME
 import com.codekotliners.memify.core.data.constants.STORAGE_POSTS_IMAGES_DIRECTORY
 import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.mappers.toPostDto
+import com.codekotliners.memify.core.network.models.PostDto
 import com.codekotliners.memify.core.network.utils.InternetChecker
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -35,10 +36,11 @@ class PostsFbStorageDatasource @Inject constructor() : PostsDatasource {
         }
     }
 
-    override suspend fun uploadPost(post: PostDto, imageUri: Uri): Boolean {
+    override suspend fun uploadPost(post: PostDto, imageUri: Uri) {
         val firestoreDocument = postsCollection.document()
         val imageName = firestoreDocument.id
         val imageRef = postImagesRef.child(imageName)
+
         imageRef
             .putFile(imageUri)
             .addOnSuccessListener { uploadTask ->
@@ -58,9 +60,11 @@ class PostsFbStorageDatasource @Inject constructor() : PostsDatasource {
                                 )
                                 imageRef.delete()
                             }
+                    }.addOnSuccessListener {
+                        throw IOException("Failed to post to firestore")
                     }
+            }.addOnFailureListener { e ->
+                throw IOException("Failed to upload image to Cloud Storage")
             }
-
-        return false
     }
 }

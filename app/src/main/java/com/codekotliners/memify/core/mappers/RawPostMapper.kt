@@ -7,7 +7,7 @@ import com.codekotliners.memify.core.data.constants.FIELD_TEMPLATE_ID
 import com.codekotliners.memify.core.data.constants.FIELD_TIMESTAMP
 import com.codekotliners.memify.core.data.constants.FIELD_CREATOR_ID
 import com.codekotliners.memify.core.data.constants.FIELD_WIDTH
-import com.codekotliners.memify.core.network.PostDto
+import com.codekotliners.memify.core.network.models.PostDto
 import com.google.firebase.firestore.DocumentSnapshot
 
 fun DocumentSnapshot.toPostDto(): PostDto {

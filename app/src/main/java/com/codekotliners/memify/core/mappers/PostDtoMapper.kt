@@ -2,7 +2,7 @@ package com.codekotliners.memify.core.mappers
 
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.models.User
-import com.codekotliners.memify.core.network.PostDto
+import com.codekotliners.memify.core.network.models.PostDto
 
 fun PostDto.toPost(author: User, isLiked: Boolean): Post =
     Post(

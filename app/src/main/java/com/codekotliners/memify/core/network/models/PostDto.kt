@@ -1,4 +1,4 @@
-package com.codekotliners.memify.core.network
+package com.codekotliners.memify.core.network.models
 
 data class PostDto(
     val id: String,

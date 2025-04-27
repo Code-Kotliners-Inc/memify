@@ -24,7 +24,7 @@ import coil.compose.AsyncImage
 import com.codekotliners.memify.core.models.Post
 
 @Composable
-fun PostCardHeader(card: Post) {
+fun PostCardHeader(post: Post) {
     Row(
         verticalAlignment = Alignment.Companion.CenterVertically,
         modifier =
@@ -34,7 +34,7 @@ fun PostCardHeader(card: Post) {
                 .padding(start = 2.dp),
     ) {
         AsyncImage(
-            model = card.author.profileImageUrl,
+            model = post.author.profileImageUrl,
             contentDescription = "Profile picture",
             modifier =
                 Modifier.Companion
@@ -44,7 +44,7 @@ fun PostCardHeader(card: Post) {
         )
         Spacer(Modifier.Companion.width(10.dp))
         Text(
-            text = card.author.username,
+            text = post.author.username,
             fontWeight = FontWeight.Companion.Bold,
             fontSize = 16.sp,
         )

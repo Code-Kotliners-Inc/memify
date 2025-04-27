@@ -71,7 +71,7 @@ fun HomeScreen(
                 is PostsFeedTabState.Error ->
                     ErrorScreen(currentState.type.getMessage(LocalContext.current))
                 is PostsFeedTabState.Content ->
-                    MemesColumn(currentState.posts) { post ->
+                    PostsFeed(currentState.posts) { post ->
                         viewModel.likeClick(post)
                     }
             }
@@ -80,8 +80,8 @@ fun HomeScreen(
 }
 
 @Composable
-private fun MemesColumn(
-    cards: List<Post>,
+private fun PostsFeed(
+    posts: List<Post>,
     onLikeClick: (Post) -> Unit,
 ) {
     LazyColumn(
@@ -91,8 +91,8 @@ private fun MemesColumn(
                 .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
     ) {
-        items(cards) { card ->
-            PostCard(card, onLikeClick)
+        items(posts) { post ->
+            PostCard(post, onLikeClick)
         }
     }
 }

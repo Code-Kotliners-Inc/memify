@@ -14,17 +14,17 @@ import com.codekotliners.memify.core.models.Post
 
 @Composable
 fun PostCardFooter(
-    card: Post,
+    post: Post,
     onLikeClick: (Post) -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onLikeClick(card) }) {
+        IconButton(onClick = { onLikeClick(post) }) {
             Icon(
-                imageVector = if (card.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                imageVector = if (post.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                 contentDescription = "Like",
-                tint = if (card.isLiked) Color.Red else Color.Gray,
+                tint = if (post.isLiked) Color.Red else Color.Gray,
             )
         }
-        Text(text = card.liked.size.toString(), color = Color.Gray)
+        Text(text = post.liked.size.toString(), color = Color.Gray)
     }
 }

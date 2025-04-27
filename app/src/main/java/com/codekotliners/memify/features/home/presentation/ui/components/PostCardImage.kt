@@ -24,13 +24,13 @@ import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndic
 import com.codekotliners.memify.core.ui.components.CenteredWidget
 
 @Composable
-fun PostCardImage(card: Post) {
+fun PostCardImage(post: Post) {
     val painter =
         rememberAsyncImagePainter(
             model =
                 ImageRequest
                     .Builder(LocalContext.current)
-                    .data(card.imageUrl)
+                    .data(post.imageUrl)
                     .crossfade(true)
                     .build(),
         )
@@ -39,7 +39,7 @@ fun PostCardImage(card: Post) {
     Box(
         modifier =
             Modifier
-                .aspectRatio(card.width.toFloat() / card.height.toFloat())
+                .aspectRatio(post.width.toFloat() / post.height.toFloat())
                 .fillMaxWidth(),
     ) {
         when (state) {
