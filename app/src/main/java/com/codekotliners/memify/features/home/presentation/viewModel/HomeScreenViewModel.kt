@@ -1,19 +1,22 @@
 package com.codekotliners.memify.features.home.presentation.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.features.home.domain.repository.PostsRepository
+import com.codekotliners.memify.features.home.presentation.state.ErrorType
 import com.codekotliners.memify.features.home.presentation.state.MainFeedScreenState
 import com.codekotliners.memify.features.home.presentation.state.MainFeedTab
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
+import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -22,7 +25,23 @@ class HomeScreenViewModel @Inject constructor(
     private val _screenState = MutableStateFlow(MainFeedScreenState(selectedTab = MainFeedTab.POPULAR))
     val screenState = _screenState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     init {
+        loadDataForTab(_screenState.value.selectedTab)
+    }
+
+    private fun startRefresh() {
+        _isRefreshing.value = true
+    }
+
+    private fun stopRefreshing() {
+        _isRefreshing.value = false
+    }
+
+    fun refresh() {
+        startRefresh()
         loadDataForTab(_screenState.value.selectedTab)
     }
 
@@ -32,15 +51,34 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun loadDataForTab(tab: MainFeedTab) {
-        viewModelScope.launch {
-            _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Loading) }
+        if (_screenState.value.getCurrentTabState() is PostsFeedTabState.Loading) return
+        if (!isRefreshing.value && _screenState.value.getCurrentTabState() is PostsFeedTabState.Content) return
 
-            val data = when(tab) {
-                MainFeedTab.POPULAR -> repository.getPosts()
-                MainFeedTab.NEW -> repository.getPosts()
+        _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Loading) }
+
+        viewModelScope.launch {
+            try {
+                val data =
+                    when (tab) {
+                        MainFeedTab.POPULAR -> repository.getPosts()
+                        MainFeedTab.NEW -> repository.getPosts()
+                    }
+
+                if (data.isEmpty()) {
+                    _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Empty) }
+                } else {
+                    _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Content(data)) }
+                }
+            } catch (e: Exception) {
+                val errorType =
+                    when (e) {
+                        is FirebaseFirestoreException -> ErrorType.NETWORK
+                        else -> ErrorType.UNKNOWN
+                    }
+                _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Error(errorType)) }
             }
 
-            _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Content(data)) }
+            stopRefreshing()
         }
     }
 

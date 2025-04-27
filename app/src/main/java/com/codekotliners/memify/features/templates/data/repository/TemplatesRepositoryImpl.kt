@@ -6,6 +6,7 @@ import com.codekotliners.memify.features.templates.domain.datasource.TemplatesTy
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
@@ -20,7 +21,7 @@ class TemplatesRepositoryImpl @Inject constructor(
 
     override suspend fun getFavouriteTemplates(): Flow<Template> {
         if (FirebaseAuth.getInstance().currentUser == null) {
-            flowOf(throw IllegalStateException("User not logged in"))
+            return flow { throw IllegalStateException("User not logged in") }
         }
 
         val userId = FirebaseAuth.getInstance().currentUser!!.uid

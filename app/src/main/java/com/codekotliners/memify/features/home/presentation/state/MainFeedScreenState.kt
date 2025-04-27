@@ -13,10 +13,9 @@ data class MainFeedScreenState(
             MainFeedTab.NEW -> newPostsState
         }
 
-    fun updatedCurrentTab(tabState: PostsFeedTabState): MainFeedScreenState {
-        return when (selectedTab) {
+    fun updatedCurrentTab(tabState: PostsFeedTabState): MainFeedScreenState =
+        when (selectedTab) {
             MainFeedTab.POPULAR -> copy(popularPostsState = tabState)
             MainFeedTab.NEW -> copy(newPostsState = tabState)
         }
-    }
 }

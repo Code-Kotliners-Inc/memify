@@ -14,5 +14,5 @@ fun PostDto.toPost(author: User, isLiked: Boolean): Post =
         height = height,
         width = width,
         isLiked = isLiked,
-        author = author
+        author = author,
     )
