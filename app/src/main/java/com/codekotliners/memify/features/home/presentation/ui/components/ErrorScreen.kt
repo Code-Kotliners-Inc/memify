@@ -7,18 +7,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.CenteredWidget
 
 @Composable
-fun EmptyFeed() {
+fun ErrorScreen(message: String) {
     CenteredWidget(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
     ) {
-        Text(text = stringResource(R.string.empty_templates_tab_message), style = MaterialTheme.typography.bodyMedium)
+        Text(text = message, style = MaterialTheme.typography.bodyMedium)
     }
 }

@@ -29,7 +29,7 @@ val MOCK_MEMES: List<MockMeme> =
 
 val mockUser =
     User(
-        "",
+        "uid",
         "https://media.zenfs.com/en/us.abcnews.go.com/9da71bee32e1aa23075b2c04c38987b3",
-        "Name",
+        "Mock-user-name",
     )

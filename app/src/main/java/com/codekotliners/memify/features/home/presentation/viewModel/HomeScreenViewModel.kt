@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.home.presentation.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.models.Post
@@ -37,7 +36,10 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun stopRefreshing() {
-        _isRefreshing.value = false
+        viewModelScope.launch {
+            delay(300)
+            _isRefreshing.value = false
+        }
     }
 
     fun refresh() {
