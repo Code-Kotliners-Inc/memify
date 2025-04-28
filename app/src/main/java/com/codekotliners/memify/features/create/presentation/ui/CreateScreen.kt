@@ -284,11 +284,12 @@ private fun ImageBox(viewModel: CanvasViewModel) {
     var scale by remember { mutableFloatStateOf(1f) }
     var angle by remember { mutableFloatStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
-    val state = rememberTransformableState { scaleChange, offsetChange, rotationChange ->
-        scale *= scaleChange
-        angle += rotationChange
-        offset += offsetChange
-    }
+    val state =
+        rememberTransformableState { scaleChange, offsetChange, rotationChange ->
+            scale *= scaleChange
+            angle += rotationChange
+            offset += offsetChange
+        }
 
     Box(
         modifier =
@@ -302,15 +303,13 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     } else {
                         Modifier
                     },
-                )
-                .graphicsLayer(
+                ).graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,
                     rotationZ = angle,
                     translationX = offset.x,
-                    translationY = offset.y
-                )
-                .transformable(state = state),
+                    translationY = offset.y,
+                ).transformable(state = state),
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
