@@ -35,35 +35,40 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
         modifier =
             Modifier
                 .size(viewModel.imageWidth.dp, viewModel.imageHeight.dp)
-                .clipToBounds()
-                .then(
-                    if (viewModel.iAmAPainterGodDamnIt) {
-                        Modifier.drawingCanvas(viewModel)
-                    } else {
-                        Modifier
-                    },
-                ).drawWithCache {
-                    val lines = elements.filterIsInstance<ColoredLine>()
-                    val currentPath = if (currentLine.size > 1) createDrawingLinePath(currentLine) else null
-
-                    onDrawWithContent {
-                        drawContent()
-                        drawLines(lines)
-                        currentPath?.let {
-                            drawPath(
-                                path = it,
-                                color = currentLineColor,
-                                style =
-                                    Stroke(
-                                        width = currentLineWidth,
-                                        cap = StrokeCap.Round,
-                                        join = StrokeJoin.Round,
-                                    ),
-                            )
-                        }
-                    }
-                },
+                .clipToBounds(),
     ) {
+        Box(
+            modifier =
+                Modifier
+                    .then(
+                        if (viewModel.iAmAPainterGodDamnIt) {
+                            Modifier.drawingCanvas(viewModel)
+                        } else {
+                            Modifier
+                        },
+                    ).drawWithCache {
+                        val lines = elements.filterIsInstance<ColoredLine>()
+                        val currentPath = if (currentLine.size > 1) createDrawingLinePath(currentLine) else null
+
+                        onDrawWithContent {
+                            drawContent()
+                            drawLines(lines)
+                            currentPath?.let {
+                                drawPath(
+                                    path = it,
+                                    color = currentLineColor,
+                                    style =
+                                        Stroke(
+                                            width = currentLineWidth,
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round,
+                                        ),
+                                )
+                            }
+                        }
+                    },
+        )
+
         viewModel.canvasElements.filterIsInstance<TextElement>().forEach { element ->
             TextElementView(
                 element = element,
