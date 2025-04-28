@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,8 +45,15 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -272,6 +281,15 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 
 @Composable
 private fun ImageBox(viewModel: CanvasViewModel) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var angle by remember { mutableFloatStateOf(0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+    val state = rememberTransformableState { scaleChange, offsetChange, rotationChange ->
+        scale *= scaleChange
+        angle += rotationChange
+        offset += offsetChange
+    }
+
     Box(
         modifier =
             Modifier
@@ -284,7 +302,15 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     } else {
                         Modifier
                     },
-                ),
+                )
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    rotationZ = angle,
+                    translationX = offset.x,
+                    translationY = offset.y
+                )
+                .transformable(state = state),
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),
