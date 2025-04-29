@@ -23,7 +23,7 @@ if [ "$CI" ]; then
   reviewdog -f=checkstyle \
     -name="detekt" \
     -reporter="github-pr-review" \
-    -fail-on-error="true" <detekt_report.xml
+    -fail-level=error <detekt_report.xml
 else
   java -jar "$DETEKT_JAR" \
     --config .github/workflows/assets/detekt.yml \
