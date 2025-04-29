@@ -38,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -54,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
@@ -63,37 +65,51 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
-import com.codekotliners.memify.features.viewer.presentation.ui.ImageItem
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen() {
+fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val showImageViewer = remember { mutableStateOf(false) }
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { CreateScreenTopBar(scrollBehavior, onMenuClick = { showImageViewer.value = true }) },
+        topBar = {
+            CreateScreenTopBar(
+                scrollBehavior,
+                onMenuClick = {
+                    coroutineScope.launch {
+                        val bitmap = viewModel.createBitMap()
+                        bitmapState.value = bitmap
+                        showImageViewer.value = true
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
-        CreateScreenContent(innerPadding)
-        if (showImageViewer.value) {
+        CreateScreenContent(innerPadding, viewModel)
+
+        if (showImageViewer.value && bitmapState.value != null) {
             Dialog(onDismissRequest = { showImageViewer.value = false }) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 4.dp
                 ) {
                     ImageViewerScreen(
-                        image = ImageItem(
-                            title = "Мем",
-                            url = "https://example.com/meme.jpg"
-                        )
+                        bitmap = bitmapState.value!!
                     )
                 }
             }
-
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,8 +142,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues) {
-    val viewModel: CanvasViewModel = hiltViewModel()
+private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
 
     Column(
         modifier =
@@ -147,6 +162,7 @@ private fun CreateScreenContent(innerPadding: PaddingValues) {
         }
     }
 }
+
 
 @Composable
 private fun InteractiveCanvas(viewModel: CanvasViewModel) {
@@ -251,3 +267,4 @@ fun CreateScreenPreview() {
         CreateScreen()
     }
 }
+

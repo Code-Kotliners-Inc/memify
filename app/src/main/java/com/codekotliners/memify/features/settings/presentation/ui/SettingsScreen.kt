@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.settings.presentation.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,12 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+
 
 @Composable
 fun SettingsUnLoggedScreen() {
@@ -344,3 +348,12 @@ private fun ChangePhoto() {
         }
     }
 }
+@Preview(name = "Light Mode", showSystemUi = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Composable
+fun SettingsLoggedScreenPreview() {
+    MemifyTheme {
+        SettingsLoggedScreen()
+    }
+}
+
