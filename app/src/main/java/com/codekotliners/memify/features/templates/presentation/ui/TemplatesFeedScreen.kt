@@ -1,84 +1,89 @@
 package com.codekotliners.memify.features.templates.presentation.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codekotliners.memify.R
-import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplateFeedTabState
-import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedTabs
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.codekotliners.memify.core.models.Template
+import com.codekotliners.memify.features.templates.presentation.state.TabState
+import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorTab
+import com.codekotliners.memify.features.templates.presentation.ui.components.LoadingTab
+import com.codekotliners.memify.features.templates.presentation.ui.components.NoContentTab
+import com.codekotliners.memify.features.templates.presentation.ui.components.TemplateItem
 import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TemplatesFeedScreen() {
-    val templatesFeedViewModel: TemplatesFeedViewModel = viewModel()
-
-    val tabState by templatesFeedViewModel.tabStates.collectAsState()
-    val selectedTab by templatesFeedViewModel.selectedTab.collectAsState()
+fun TemplatesFeedScreen(
+    onLoginClicked: () -> Unit,
+    onTemplateSelected: (Template) -> Unit,
+    viewModel: TemplatesFeedViewModel = hiltViewModel(),
+) {
+    val pageState by viewModel.pageState.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab.ordinal) {
-            tabState.forEach { (tab, _) ->
+        TabRow(selectedTabIndex = pageState.selectedTab.ordinal) {
+            pageState.getTabs().forEach { tab ->
                 Tab(
-                    selected = selectedTab.ordinal == tab.ordinal,
-                    onClick = { templatesFeedViewModel.selectTab(tab) },
+                    selected = pageState.selectedTab.ordinal == tab.ordinal,
+                    onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = resolveTabName(tab),
+                            text = tab.getName(LocalContext.current),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
                 )
             }
         }
-        when (val currentState = tabState[selectedTab]) {
-            is TemplateFeedTabState.Loading -> {
-                LoadingIndicator()
-            }
-            is TemplateFeedTabState.Error -> {
-                ErrorMessage(message = currentState.message)
-            }
-            is TemplateFeedTabState.Content -> {
-                TemplateGrid(templates = currentState.templates.toImmutableList())
-            }
-            null -> {
-                ErrorMessage(message = "Состояние не доступно")
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refresh() },
+        ) {
+            when (val currentState = pageState.getCurrentState()) {
+                TabState.Idle -> {}
+
+                is TabState.Loading -> LoadingTab()
+
+                is TabState.Error -> {
+                    ErrorTab(errorType = currentState.type) { onLoginClicked() }
+                }
+
+                is TabState.Content -> {
+                    TemplatesGrid(templates = currentState.templates, onTemplateSelected = onTemplateSelected)
+                }
+
+                TabState.Empty -> NoContentTab()
             }
         }
     }
 }
 
 @Composable
-private fun TemplateGrid(templates: ImmutableList<Int>) {
+fun TemplatesGrid(templates: List<Template>, onTemplateSelected: (Template) -> Unit) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
+        verticalItemSpacing = 10.dp,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier =
             Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -86,67 +91,14 @@ private fun TemplateGrid(templates: ImmutableList<Int>) {
         contentPadding = PaddingValues(0.dp),
         content = {
             items(templates) { template ->
-                TemplateItem(image = painterResource(template))
+                TemplateItem(template = template, onTemplateSelected = onTemplateSelected)
             }
         },
     )
 }
 
-@Composable
-private fun TemplateItem(image: Painter) {
-    Card(
-        modifier =
-            Modifier
-                .padding(4.dp)
-                .fillMaxWidth(),
-    ) {
-        Image(
-            painter = image,
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .fillMaxWidth(),
-            contentScale = ContentScale.Crop,
-        )
-    }
-}
-
-@Composable
-private fun LoadingIndicator() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun ErrorMessage(message: String) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = message, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTemplatesFeed() {
-    TemplatesFeedScreen()
-}
-
-@Composable
-@ReadOnlyComposable
-fun resolveTabName(tab: TemplatesFeedTabs): String {
-    val nameRes =
-        when (tab) {
-            TemplatesFeedTabs.BEST -> R.string.Best
-            TemplatesFeedTabs.NEW -> R.string.New
-            TemplatesFeedTabs.FAVOURITE -> R.string.Favourites
-        }
-    return stringResource(nameRes)
+    TemplatesFeedScreen({}, {})
 }

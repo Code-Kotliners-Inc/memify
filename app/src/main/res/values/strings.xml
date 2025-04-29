@@ -81,11 +81,13 @@
 
     <string name="description_swipe_bottom_sheet">Свайп</string>
     <string name="choose_pattern">Выбрать шаблон</string>
-    <string name="cat_developer">Здесь был один из котиков-разрабов</string>
 
+    <string name="network_errormessage">Ошибка во время загрузки. Проверьте подключение к сети</string>
+    <string name="need_authenticated_message">Войдите в аккаунт чтобы воспользоваться этой функцией</string>
+    <string name="unknown_error_message">Упс, что-то пошло не так, попробуйте позже</string>
+    <string name="empty_templates_tab_message">Кажется, здесь ничего нет</string>
     <string name="login_error_message">Ошибка входа</string>
     <string name="id_token_not_found">ID токен не найден</string>
     <string name="auth_error">Ошибка авторизации:</string>
     <string name="auth">Авторизация...</string>
-
 </resources>
