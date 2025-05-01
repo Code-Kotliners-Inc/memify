@@ -8,7 +8,9 @@ import com.codekotliners.memify.core.mappers.toPostDto
 import com.codekotliners.memify.core.network.models.PostDto
 import com.codekotliners.memify.core.network.utils.InternetChecker
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.tasks.await
 import java.io.IOException
@@ -53,42 +55,58 @@ class PostsFbStorageDatasource @Inject constructor(
         val imageName = firestoreDocument.id
         val imageRef = postImagesRef.child(imageName)
 
+        if (!uploadToStorage(imageRef, imageUri))
+            return false
+
         try {
-            imageRef.putFile(imageUri).await()
+            val downloadUrl = imageRef.downloadUrl.await()
 
-            try {
-                val downloadUrl = imageRef.downloadUrl.await()
-
-                val postToUpload = post.toMap().toMutableMap()
-                postToUpload["id"] = firestoreDocument.id
-                postToUpload["imageUrl"] = downloadUrl.toString()
-
-                try {
-                    firestoreDocument.set(postToUpload).await()
-                    return true
-                } catch (e: Exception) {
-                    Logger.log(
-                        Logger.Level.ERROR,
-                        "Posts uploading",
-                        "Failed to upload info to firestore for document: ${post.id}\n${e.message}",
-                    )
-                    imageRef.delete()
-                }
-            } catch (e: Exception) {
-                Logger.log(
-                    Logger.Level.ERROR,
-                    "Post uploading",
-                    "Failed to get url to just right now uploaded to storage image for document: ${post.id}\n${e.message}",
-                )
+            if (!uploadToFirestore(firestoreDocument, downloadUrl, post)) {
+                imageRef.delete()
+                return false
             }
-
         } catch (e: Exception) {
             Logger.log(
                 Logger.Level.ERROR,
                 "Post uploading",
-                "Failed to upload image to Cloud Storage for document: ${post.id}\n${e.message}",
+                "Failed to get url to just right now uploaded to storage image for document: ${post.id}\n${e.message}",
+            )
+            return false
+        }
+
+        return true
+    }
+
+    private suspend fun uploadToStorage(imageRef: StorageReference, imageUri: Uri): Boolean {
+        try {
+            imageRef.putFile(imageUri).await()
+            return true
+        } catch (e: Exception) {
+            Logger.log(
+                Logger.Level.ERROR,
+                "Post uploading",
+                "Failed to upload image to Cloud Storage for document: ${e.message}",
             )
         }
+        return false
+    }
+
+    private suspend fun uploadToFirestore(firestoreDocument: DocumentReference, downloadUrl: Uri, post: PostDto): Boolean {
+        val postToUpload = post.toMap().toMutableMap()
+        postToUpload["id"] = firestoreDocument.id
+        postToUpload["imageUrl"] = downloadUrl.toString()
+
+        try {
+            firestoreDocument.set(postToUpload).await()
+            return true
+        } catch (e: Exception) {
+            Logger.log(
+                Logger.Level.ERROR,
+                "Posts uploading",
+                "Failed to upload info to firestore for document: ${post.id}\n${e.message}",
+            )
+        }
+
         return false
     }
 }
