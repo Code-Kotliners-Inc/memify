@@ -14,14 +14,16 @@ import kotlinx.coroutines.tasks.await
 import java.io.IOException
 import javax.inject.Inject
 
-class PostsFbStorageDatasource @Inject constructor() : PostsDatasource {
+class PostsFbStorageDatasource @Inject constructor(
+    private val internetChecker: InternetChecker
+) : PostsDatasource {
     private val storage = Firebase.storage
     private val postImagesRef = storage.reference.child(STORAGE_POSTS_IMAGES_DIRECTORY)
     private val db = Firebase.firestore
     private val postsCollection = db.collection(POSTS_COLLECTION_NAME)
 
     override suspend fun getPosts(): List<PostDto> {
-        if (!InternetChecker.isOnline()) {
+        if (!internetChecker.isConnected()) {
             // preventing uncatchable firebase exception from another thread
             throw IOException("We are offline")
         }
@@ -36,35 +38,52 @@ class PostsFbStorageDatasource @Inject constructor() : PostsDatasource {
         }
     }
 
-    override suspend fun uploadPost(post: PostDto, imageUri: Uri) {
+    /**
+     * @param post should contain all relevant info about post to be uploaded, except for imageUrl field - it can be any
+     * @param imageUri uri of local image that will be uploaded to cloud storage
+     * Returns true when the operation was successful
+     **/
+    override suspend fun uploadPost(post: PostDto, imageUri: Uri): Boolean {
         val firestoreDocument = postsCollection.document()
         val imageName = firestoreDocument.id
         val imageRef = postImagesRef.child(imageName)
 
-        imageRef
-            .putFile(imageUri)
-            .addOnSuccessListener { uploadTask ->
-                postImagesRef.downloadUrl
-                    .addOnSuccessListener { uri ->
-                        val postToUpload = post.toMap().toMutableMap()
-                        postToUpload["id"] = firestoreDocument.id
-                        postToUpload["imageUrl"] = uri.toString()
+        try {
+            imageRef.putFile(imageUri).await()
 
-                        firestoreDocument
-                            .set(postToUpload)
-                            .addOnFailureListener {
-                                Logger.log(
-                                    Logger.Level.ERROR,
-                                    "Posts uploading",
-                                    "For document: ${post.id} ${it.message}",
-                                )
-                                imageRef.delete()
-                            }
-                    }.addOnSuccessListener {
-                        throw IOException("Failed to post to firestore")
-                    }
-            }.addOnFailureListener { e ->
-                throw IOException("Failed to upload image to Cloud Storage")
+            try {
+                val downloadUrl = imageRef.downloadUrl.await()
+
+                val postToUpload = post.toMap().toMutableMap()
+                postToUpload["id"] = firestoreDocument.id
+                postToUpload["imageUrl"] = downloadUrl.toString()
+
+                try {
+                    firestoreDocument.set(postToUpload).await()
+                    return true
+                } catch (e: Exception) {
+                    Logger.log(
+                        Logger.Level.ERROR,
+                        "Posts uploading",
+                        "Failed to upload info to firestore for document: ${post.id}\n${e.message}",
+                    )
+                    imageRef.delete()
+                }
+            } catch (e: Exception) {
+                Logger.log(
+                    Logger.Level.ERROR,
+                    "Post uploading",
+                    "Failed to get url to just right now uploaded to storage image for document: ${post.id}\n${e.message}",
+                )
             }
+
+        } catch (e: Exception) {
+            Logger.log(
+                Logger.Level.ERROR,
+                "Post uploading",
+                "Failed to upload image to Cloud Storage for document: ${post.id}\n${e.message}",
+            )
+        }
+        return false
     }
 }

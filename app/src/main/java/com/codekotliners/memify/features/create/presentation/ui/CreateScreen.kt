@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
@@ -76,13 +77,12 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateScreen() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val minHeight = 800.dp
-    val maxHeight = 900.dp
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
@@ -95,9 +95,7 @@ fun CreateScreen() {
     CreateScreenBottomSheet(
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
-        minHeight = minHeight,
-        maxHeight = maxHeight,
-        scrollBehavior = scrollBehavior,
+        scrollBehavior = scrollBehavior
     )
 }
 
@@ -106,15 +104,15 @@ fun CreateScreen() {
 private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
-    minHeight: Dp,
-    maxHeight: Dp,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
-        sheetContent = { BottomSheetContent(bottomSheetState, minHeight, maxHeight) },
+        sheetContent = {
+            TemplatesFeedScreen({}, {})
+        },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
@@ -303,13 +301,15 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     } else {
                         Modifier
                     },
-                ).graphicsLayer(
+                )
+                .graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,
                     rotationZ = angle,
                     translationX = offset.x,
                     translationY = offset.y,
-                ).transformable(state = state),
+                )
+                .transformable(state = state),
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),

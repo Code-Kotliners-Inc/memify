@@ -10,4 +10,4 @@ const val FIELD_CREATOR_ID = "creatorId"
 const val FIELD_WIDTH = "width"
 
 const val POSTS_COLLECTION_NAME = "posts"
-const val STORAGE_POSTS_IMAGES_DIRECTORY = "post_images"
+const val STORAGE_POSTS_IMAGES_DIRECTORY = "posted-images"
