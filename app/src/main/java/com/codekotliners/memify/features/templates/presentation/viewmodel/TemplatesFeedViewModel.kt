@@ -1,45 +1,89 @@
 package com.codekotliners.memify.features.templates.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.codekotliners.memify.R
+import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
+import com.codekotliners.memify.features.templates.presentation.state.ErrorType
+import com.codekotliners.memify.features.templates.presentation.state.Tab
+import com.codekotliners.memify.features.templates.presentation.state.TabState
+import com.codekotliners.memify.features.templates.presentation.state.TemplatesPageState
+import com.google.firebase.firestore.FirebaseFirestoreException
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TemplatesFeedViewModel : ViewModel() {
-    private val _tabStates =
-        MutableStateFlow(
-            mapOf(
-                TemplatesFeedTabs.BEST to TemplateFeedTabState.Content(List(8) { R.drawable.placeholder600x400 }),
-                TemplatesFeedTabs.NEW to TemplateFeedTabState.Loading,
-                TemplatesFeedTabs.FAVOURITE to TemplateFeedTabState.Error("No favourites yet"),
-            ),
-        )
-    val tabStates = _tabStates.asStateFlow()
+@HiltViewModel
+class TemplatesFeedViewModel @Inject constructor(
+    private val repository: TemplatesRepository,
+) : ViewModel() {
+    private val _pageState = MutableStateFlow(TemplatesPageState(selectedTab = Tab.BEST))
+    val pageState: StateFlow<TemplatesPageState> = _pageState
 
-    private val _selectedTab = MutableStateFlow(TemplatesFeedTabs.BEST)
-    val selectedTab: StateFlow<TemplatesFeedTabs> = _selectedTab.asStateFlow()
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
-    fun selectTab(tab: TemplatesFeedTabs) {
-        _selectedTab.update { tab }
+    init {
+        loadDataForTab(_pageState.value.selectedTab)
     }
-}
 
-enum class TemplatesFeedTabs {
-    BEST,
-    NEW,
-    FAVOURITE,
-}
+    fun startRefresh() {
+        _isRefreshing.value = true
+    }
 
-sealed interface TemplateFeedTabState {
-    data object Loading : TemplateFeedTabState
+    fun finishRefresh() {
+        _isRefreshing.value = false
+    }
 
-    data class Error(
-        val message: String,
-    ) : TemplateFeedTabState
+    fun refresh() {
+        viewModelScope.launch {
+            startRefresh()
+            loadDataForTab(_pageState.value.selectedTab)
+            delay(400)
+            finishRefresh()
+        }
+    }
 
-    data class Content(
-        val templates: List<Int>,
-    ) : TemplateFeedTabState
+    fun selectTab(tab: Tab) {
+        _pageState.update { it.copy(selectedTab = tab) }
+        loadDataForTab(tab)
+    }
+
+    fun loadDataForTab(tab: Tab) {
+        if (_pageState.value.getCurrentState() is TabState.Loading) return
+        if (!_isRefreshing.value && _pageState.value.getCurrentState() is TabState.Content) return
+
+        _pageState.update { it.updatedCurrentTabState(TabState.Loading) }
+
+        viewModelScope.launch {
+            val dataFlow =
+                when (tab) {
+                    Tab.BEST -> repository.getBestTemplates()
+                    Tab.NEW -> repository.getNewTemplates()
+                    Tab.FAVOURITE -> repository.getFavouriteTemplates()
+                }
+
+            dataFlow
+                .catch { e ->
+                    var errorType =
+                        when (e) {
+                            is IllegalStateException -> ErrorType.NEED_LOGIN
+                            is FirebaseFirestoreException -> ErrorType.NETWORK
+                            else -> ErrorType.UNKNOWN
+                        }
+
+                    _pageState.update {
+                        it.updatedCurrentTabState(TabState.Error(errorType))
+                    }
+                }.collect { template ->
+                    _pageState.update { it.updatedCurrentContent(template) }
+                }
+
+            finishRefresh()
+        }
+    }
 }

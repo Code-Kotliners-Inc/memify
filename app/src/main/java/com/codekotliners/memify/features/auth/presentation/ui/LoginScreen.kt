@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.registration.presentation.ui
+package com.codekotliners.memify.features.auth.presentation.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,24 +41,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
-import com.codekotliners.memify.features.registration.presentation.viewmodel.RegistrationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(
+fun LoginScreen(
     navController: NavHostController,
-    registerViewModel: RegistrationViewModel = hiltViewModel(),
+    onLoginClicked: (String, String) -> Unit,
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.registration_title),
+                        text = stringResource(R.string.login_title),
                         style = MaterialTheme.typography.titleLarge,
                     )
                 },
@@ -87,25 +85,23 @@ fun RegistrationScreen(
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = stringResource(R.string.security_icon),
-                modifier = Modifier.padding(bottom = 30.dp),
+                modifier = Modifier.padding(bottom = 30.dp).weight(0.5f),
             )
 
-            RegistrationForm(onRegisterClicked = { registerViewModel.onRegisterClicked() })
+            LoginForm(onLoginClicked = onLoginClicked)
         }
     }
 }
 
 @Composable
-fun RegistrationForm(onRegisterClicked: () -> Unit) {
+fun LoginForm(onLoginClicked: (String, String) -> Unit) {
     var email by remember { mutableStateOf(TextFieldValue()) }
-    var name by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
-    var confirmPassword by remember { mutableStateOf(TextFieldValue()) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(22.dp),
+        verticalArrangement = Arrangement.spacedBy(28.dp),
     ) {
         OutlinedTextField(
             value = email,
@@ -113,23 +109,11 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
             label = { Text(stringResource(R.string.email_field)) },
             modifier = Modifier.fillMaxWidth(),
         )
-
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text(stringResource(R.string.name_field)) },
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        PasswordField(label = stringResource(R.string.password_field), onTextChanged = { password = it })
-
-        PasswordField(
-            label = stringResource(R.string.password_confirmation_field),
-            onTextChanged = { confirmPassword = it },
-        )
-
+        PasswordField { password = it }
         Button(
-            onClick = { onRegisterClicked() },
+            onClick = {
+                onLoginClicked(email.text, password.text)
+            },
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -137,7 +121,7 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
             shape = RoundedCornerShape(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.register_button),
+                stringResource(R.string.login_button),
                 style = MaterialTheme.typography.authButton,
             )
         }
@@ -145,18 +129,18 @@ fun RegistrationForm(onRegisterClicked: () -> Unit) {
 }
 
 @Composable
-fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
-    var text by remember { mutableStateOf(TextFieldValue()) }
+fun PasswordField(onTextChange: (TextFieldValue) -> Unit) {
+    var password by remember { mutableStateOf(TextFieldValue()) }
     var passwordVisible by remember { mutableStateOf(false) }
     val passwordVisualTransformation = remember { PasswordVisualTransformation() }
 
     OutlinedTextField(
-        value = text,
+        value = password,
         onValueChange = {
-            text = it
-            onTextChanged(it)
+            password = it
+            onTextChange(it)
         },
-        label = { Text(label) },
+        label = { Text(stringResource(R.string.password_field)) },
         visualTransformation = if (passwordVisible) VisualTransformation.None else passwordVisualTransformation,
         trailingIcon = {
             Box(
@@ -174,7 +158,7 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
                         painterResource(
                             if (passwordVisible) R.drawable.visibility_off else R.drawable.visibility,
                         ),
-                    contentDescription = stringResource(R.string.toggle_confirm_password_visibility),
+                    contentDescription = stringResource(R.string.toggle_password_visibility),
                 )
             }
         },
@@ -184,6 +168,6 @@ fun PasswordField(label: String, onTextChanged: (TextFieldValue) -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewRegistrationScreen() {
-    RegistrationScreen(navController = NavHostController(LocalContext.current))
+fun PreviewLoginScreen() {
+    LoginScreen(navController = NavHostController(LocalContext.current), onLoginClicked = { _, _ -> })
 }

@@ -79,3 +79,7 @@ val Typography.ubuntuText16Sp: TextStyle
             fontSize = 16.sp,
             fontStyle = FontStyle.Normal,
         )
+val MaterialIcons =
+    FontFamily(
+        Font(R.font.material_icons_regular),
+    )
