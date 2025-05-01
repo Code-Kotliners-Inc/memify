@@ -65,7 +65,7 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize(),
         ) {
             when (val currentState = screenState.getCurrentTabState()) {
-                is PostsFeedTabState.Idle -> {}
+                is PostsFeedTabState.None -> {}
                 is PostsFeedTabState.Empty -> EmptyFeed()
                 is PostsFeedTabState.Loading -> LoadingIndicator()
                 is PostsFeedTabState.Error ->

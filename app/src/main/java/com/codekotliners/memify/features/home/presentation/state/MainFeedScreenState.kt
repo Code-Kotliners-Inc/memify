@@ -2,8 +2,8 @@ package com.codekotliners.memify.features.home.presentation.state
 
 data class MainFeedScreenState(
     val selectedTab: MainFeedTab,
-    val popularPostsState: PostsFeedTabState = PostsFeedTabState.Idle,
-    val newPostsState: PostsFeedTabState = PostsFeedTabState.Idle,
+    val popularPostsState: PostsFeedTabState = PostsFeedTabState.None,
+    val newPostsState: PostsFeedTabState = PostsFeedTabState.None,
 ) {
     fun getTabs(): List<MainFeedTab> = MainFeedTab.entries.toList()
 

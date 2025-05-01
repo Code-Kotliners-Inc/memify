@@ -4,9 +4,9 @@ import com.codekotliners.memify.core.models.Template
 
 data class TemplatesPageState(
     val selectedTab: Tab,
-    val bestTemplatesState: TabState = TabState.Idle,
-    val favouriteTemplatesState: TabState = TabState.Idle,
-    val newTemplatesState: TabState = TabState.Idle,
+    val bestTemplatesState: TabState = TabState.None,
+    val favouriteTemplatesState: TabState = TabState.None,
+    val newTemplatesState: TabState = TabState.None,
 ) {
     fun getTabs(): List<Tab> = Tab.entries.toList()
 
@@ -19,7 +19,7 @@ data class TemplatesPageState(
 
     fun currentContent(state: TabState): List<Template> {
         return when (state) {
-            is TabState.Idle -> emptyList<Template>()
+            is TabState.None -> emptyList<Template>()
             is TabState.Loading -> emptyList<Template>()
             is TabState.Error -> emptyList<Template>()
             is TabState.Content -> {

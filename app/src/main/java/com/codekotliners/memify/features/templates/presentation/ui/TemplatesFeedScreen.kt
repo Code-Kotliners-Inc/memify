@@ -60,7 +60,7 @@ fun TemplatesFeedScreen(
             onRefresh = { viewModel.refresh() },
         ) {
             when (val currentState = pageState.getCurrentState()) {
-                TabState.Idle -> {}
+                TabState.None -> {}
 
                 is TabState.Loading -> LoadingTab()
 

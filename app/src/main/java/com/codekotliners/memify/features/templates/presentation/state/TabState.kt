@@ -6,7 +6,7 @@ import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.Template
 
 sealed interface TabState {
-    object Idle : TabState
+    object None : TabState
 
     data object Loading : TabState
 

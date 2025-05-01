@@ -16,7 +16,7 @@ enum class MainFeedTab(
 }
 
 sealed interface PostsFeedTabState {
-    object Idle : PostsFeedTabState
+    object None : PostsFeedTabState
 
     object Empty : PostsFeedTabState
 
