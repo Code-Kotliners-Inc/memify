@@ -17,7 +17,7 @@ import java.io.IOException
 import javax.inject.Inject
 
 class PostsFbStorageDatasource @Inject constructor(
-    private val internetChecker: InternetChecker
+    private val internetChecker: InternetChecker,
 ) : PostsDatasource {
     private val storage = Firebase.storage
     private val postImagesRef = storage.reference.child(STORAGE_POSTS_IMAGES_DIRECTORY)
@@ -51,30 +51,36 @@ class PostsFbStorageDatasource @Inject constructor(
      * Returns true when the operation was successful
      **/
     override suspend fun uploadPost(post: PostDto, imageUri: Uri): Boolean {
+        var isSuccess = true
+
         val firestoreDocument = postsCollection.document()
         val imageName = firestoreDocument.id
         val imageRef = postImagesRef.child(imageName)
 
-        if (!uploadToStorage(imageRef, imageUri))
-            return false
-
-        try {
-            val downloadUrl = imageRef.downloadUrl.await()
-
-            if (!uploadToFirestore(firestoreDocument, downloadUrl, post)) {
-                imageRef.delete()
-                return false
-            }
-        } catch (e: Exception) {
-            Logger.log(
-                Logger.Level.ERROR,
-                "Post uploading",
-                "Failed to get url to just right now uploaded to storage image for document: ${post.id}\n${e.message}",
-            )
-            return false
+        if (!uploadToStorage(imageRef, imageUri)) {
+            isSuccess = false
         }
 
-        return true
+        if (isSuccess) {
+            try {
+                val downloadUrl = imageRef.downloadUrl.await()
+
+                if (!uploadToFirestore(firestoreDocument, downloadUrl, post)) {
+                    imageRef.delete()
+                    isSuccess = false
+                }
+            } catch (e: Exception) {
+                Logger.log(
+                    Logger.Level.ERROR,
+                    "Post uploading",
+                    "Failed to get url to just right now uploaded" +
+                        "to storage image for document: ${post.id}\n${e.message}",
+                )
+                isSuccess = false
+            }
+        }
+
+        return isSuccess
     }
 
     private suspend fun uploadToStorage(imageRef: StorageReference, imageUri: Uri): Boolean {
@@ -91,7 +97,11 @@ class PostsFbStorageDatasource @Inject constructor(
         return false
     }
 
-    private suspend fun uploadToFirestore(firestoreDocument: DocumentReference, downloadUrl: Uri, post: PostDto): Boolean {
+    private suspend fun uploadToFirestore(
+        firestoreDocument: DocumentReference,
+        downloadUrl: Uri,
+        post: PostDto,
+    ): Boolean {
         val postToUpload = post.toMap().toMutableMap()
         postToUpload["id"] = firestoreDocument.id
         postToUpload["imageUrl"] = downloadUrl.toString()

@@ -68,7 +68,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.R
-import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
@@ -96,7 +95,7 @@ fun CreateScreen(onLogin: () -> Unit) {
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
         scrollBehavior = scrollBehavior,
-        onLogin = onLogin
+        onLogin = onLogin,
     )
 }
 
@@ -106,7 +105,7 @@ private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     scrollBehavior: TopAppBarScrollBehavior,
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
 ) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -303,15 +302,13 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     } else {
                         Modifier
                     },
-                )
-                .graphicsLayer(
+                ).graphicsLayer(
                     scaleX = scale,
                     scaleY = scale,
                     rotationZ = angle,
                     translationX = offset.x,
                     translationY = offset.y,
-                )
-                .transformable(state = state),
+                ).transformable(state = state),
     ) {
         Image(
             painter = painterResource(id = R.drawable.meme),

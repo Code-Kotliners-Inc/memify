@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.templates.data.repository
 
-import android.util.Log
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesType

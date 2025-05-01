@@ -12,7 +12,7 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     @Provides
-    fun provideInternetChecker(@ApplicationContext context: Context): InternetChecker {
-        return InternetChecker(context)
-    }
+    fun provideInternetChecker(
+        @ApplicationContext context: Context,
+    ): InternetChecker = InternetChecker(context)
 }

@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.templates.presentation.state
 
-import android.content.Context
 import androidx.annotation.StringRes
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.Template

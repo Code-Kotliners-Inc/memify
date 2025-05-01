@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.templates.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
@@ -71,8 +70,7 @@ class TemplatesFeedViewModel @Inject constructor(
             dataFlow
                 .onEmpty {
                     _pageState.update { it.updatedCurrentTabState(TabState.Empty) }
-                }
-                .catch { e ->
+                }.catch { e ->
                     var errorType =
                         when (e) {
                             is IllegalStateException -> ErrorType.NEED_LOGIN
@@ -86,7 +84,6 @@ class TemplatesFeedViewModel @Inject constructor(
                 }.collect { template ->
                     _pageState.update { it.updatedCurrentContent(template) }
                 }
-
 
             finishRefresh()
         }

@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.templates.presentation.state
 
-import android.util.Log
 import com.codekotliners.memify.core.models.Template
 
 data class TemplatesPageState(
