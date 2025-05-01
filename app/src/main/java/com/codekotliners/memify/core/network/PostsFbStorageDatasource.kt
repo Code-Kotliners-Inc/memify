@@ -32,7 +32,12 @@ class PostsFbStorageDatasource @Inject constructor(
         return snap.mapNotNull { doc ->
             try {
                 doc.toPostDto()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                Logger.log(
+                    Logger.Level.ERROR,
+                    "Posts receiving",
+                    "Failed to deserialize a post: ${doc.id}\n${e.message}",
+                )
                 null
             }
         }
