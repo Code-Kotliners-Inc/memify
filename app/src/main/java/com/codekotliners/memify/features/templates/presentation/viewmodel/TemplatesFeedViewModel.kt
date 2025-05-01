@@ -14,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -68,6 +69,9 @@ class TemplatesFeedViewModel @Inject constructor(
                 }
 
             dataFlow
+                .onEmpty {
+                    _pageState.update { it.updatedCurrentTabState(TabState.Empty) }
+                }
                 .catch { e ->
                     var errorType =
                         when (e) {
@@ -82,6 +86,7 @@ class TemplatesFeedViewModel @Inject constructor(
                 }.collect { template ->
                     _pageState.update { it.updatedCurrentContent(template) }
                 }
+
 
             finishRefresh()
         }
