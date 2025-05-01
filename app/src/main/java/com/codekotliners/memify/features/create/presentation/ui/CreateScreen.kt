@@ -81,7 +81,7 @@ import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen() {
+fun CreateScreen(onLogin: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val bottomSheetState =
@@ -95,7 +95,8 @@ fun CreateScreen() {
     CreateScreenBottomSheet(
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
+        onLogin = onLogin
     )
 }
 
@@ -105,13 +106,14 @@ private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     scrollBehavior: TopAppBarScrollBehavior,
+    onLogin: () -> Unit
 ) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
         sheetContent = {
-            TemplatesFeedScreen({}, {})
+            TemplatesFeedScreen({ onLogin() }, {})
         },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
@@ -346,6 +348,6 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 @Composable
 fun CreateScreenPreview() {
     MemifyTheme {
-        CreateScreen()
+        CreateScreen({})
     }
 }

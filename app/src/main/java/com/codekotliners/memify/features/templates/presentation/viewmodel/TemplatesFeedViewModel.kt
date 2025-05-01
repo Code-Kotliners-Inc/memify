@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.templates.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
@@ -36,16 +37,15 @@ class TemplatesFeedViewModel @Inject constructor(
     }
 
     fun finishRefresh() {
-        _isRefreshing.value = false
+        viewModelScope.launch {
+            delay(300)
+            _isRefreshing.value = false
+        }
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            startRefresh()
-            loadDataForTab(_pageState.value.selectedTab)
-            delay(400)
-            finishRefresh()
-        }
+        startRefresh()
+        loadDataForTab(_pageState.value.selectedTab)
     }
 
     fun selectTab(tab: Tab) {

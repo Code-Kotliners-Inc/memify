@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.templates.data.datasource
 
+import android.util.Log
 import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_CREATED_AT
@@ -35,6 +36,7 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
     private fun fetchTemplates(query: Query): Flow<Template> =
         flow {
             val snap = query.get().await()
+
             snap.documents.forEach { doc ->
                 try {
                     emit(doc.toTemplate())

@@ -11,8 +11,6 @@ enum class MainFeedTab(
     POPULAR(R.string.popular_tab_name),
     NEW(R.string.new_tab_name),
     ;
-
-    fun getName(context: Context): String = context.getString(nameResId)
 }
 
 sealed interface PostsFeedTabState {
@@ -37,6 +35,4 @@ enum class ErrorType(
     NETWORK(R.string.network_errormessage),
     UNKNOWN(R.string.unknown_error_message),
     ;
-
-    fun getMessage(context: Context): String = context.getString(userMessageResId)
 }

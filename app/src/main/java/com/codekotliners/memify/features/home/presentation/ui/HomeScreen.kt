@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.core.models.Post
@@ -49,7 +50,7 @@ fun HomeScreen(
                     onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = tab.getName(LocalContext.current),
+                            text = stringResource(tab.nameResId),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
@@ -69,7 +70,7 @@ fun HomeScreen(
                 is PostsFeedTabState.Empty -> EmptyFeed()
                 is PostsFeedTabState.Loading -> LoadingIndicator()
                 is PostsFeedTabState.Error ->
-                    ErrorScreen(currentState.type.getMessage(LocalContext.current))
+                    ErrorScreen(currentState.type)
                 is PostsFeedTabState.Content ->
                     PostsFeed(currentState.posts) { post ->
                         viewModel.likeClick(post)
