@@ -50,7 +50,7 @@ fun App(
                 modifier = Modifier.weight(1f),
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
-                composable(NavRoutes.Create.route) { CreateScreen{ navController.navigate(NavRoutes.Auth.route) } }
+                composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
                 composable(NavRoutes.Profile.route) { ProfileScreen() }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {

@@ -3,6 +3,11 @@ package com.codekotliners.memify.features.templates.domain.datasource
 import com.codekotliners.memify.core.models.Template
 import kotlinx.coroutines.flow.Flow
 
-interface TemplatesDatasource {
-    suspend fun getFilteredTemplates(type: TemplatesFilter, limit: Long): Flow<Template>
+data class DatasourceResult<T>(
+    val data: Flow<Template>,
+    val nextToStart: T?,
+)
+
+interface TemplatesDatasource<T> {
+    suspend fun getFilteredTemplates(type: TemplatesFilter, limit: Long, startWith: T?): DatasourceResult<T>
 }

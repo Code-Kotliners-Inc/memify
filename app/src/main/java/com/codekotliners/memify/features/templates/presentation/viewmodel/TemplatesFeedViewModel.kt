@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class TemplatesFeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
-    val limitPerRequest: Long = 50
+    val limitPerRequest: Long = 20
 
     init {
         loadDataForTab(_pageState.value.selectedTab)
@@ -57,20 +58,48 @@ class TemplatesFeedViewModel @Inject constructor(
 
     fun loadDataForTab(tab: Tab) {
         if (_pageState.value.getCurrentState() is TabState.Loading) return
-        if (!_isRefreshing.value && _pageState.value.getCurrentState() is TabState.Content) return
+        val currentState = _pageState.value.getCurrentState()
+        if (!isRefreshing.value &&
+            currentState is TabState.Content &&
+            currentState.isLoadingMore
+        ) {
+            return
+        }
 
-        _pageState.update { it.updatedCurrentTabState(TabState.Loading) }
+        if (isRefreshing.value || pageState.value.getTemplatesOfSelectedState().isEmpty()) {
+            _pageState.update { it.updatedCurrentTabState(TabState.Loading) }
+        } else {
+            _pageState.update {
+                it.updatedCurrentTabState(
+                    TabState.Content(
+                        it.getTemplatesByState(it.getCurrentState()),
+                        true,
+                    ),
+                )
+            }
+        }
 
         viewModelScope.launch {
             val dataFlow =
                 when (tab) {
-                    Tab.BEST -> repository.getBestTemplates(limitPerRequest)
-                    Tab.NEW -> repository.getNewTemplates(limitPerRequest)
-                    Tab.FAVOURITE -> repository.getFavouriteTemplates(limitPerRequest)
+                    Tab.BEST -> repository.getBestTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.NEW -> repository.getNewTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.FAVOURITE ->
+                        repository.getFavouriteTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                 }
 
             dataFlow
-                .catch { e ->
+                .onEmpty {
+                    delay(1400) // to show loading in UI
+                    _pageState.update {
+                        it.updatedCurrentTabState(
+                            TabState.Content(
+                                it.getTemplatesOfSelectedState(),
+                                false,
+                            ),
+                        )
+                    }
+                }.catch { e ->
                     var errorType =
                         when (e) {
                             is IllegalStateException -> ErrorType.NEED_LOGIN
