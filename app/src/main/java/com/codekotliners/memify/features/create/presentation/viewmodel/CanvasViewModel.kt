@@ -59,6 +59,9 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     var iAmAPainterGodDamnIt by mutableStateOf(false)
     var iAmAWriterGodDamnIt by mutableStateOf(false)
 
+    var showRadialMenu by mutableStateOf(false)
+    var radialMenuPosition by mutableStateOf(Offset.Zero)
+
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
     }
@@ -78,8 +81,21 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun startWriting() {
+        clearModes()
+        iAmAWriterGodDamnIt = true
         isWriting = true
+        showTextPreview = true
         currentText = ""
+    }
+
+    fun clearModes() {
+        iAmAPainterGodDamnIt = false
+        iAmAWriterGodDamnIt = false
+        isWriting = false
+        showTextPreview = false
+        showColors = false
+        showFonts = false
+        showWeights = false
     }
 
     fun clearCanvas() {
@@ -144,7 +160,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
 
-    fun drawCanvasElements(canvas: android.graphics.Canvas) {
+    private fun drawCanvasElements(canvas: android.graphics.Canvas) {
         canvas.drawColor(Color.White.toArgb())
         val paint = Paint().apply {
             isAntiAlias = true
