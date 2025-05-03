@@ -9,8 +9,9 @@ import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE
 import com.codekotliners.memify.features.templates.data.constants.TEMPLATES_COLLECTION_NAME
 import com.codekotliners.memify.features.templates.data.mappers.toTemplate
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
-import com.codekotliners.memify.features.templates.domain.datasource.TemplatesType
+import com.codekotliners.memify.features.templates.domain.datasource.TemplatesFilter
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
@@ -22,37 +23,70 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
     private val db = Firebase.firestore
     private val templatesCollection = db.collection(TEMPLATES_COLLECTION_NAME)
 
-    override suspend fun getFilteredTemplates(type: TemplatesType, limit: Int): Flow<Template> {
+    private var bestStartWith: DocumentSnapshot? = null
+    private var newStartWith: DocumentSnapshot? = null
+    private var favouritesWith: DocumentSnapshot? = null
+
+    override suspend fun getFilteredTemplates(type: TemplatesFilter, limit: Long): Flow<Template> {
+        bestStartWith?.let { Log.d("FILTERING...", it.id) }
+        if (bestStartWith == null) {
+            Log.d("FILTERING...", "IT IS FUCKING NULL")
+        }
+
+        val limitToFetch = limit + 1  // to handle paging
         val queryByType =
             when (type) {
-                is TemplatesType.BEST -> queryBest(limit)
-                is TemplatesType.NEW -> queryNew(limit)
-                is TemplatesType.FAVOURITES -> queryFavourites(type.userId, limit)
+                is TemplatesFilter.Best -> queryBest(limitToFetch, bestStartWith)
+                is TemplatesFilter.New -> queryNew(limitToFetch, newStartWith)
+                is TemplatesFilter.Favorites -> queryFavourites(type.userId, limitToFetch, favouritesWith)
             }
 
-        return fetchTemplates(queryByType)
+        val snap = queryByType.get().await()
+        val savedDoc = if (snap.documents.size.toLong() == limit + 1) {
+            snap.documents.last()
+        } else {
+            null
+        }
+        when (type) {
+            is TemplatesFilter.Best -> bestStartWith = savedDoc
+            is TemplatesFilter.New -> newStartWith = savedDoc
+            is TemplatesFilter.Favorites -> favouritesWith = savedDoc
+        }
+        return fetchTemplates(snap.documents.dropLast(1))
     }
 
-    private fun fetchTemplates(query: Query): Flow<Template> =
+    private fun fetchTemplates(documents: List<DocumentSnapshot>): Flow<Template> =
         flow {
-            val snap = query.get().await()
-            snap.documents.forEach { doc ->
+            documents.forEach { doc ->
                 try {
                     emit(doc.toTemplate())
                 } catch (e: Exception) {
                     Logger.log(Logger.Level.ERROR, "Templates parsing", "For document: ${doc.id} ${e.message}")
-                    null
                 }
             }
-            Log.d("TEST", "${snap.documents.size}")
         }
 
-    private fun queryNew(limit: Int): Query =
-        templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
+    private fun queryBest(limit: Long, startAtDocument: DocumentSnapshot?): Query {
+        var baseQuery = templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
+            .limit(limit)
+        if (startAtDocument != null)
+            baseQuery = baseQuery.startAt(startAtDocument)
+        return baseQuery
+    }
 
-    private fun queryBest(limit: Int): Query =
-        templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
+    private fun queryNew(limit: Long, startAtDocument: DocumentSnapshot?): Query {
+        var baseQuery = templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
+            .limit(limit)
+        if (startAtDocument != null)
+            baseQuery = baseQuery.startAt(startAtDocument)
+        return baseQuery
+    }
 
-    private fun queryFavourites(userId: String, limit: Int): Query =
-        templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
+    private fun queryFavourites(userId: String, limit: Long, startAtDocument: DocumentSnapshot?): Query {
+        var baseQuery = templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
+            .limit(limit)
+        if (startAtDocument != null)
+            baseQuery = baseQuery.startAt(startAtDocument)
+        return baseQuery
+    }
 }

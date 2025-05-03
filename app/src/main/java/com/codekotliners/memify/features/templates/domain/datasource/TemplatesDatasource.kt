@@ -4,5 +4,5 @@ import com.codekotliners.memify.core.models.Template
 import kotlinx.coroutines.flow.Flow
 
 interface TemplatesDatasource {
-    suspend fun getFilteredTemplates(type: TemplatesType, limit: Int): Flow<Template>
+    suspend fun getFilteredTemplates(type: TemplatesFilter, limit: Long): Flow<Template>
 }

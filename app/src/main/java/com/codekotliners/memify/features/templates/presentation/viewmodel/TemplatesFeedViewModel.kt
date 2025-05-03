@@ -27,7 +27,7 @@ class TemplatesFeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
-    val limitPerRequest = 50
+    val limitPerRequest: Long = 50
 
     init {
         loadDataForTab(_pageState.value.selectedTab)
