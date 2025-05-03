@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.templates.data.datasource
 
+import android.util.Log
 import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_CREATED_AT
@@ -21,12 +22,12 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
     private val db = Firebase.firestore
     private val templatesCollection = db.collection(TEMPLATES_COLLECTION_NAME)
 
-    override suspend fun getFilteredTemplates(type: TemplatesType): Flow<Template> {
+    override suspend fun getFilteredTemplates(type: TemplatesType, limit: Int): Flow<Template> {
         val queryByType =
             when (type) {
-                is TemplatesType.BEST -> queryBest()
-                is TemplatesType.FAVOURITES -> queryFavourites(type.userId)
-                is TemplatesType.NEW -> queryNew()
+                is TemplatesType.BEST -> queryBest(limit)
+                is TemplatesType.NEW -> queryNew(limit)
+                is TemplatesType.FAVOURITES -> queryFavourites(type.userId, limit)
             }
 
         return fetchTemplates(queryByType)
@@ -43,14 +44,15 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource {
                     null
                 }
             }
+            Log.d("TEST", "${snap.documents.size}")
         }
 
-    private fun queryNew(): Query =
+    private fun queryNew(limit: Int): Query =
         templatesCollection.orderBy(FIELD_TEMPLATE_CREATED_AT, Query.Direction.DESCENDING)
 
-    private fun queryBest(): Query =
+    private fun queryBest(limit: Int): Query =
         templatesCollection.orderBy(FIELD_TEMPLATE_USED_COUNT, Query.Direction.DESCENDING)
 
-    private fun queryFavourites(userId: String): Query =
+    private fun queryFavourites(userId: String, limit: Int): Query =
         templatesCollection.whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
 }

@@ -27,6 +27,8 @@ class TemplatesFeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
+    val limitPerRequest = 50
+
     init {
         loadDataForTab(_pageState.value.selectedTab)
     }
@@ -62,9 +64,9 @@ class TemplatesFeedViewModel @Inject constructor(
         viewModelScope.launch {
             val dataFlow =
                 when (tab) {
-                    Tab.BEST -> repository.getBestTemplates()
-                    Tab.NEW -> repository.getNewTemplates()
-                    Tab.FAVOURITE -> repository.getFavouriteTemplates()
+                    Tab.BEST -> repository.getBestTemplates(limitPerRequest)
+                    Tab.NEW -> repository.getNewTemplates(limitPerRequest)
+                    Tab.FAVOURITE -> repository.getFavouriteTemplates(limitPerRequest)
                 }
 
             dataFlow

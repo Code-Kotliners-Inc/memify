@@ -4,9 +4,9 @@ import com.codekotliners.memify.core.models.Template
 import kotlinx.coroutines.flow.Flow
 
 interface TemplatesRepository {
-    suspend fun getBestTemplates(): Flow<Template>
+    suspend fun getBestTemplates(limit: Int): Flow<Template>
 
-    suspend fun getNewTemplates(): Flow<Template>
+    suspend fun getNewTemplates(limit: Int): Flow<Template>
 
-    suspend fun getFavouriteTemplates(): Flow<Template>
+    suspend fun getFavouriteTemplates(limit: Int): Flow<Template>
 }
