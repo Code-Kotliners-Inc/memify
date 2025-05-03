@@ -139,9 +139,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         val height = imageHeight.toInt()
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = android.graphics.Canvas(bitmap)
-
         drawCanvasElements(canvas)
-
         bitmap
     }
 
@@ -151,14 +149,14 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         val paint = Paint().apply {
             isAntiAlias = true
         }
-
         for (element in canvasElements) {
             when (element) {
                 is ColoredLine -> {
                     paint.color = element.color.toArgb()
                     paint.strokeWidth = element.strokeWidth
                     paint.style = Paint.Style.STROKE
-
+                    paint.strokeCap = Paint.Cap.ROUND
+                    paint.strokeJoin = Paint.Join.ROUND
                     val path = Path().apply {
                         if (element.points.isNotEmpty()) {
                             moveTo(element.points.first().x, element.points.first().y)
@@ -169,23 +167,19 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                     }
                     canvas.drawPath(path, paint)
                 }
-
                 is TextElement -> {
                     paint.color = element.color.toArgb()
-                    paint.textSize = element.size
-                    paint.typeface = Typeface.DEFAULT // тут нужно маппить FontFamily на Typeface
+                    paint.textSize = (element.size * 1.6).toFloat() //MULTIPLY
+                    paint.typeface = Typeface.DEFAULT
                     paint.style = Paint.Style.FILL
-
                     canvas.drawText(
                         element.text,
                         element.position.x,
-                        element.position.y,
+                        element.position.y,//is it right?
                         paint
                     )
                 }
             }
         }
-
     }
-
 }
