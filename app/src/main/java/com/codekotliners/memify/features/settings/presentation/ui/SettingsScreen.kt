@@ -43,7 +43,6 @@ import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
 
-
 @Composable
 fun SettingsUnLoggedScreen() {
     Scaffold(
@@ -348,6 +347,7 @@ private fun ChangePhoto() {
         }
     }
 }
+
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -356,4 +356,3 @@ fun SettingsLoggedScreenPreview() {
         SettingsLoggedScreen()
     }
 }
-

@@ -1,11 +1,8 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
-import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.view.View
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +29,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -56,8 +52,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,8 +59,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -90,7 +82,6 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -132,7 +123,7 @@ fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
                             bitmapState.value = bitmap
                             showImageViewer.value = true
                         }
-                    }
+                    },
                 )
             },
         ) { scaffoldInnerPadding ->
@@ -142,7 +133,7 @@ fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
                 Dialog(onDismissRequest = { showImageViewer.value = false }) {
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        tonalElevation = 4.dp
+                        tonalElevation = 4.dp,
                     ) {
                         ImageViewerScreen(bitmap = bitmapState.value!!)
                     }
@@ -151,7 +142,6 @@ fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +174,6 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 
 @Composable
 private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
-
     LazyColumn(
         modifier =
             Modifier
@@ -366,7 +355,6 @@ private fun ImageBox(viewModel: CanvasViewModel) {
     }
 }
 
-
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -375,4 +363,3 @@ fun CreateScreenPreview() {
         CreateScreen()
     }
 }
-
