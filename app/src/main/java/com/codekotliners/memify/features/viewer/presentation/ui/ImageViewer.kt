@@ -81,7 +81,7 @@ fun ImageViewerScreen(
         topBar = {
             ImageViewerTopBar(
                 onShareClick = { viewModel.onShareClick(bitmap) },
-                onDownloadClick = { viewModel.onDownloadClick() },
+                onDownloadClick = { viewModel.onDownloadClick(bitmap) },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
                 title = "Предпросмотр",
