@@ -44,43 +44,6 @@ import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
 
 @Composable
-fun SettingsUnLoggedScreen() {
-    Scaffold(
-        topBar = {
-            ToolBar()
-        },
-        content = { paddingValues ->
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(paddingValues)
-                        .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                ThemeChange()
-                Button(
-                    onClick = {},
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.login),
-                        style = MaterialTheme.typography.authButton,
-                        modifier = Modifier.padding(10.dp),
-                    )
-                }
-            }
-        },
-    )
-}
-
-@Composable
 fun SettingsLoggedScreen() {
     Scaffold(
         topBar = {

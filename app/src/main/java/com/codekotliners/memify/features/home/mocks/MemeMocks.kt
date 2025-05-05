@@ -1,5 +1,7 @@
 package com.codekotliners.memify.features.home.mocks
 
+import com.codekotliners.memify.core.models.User
+
 data class MockMeme(
     val id: String,
     val title: String,
@@ -23,4 +25,11 @@ val MOCK_MEMES: List<MockMeme> =
             "Cat 3",
             "https://i.pinimg.com/474x/ff/81/b7/ff81b7b5b8c90905351d7475fdcc3fc3.jpg",
         ),
+    )
+
+val mockUser =
+    User(
+        "uid",
+        "https://media.zenfs.com/en/us.abcnews.go.com/9da71bee32e1aa23075b2c04c38987b3",
+        "Mock-user-name",
     )

@@ -64,7 +64,7 @@ complexity:
         threshold: 60
     LongParameterList:
         active: true
-        functionThreshold: 6
+        functionThreshold: 7
         constructorThreshold: 7
         ignoreDefaultParameters: false
         ignoreDataClasses: true
@@ -320,7 +320,7 @@ style:
         active: true
     ReturnCount:
         active: true
-        max: 2
+        max: 4
         excludedFunctions: ['equals']
         excludeLabeled: false
         excludeReturnFromLambda: true

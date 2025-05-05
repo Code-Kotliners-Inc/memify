@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,19 +82,15 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
+fun CreateScreen(onLogin: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val minHeight = 800.dp
-    val maxHeight = 900.dp
-    val showImageViewer = remember { mutableStateOf(false) }
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
-    val coroutineScope = rememberCoroutineScope()
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
@@ -103,12 +100,33 @@ fun CreateScreen(viewModel: CanvasViewModel = hiltViewModel()) {
             },
         )
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
+    CreateScreenBottomSheet(
+        scaffoldState = scaffoldState,
+        bottomSheetState = bottomSheetState,
+        scrollBehavior = scrollBehavior,
+        onLogin = onLogin,
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CreateScreenBottomSheet(
+    scaffoldState: BottomSheetScaffoldState,
+    bottomSheetState: SheetState,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onLogin: () -> Unit,
+    viewModel: CanvasViewModel = hiltViewModel(),
+) {
+    val showImageViewer = remember { mutableStateOf(false) }
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val coroutineScope = rememberCoroutineScope()
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
-        sheetContent = { BottomSheetContent(bottomSheetState, minHeight, maxHeight) },
+        sheetContent = {
+            TemplatesFeedScreen({ onLogin() }, {})
+        },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
@@ -360,6 +378,6 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 @Composable
 fun CreateScreenPreview() {
     MemifyTheme {
-        CreateScreen()
+        CreateScreen({})
     }
 }
