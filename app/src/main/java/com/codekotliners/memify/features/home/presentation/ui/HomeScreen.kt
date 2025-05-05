@@ -1,71 +1,55 @@
 package com.codekotliners.memify.features.home.presentation.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.codekotliners.memify.R
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
+import com.codekotliners.memify.features.home.presentation.ui.components.EmptyFeed
+import com.codekotliners.memify.features.home.presentation.ui.components.ErrorScreen
+import com.codekotliners.memify.features.home.presentation.ui.components.LoadingIndicator
+import com.codekotliners.memify.features.home.presentation.ui.components.PostCardFooter
+import com.codekotliners.memify.features.home.presentation.ui.components.PostCardHeader
+import com.codekotliners.memify.features.home.presentation.ui.components.PostCardImage
 import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
-import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabState
-import com.codekotliners.memify.features.home.presentation.viewModel.MainFeedTabs
-import com.codekotliners.memify.features.home.presentation.viewModel.MemeCard
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
-    val viewModel: HomeScreenViewModel = viewModel()
-    val tabState by viewModel.tabStates.collectAsState()
-    val selectedTab by viewModel.selectedTab.collectAsState()
+fun HomeScreen(
+    viewModel: HomeScreenViewModel = hiltViewModel(),
+) {
+    val screenState by viewModel.screenState.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = selectedTab.ordinal) {
-            tabState.forEach { (tab, _) ->
+        TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
+            screenState.getTabs().forEach { tab ->
                 Tab(
-                    selected = selectedTab == tab,
+                    selected = screenState.selectedTab == tab,
                     onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = resolveMainFeedTabName(tab),
+                            text = stringResource(tab.nameResId),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
@@ -74,23 +58,31 @@ fun HomeScreen() {
                 )
             }
         }
-        when (val currentState = tabState[selectedTab]) {
-            is MainFeedTabState.Loading -> LoadingIndicator()
-            is MainFeedTabState.Error -> ErrorMessage(currentState.message)
-            is MainFeedTabState.Content ->
-                MemesColumn(currentState.content.toImmutableList()) { card ->
-                    viewModel.likeClick(card)
-                }
 
-            null -> ErrorMessage(stringResource(R.string.State_unavailable_error))
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refresh() },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when (val currentState = screenState.getCurrentTabState()) {
+                is PostsFeedTabState.None -> {}
+                is PostsFeedTabState.Empty -> EmptyFeed()
+                is PostsFeedTabState.Loading -> LoadingIndicator()
+                is PostsFeedTabState.Error ->
+                    ErrorScreen(currentState.type)
+                is PostsFeedTabState.Content ->
+                    PostsFeed(currentState.posts) { post ->
+                        viewModel.likeClick(post)
+                    }
+            }
         }
     }
 }
 
 @Composable
-private fun MemesColumn(
-    cards: ImmutableList<MemeCard>,
-    onLikeClick: (MemeCard) -> Unit,
+private fun PostsFeed(
+    posts: List<Post>,
+    onLikeClick: (Post) -> Unit,
 ) {
     LazyColumn(
         modifier =
@@ -99,16 +91,16 @@ private fun MemesColumn(
                 .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
     ) {
-        items(cards) { card ->
-            MemeCard(card, onLikeClick)
+        items(posts) { post ->
+            PostCard(post, onLikeClick)
         }
     }
 }
 
 @Composable
-fun MemeCard(
-    card: MemeCard,
-    onLikeClick: (MemeCard) -> Unit,
+fun PostCard(
+    card: Post,
+    onLikeClick: (Post) -> Unit,
 ) {
     Card(
         modifier =
@@ -119,98 +111,10 @@ fun MemeCard(
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
     ) {
-        Column(Modifier.padding(8.dp)) {
-            MemeCardHeader(card)
-            Spacer(Modifier.height(8.dp))
-            MemeCardImage(card)
-            MemeCardFooter(card, onLikeClick)
+        Column(Modifier.padding(horizontal = 8.dp)) {
+            PostCardHeader(card)
+            PostCardImage(card)
+            PostCardFooter(card, onLikeClick)
         }
     }
 }
-
-@Composable
-private fun MemeCardHeader(card: MemeCard) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Image(
-            painter = painterResource(card.author.profilePicture),
-            contentDescription = "Profile picture",
-            modifier =
-                Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-        )
-        Spacer(Modifier.width(8.dp))
-        Text(
-            text = card.author.name,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-        )
-        Spacer(Modifier.weight(1f))
-        IconButton(
-            content = { Icon(Icons.Default.MoreVert, "Menu") },
-            onClick = {},
-        )
-    }
-}
-
-@Composable
-private fun MemeCardImage(card: MemeCard) {
-    Image(
-        painter = painterResource(card.picture),
-        contentDescription = "Meme image",
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp)),
-        contentScale = ContentScale.Crop,
-    )
-}
-
-@Composable
-private fun MemeCardFooter(
-    card: MemeCard,
-    onLikeClick: (MemeCard) -> Unit,
-) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { onLikeClick(card) }) {
-            Icon(
-                imageVector = if (card.isLiked) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                contentDescription = "Like",
-                tint = if (card.isLiked) Color.Red else Color.Gray,
-            )
-        }
-        Text(text = card.likesCount.toString())
-    }
-}
-
-@Composable
-private fun LoadingIndicator() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun ErrorMessage(message: String) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(text = message, style = MaterialTheme.typography.bodyMedium)
-    }
-}
-
-@Composable
-private fun resolveMainFeedTabName(tab: MainFeedTabs): String =
-    when (tab) {
-        MainFeedTabs.POPULAR -> stringResource(R.string.Popular)
-        MainFeedTabs.NEW -> stringResource(R.string.New)
-    }

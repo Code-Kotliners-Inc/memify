@@ -76,13 +76,12 @@ import com.codekotliners.memify.features.create.presentation.ui.components.Instr
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
+import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateScreen() {
+fun CreateScreen(onLogin: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val minHeight = 800.dp
-    val maxHeight = 900.dp
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
@@ -95,9 +94,8 @@ fun CreateScreen() {
     CreateScreenBottomSheet(
         scaffoldState = scaffoldState,
         bottomSheetState = bottomSheetState,
-        minHeight = minHeight,
-        maxHeight = maxHeight,
         scrollBehavior = scrollBehavior,
+        onLogin = onLogin,
     )
 }
 
@@ -106,15 +104,16 @@ fun CreateScreen() {
 private fun CreateScreenBottomSheet(
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
-    minHeight: Dp,
-    maxHeight: Dp,
     scrollBehavior: TopAppBarScrollBehavior,
+    onLogin: () -> Unit,
 ) {
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
-        sheetContent = { BottomSheetContent(bottomSheetState, minHeight, maxHeight) },
+        sheetContent = {
+            TemplatesFeedScreen({ onLogin() }, {})
+        },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
@@ -346,6 +345,6 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 @Composable
 fun CreateScreenPreview() {
     MemifyTheme {
-        CreateScreen()
+        CreateScreen({})
     }
 }
