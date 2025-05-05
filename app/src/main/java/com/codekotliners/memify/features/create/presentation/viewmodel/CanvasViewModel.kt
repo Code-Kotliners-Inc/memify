@@ -115,7 +115,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-
     fun finishWriting() {
         if (currentText.isNotBlank()) {
             history.add(canvasElements.toList())

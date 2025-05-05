@@ -28,7 +28,7 @@ class DrawingCanvas(
     private fun drawColoredLine(
         canvas: android.graphics.Canvas,
         paint: Paint,
-        line: ColoredLine
+        line: ColoredLine,
     ) {
         paint.apply {
             color = line.color.toArgb()
@@ -39,12 +39,13 @@ class DrawingCanvas(
         }
 
         if (line.points.isNotEmpty()) {
-            val path = Path().apply {
-                moveTo(line.points.first().x, line.points.first().y)
-                for (point in line.points.drop(1)) {
-                    lineTo(point.x, point.y)
+            val path =
+                Path().apply {
+                    moveTo(line.points.first().x, line.points.first().y)
+                    for (point in line.points.drop(1)) {
+                        lineTo(point.x, point.y)
+                    }
                 }
-            }
             canvas.drawPath(path, paint)
         }
     }
@@ -52,7 +53,7 @@ class DrawingCanvas(
     private fun drawTextElement(
         canvas: android.graphics.Canvas,
         paint: Paint,
-        textElement: TextElement
+        textElement: TextElement,
     ) {
         paint.apply {
             color = textElement.color.toArgb()
@@ -65,7 +66,7 @@ class DrawingCanvas(
             textElement.text,
             textElement.position.x,
             textElement.position.y,
-            paint
+            paint,
         )
     }
 }
