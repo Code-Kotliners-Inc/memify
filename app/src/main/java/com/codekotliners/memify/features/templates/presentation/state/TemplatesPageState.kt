@@ -19,7 +19,7 @@ data class TemplatesPageState(
 
     fun getTemplatesByState(state: TabState): List<Template> {
         return when (state) {
-            is TabState.Idle -> emptyList<Template>()
+            is TabState.None -> emptyList<Template>()
             is TabState.Loading -> emptyList<Template>()
             is TabState.Error -> emptyList<Template>()
             is TabState.Content -> {
