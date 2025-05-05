@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.play.services.auth)
+    implementation(libs.firebase.storage)
 
     // Collections
     implementation(libs.kotlinx.collections.immutable)

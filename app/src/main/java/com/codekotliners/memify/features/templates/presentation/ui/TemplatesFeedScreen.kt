@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.codekotliners.memify.core.models.Template
@@ -41,7 +41,7 @@ fun TemplatesFeedScreen(
                     onClick = { viewModel.selectTab(tab) },
                     text = {
                         Text(
-                            text = tab.getName(LocalContext.current),
+                            text = stringResource(tab.nameResId),
                             style = MaterialTheme.typography.titleMedium,
                         )
                     },
@@ -53,7 +53,7 @@ fun TemplatesFeedScreen(
             onRefresh = { viewModel.refresh() },
         ) {
             when (val currentState = pageState.getCurrentState()) {
-                TabState.Idle -> {}
+                TabState.None -> {}
 
                 is TabState.Loading -> LoadingTab()
 

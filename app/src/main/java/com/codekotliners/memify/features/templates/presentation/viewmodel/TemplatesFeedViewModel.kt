@@ -28,7 +28,7 @@ class TemplatesFeedViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
 
-    val limitPerRequest: Long = 20
+    val limitPerRequest: Long = 30
 
     init {
         loadDataForTab(_pageState.value.selectedTab)
@@ -39,16 +39,15 @@ class TemplatesFeedViewModel @Inject constructor(
     }
 
     fun finishRefresh() {
-        _isRefreshing.value = false
+        viewModelScope.launch {
+            delay(300)
+            _isRefreshing.value = false
+        }
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            startRefresh()
-            loadDataForTab(_pageState.value.selectedTab)
-            delay(400)
-            finishRefresh()
-        }
+        startRefresh()
+        loadDataForTab(_pageState.value.selectedTab)
     }
 
     fun selectTab(tab: Tab) {
@@ -82,15 +81,17 @@ class TemplatesFeedViewModel @Inject constructor(
         viewModelScope.launch {
             val dataFlow =
                 when (tab) {
-                    Tab.BEST -> repository.getBestTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
-                    Tab.NEW -> repository.getNewTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.BEST ->
+                        repository.getBestTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.NEW ->
+                        repository.getNewTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                     Tab.FAVOURITE ->
                         repository.getFavouriteTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                 }
 
             dataFlow
                 .onEmpty {
-                    delay(1400) // to show loading in UI
+                    delay(1000) // to show loading in UI
                     _pageState.update {
                         it.updatedCurrentTabState(
                             TabState.Content(

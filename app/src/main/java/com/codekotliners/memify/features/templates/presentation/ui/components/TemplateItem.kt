@@ -19,6 +19,8 @@ import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
+import com.codekotliners.memify.core.ui.components.CenteredWidget
 import com.codekotliners.memify.core.models.Template
 
 @Composable

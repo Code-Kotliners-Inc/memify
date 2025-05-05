@@ -1,4 +1,4 @@
-package com.codekotliners.memify.features.templates.presentation.ui.components
+package com.codekotliners.memify.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,9 +8,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun CenteredWidget(content: @Composable () -> Unit) {
+fun CenteredWidget(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     Column(
-        modifier = Modifier.Companion.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Companion.CenterHorizontally,
     ) {

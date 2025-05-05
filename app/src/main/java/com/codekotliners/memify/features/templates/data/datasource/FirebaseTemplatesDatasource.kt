@@ -3,7 +3,7 @@ package com.codekotliners.memify.features.templates.data.datasource
 import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_CREATED_AT
-import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_FAVOURITED_BY_COUNT
+import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_FAVOURITED_BY_ARRAY
 import com.codekotliners.memify.features.templates.data.constants.FIELD_TEMPLATE_USED_COUNT
 import com.codekotliners.memify.features.templates.data.constants.TEMPLATES_COLLECTION_NAME
 import com.codekotliners.memify.features.templates.data.mappers.toTemplate
@@ -86,7 +86,7 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource<Do
     private fun queryFavourites(userId: String, limit: Long, startAtDocument: DocumentSnapshot?): Query {
         var baseQuery =
             templatesCollection
-                .whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_COUNT, userId)
+                .whereArrayContains(FIELD_TEMPLATE_FAVOURITED_BY_ARRAY, userId)
                 .limit(limit)
         if (startAtDocument != null) {
             baseQuery = baseQuery.startAt(startAtDocument)

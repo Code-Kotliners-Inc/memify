@@ -1,44 +1,90 @@
 package com.codekotliners.memify.features.home.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.codekotliners.memify.R
+import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.features.home.domain.repository.PostsRepository
+import com.codekotliners.memify.features.home.presentation.state.ErrorType
+import com.codekotliners.memify.features.home.presentation.state.MainFeedScreenState
+import com.codekotliners.memify.features.home.presentation.state.MainFeedTab
+import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
+import com.google.firebase.firestore.FirebaseFirestoreException
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel : ViewModel() {
-    private val _tabStates =
-        MutableStateFlow(
-            mapOf(
-                MainFeedTabs.POPULAR to
-                    MainFeedTabState.Content(
-                        List(8) {
-                            MemeCard(
-                                id = it.toLong(),
-                                picture = R.drawable.placeholder600x400,
-                                likesCount = 10,
-                                isLiked = true,
-                                author =
-                                    Author(
-                                        id = 0,
-                                        name = "JohnDoe",
-                                        profilePicture = R.drawable.profile_placeholder,
-                                    ),
-                            )
-                        },
-                    ),
-                MainFeedTabs.NEW to MainFeedTabState.Loading,
-            ),
-        )
-    val tabStates = _tabStates.asStateFlow()
-    private val _selectedTab = MutableStateFlow(MainFeedTabs.POPULAR)
-    val selectedTab = _selectedTab.asStateFlow()
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
+    private val repository: PostsRepository,
+) : ViewModel() {
+    private val _screenState = MutableStateFlow(MainFeedScreenState(selectedTab = MainFeedTab.POPULAR))
+    val screenState = _screenState.asStateFlow()
 
-    fun selectTab(tab: MainFeedTabs) {
-        _selectedTab.update { tab }
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
+    init {
+        loadDataForTab(_screenState.value.selectedTab)
     }
 
-    fun likeClick(card: MemeCard) {
+    private fun startRefresh() {
+        _isRefreshing.value = true
+    }
+
+    private fun stopRefreshing() {
+        viewModelScope.launch {
+            delay(300)
+            _isRefreshing.value = false
+        }
+    }
+
+    fun refresh() {
+        startRefresh()
+        loadDataForTab(_screenState.value.selectedTab)
+    }
+
+    fun selectTab(tab: MainFeedTab) {
+        _screenState.update { it.copy(selectedTab = tab) }
+        loadDataForTab(tab)
+    }
+
+    private fun loadDataForTab(tab: MainFeedTab) {
+        if (_screenState.value.getCurrentTabState() is PostsFeedTabState.Loading) return
+        if (!isRefreshing.value && _screenState.value.getCurrentTabState() is PostsFeedTabState.Content) return
+
+        _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Loading) }
+
+        viewModelScope.launch {
+            try {
+                val data =
+                    when (tab) {
+                        MainFeedTab.POPULAR -> repository.getPosts()
+                        MainFeedTab.NEW -> repository.getPosts()
+                    }
+
+                if (data.isEmpty()) {
+                    _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Empty) }
+                } else {
+                    _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Content(data)) }
+                }
+            } catch (e: Exception) {
+                val errorType =
+                    when (e) {
+                        is FirebaseFirestoreException -> ErrorType.NETWORK
+                        else -> ErrorType.UNKNOWN
+                    }
+                _screenState.update { it.updatedCurrentTab(PostsFeedTabState.Error(errorType)) }
+            }
+
+            stopRefreshing()
+        }
+    }
+
+    fun likeClick(card: Post) {
         // Логика обновления информации о карточке
     }
 }

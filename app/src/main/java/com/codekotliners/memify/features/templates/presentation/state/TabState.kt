@@ -1,12 +1,11 @@
 package com.codekotliners.memify.features.templates.presentation.state
 
-import android.content.Context
 import androidx.annotation.StringRes
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.Template
 
 sealed interface TabState {
-    object Idle : TabState
+    object None : TabState
 
     data object Loading : TabState
 
@@ -29,8 +28,6 @@ enum class ErrorType(
     NEED_LOGIN(R.string.need_authenticated_message),
     UNKNOWN(R.string.unknown_error_message),
     ;
-
-    fun getMessage(context: Context): String = context.getString(userMessageResId)
 }
 
 enum class Tab(
@@ -40,6 +37,4 @@ enum class Tab(
     NEW(nameResId = R.string.New),
     FAVOURITE(nameResId = R.string.Favourites),
     ;
-
-    fun getName(context: Context): String = context.getString(nameResId)
 }
