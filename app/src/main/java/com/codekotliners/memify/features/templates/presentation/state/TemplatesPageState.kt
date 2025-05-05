@@ -17,7 +17,20 @@ data class TemplatesPageState(
             Tab.FAVOURITE -> favouriteTemplatesState
         }
 
-    fun currentContent(state: TabState): List<Template> {
+    fun getTemplatesByState(state: TabState): List<Template> {
+        return when (state) {
+            is TabState.Idle -> emptyList<Template>()
+            is TabState.Loading -> emptyList<Template>()
+            is TabState.Error -> emptyList<Template>()
+            is TabState.Content -> {
+                return state.templates
+            }
+            is TabState.Empty -> emptyList<Template>()
+        }
+    }
+
+    fun getTemplatesOfSelectedState(): List<Template> {
+        val state = getCurrentState()
         return when (state) {
             is TabState.None -> emptyList<Template>()
             is TabState.Loading -> emptyList<Template>()
@@ -37,7 +50,9 @@ data class TemplatesPageState(
         }
 
     fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
-        val updatedContent = { currentState: TabState -> TabState.Content(currentContent(currentState) + newTemplate) }
+        val updatedContent = { currentState: TabState ->
+            TabState.Content(getTemplatesByState(currentState) + newTemplate, false)
+        }
         return when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = updatedContent(bestTemplatesState))
             Tab.NEW -> copy(newTemplatesState = updatedContent(newTemplatesState))
