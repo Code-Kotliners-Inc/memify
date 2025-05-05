@@ -46,7 +46,7 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                 .fillMaxWidth()
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null
+                    indication = null,
                 ) {
                     onImageClick()
                 },

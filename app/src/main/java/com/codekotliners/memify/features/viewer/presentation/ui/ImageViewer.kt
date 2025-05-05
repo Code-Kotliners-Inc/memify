@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,20 +44,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.codekotliners.memify.features.viewer.presentation.ui.components.ErrorScreen
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
-
-data class ImageItem(
-    val title: String,
-    val url: String,
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,6 +85,7 @@ fun ImageViewerScreen(
     Scaffold(
         topBar = {
             ImageViewerTopBar(
+                onBack = { navController.popBackStack() },
                 onShareClick = { viewModel.onShareClick() },
                 onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
@@ -96,16 +93,10 @@ fun ImageViewerScreen(
             )
         },
         modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0.dp),
+        contentWindowInsets = WindowInsets(0),
     ) { paddingValues ->
         when (imageState) {
             is ImageState.Content -> {
-                val painter =
-                    rememberAsyncImagePainter(
-                        model = (imageState as ImageState.Content).image.url,
-                        imageLoader = ImageLoader(LocalContext.current),
-                    )
-
                 Column(
                     modifier =
                         Modifier
@@ -115,20 +106,27 @@ fun ImageViewerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    ImageBox(painter)
+                    ImageBox((imageState as ImageState.Content).image.url)
                 }
             }
             is ImageState.Error -> ErrorScreen((imageState as ImageState.Error).type)
             ImageState.Loading -> CenteredCircularProgressIndicator()
             ImageState.None -> {}
         }
-
     }
 }
 
 @Composable
-fun ImageBox(painter: AsyncImagePainter) {
-    val painterState = painter.state
+fun ImageBox(url: String) {
+    val painter =
+        rememberAsyncImagePainter(
+            model =
+                ImageRequest
+                    .Builder(LocalContext.current)
+                    .data(url)
+                    .crossfade(true)
+                    .build(),
+        )
 
     Box {
         Image(
@@ -138,7 +136,7 @@ fun ImageBox(painter: AsyncImagePainter) {
             contentScale = ContentScale.Fit,
         )
 
-        when (painterState) {
+        when (painter.state) {
             is AsyncImagePainter.State.Loading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -176,6 +174,7 @@ fun ImageBox(painter: AsyncImagePainter) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerTopBar(
+    onBack: () -> Unit,
     onShareClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onPublishClick: () -> Unit,
@@ -184,6 +183,15 @@ fun ImageViewerTopBar(
     var expanded by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
+        windowInsets = WindowInsets(0),
+        navigationIcon = {
+            IconButton(onClick = { onBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                )
+            }
+        },
         title = {},
         actions = {
             IconButton(

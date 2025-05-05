@@ -3,9 +3,9 @@ package com.codekotliners.memify.features.viewer.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codekotliners.memify.features.viewer.presentation.state.ErrorType
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
+import com.codekotliners.memify.features.viewer.presentation.state.ErrorType
 import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,13 +13,12 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
-    private val repository: ImageRepository
+    private val repository: ImageRepository,
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<String>()
     val shareImageEvent = _shareImageEvent.asSharedFlow()
@@ -57,10 +56,11 @@ class ImageViewerViewModel @Inject constructor(
                 val image = repository.getImageById(type, id)
                 _imageState.value = ImageState.Content(image)
             } catch (e: Exception) {
-                val message = when (e) {
-                    is FirebaseFirestoreException -> ErrorType.NETWORK
-                    else -> ErrorType.UNKNOWN
-                }
+                val message =
+                    when (e) {
+                        is FirebaseFirestoreException -> ErrorType.NETWORK
+                        else -> ErrorType.UNKNOWN
+                    }
                 _imageState.value = ImageState.Error(message)
             }
         }

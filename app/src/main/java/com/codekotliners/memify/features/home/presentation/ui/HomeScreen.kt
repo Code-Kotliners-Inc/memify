@@ -97,8 +97,14 @@ private fun PostsFeed(
         contentPadding = PaddingValues(0.dp),
     ) {
         items(posts) { post ->
-            PostCard(post, onLikeClick, onImageClick = { navController.navigate(NavRoutes.ImageViewer.createRoute(
-                ImageType.POST, post.id)) })
+            PostCard(post, onLikeClick, onImageClick = {
+                navController.navigate(
+                    NavRoutes.ImageViewer.createRoute(
+                        ImageType.POST,
+                        post.id,
+                    ),
+                )
+            })
         }
     }
 }
@@ -107,7 +113,7 @@ private fun PostsFeed(
 fun PostCard(
     card: Post,
     onLikeClick: (Post) -> Unit,
-    onImageClick: () -> Unit
+    onImageClick: () -> Unit,
 ) {
     Card(
         modifier =

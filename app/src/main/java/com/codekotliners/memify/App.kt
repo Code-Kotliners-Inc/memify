@@ -1,15 +1,8 @@
 package com.codekotliners.memify
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -48,35 +41,35 @@ fun App(
             }
         },
     ) { innerPadding ->
-        Column {
-            NavHost(
-                navController,
-                startDestination = NavRoutes.Home.route,
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                composable(NavRoutes.Home.route) { HomeScreen(navController) }
-                composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
-                composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
-                composable(NavRoutes.Login.route) {
-                    LoginScreen(navController) { email, password ->
-                        authViewModel.onLogInWithMail(email, password)
-                        navController.popBackStack()
-                    }
+        NavHost(
+            navController,
+            startDestination = NavRoutes.Home.route,
+            modifier = Modifier.padding(innerPadding),
+        ) {
+            composable(NavRoutes.Home.route) { HomeScreen(navController) }
+            composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
+            composable(NavRoutes.Profile.route) { ProfileScreen() }
+            composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
+            composable(NavRoutes.Login.route) {
+                LoginScreen(navController) { email, password ->
+                    authViewModel.onLogInWithMail(email, password)
+                    navController.popBackStack()
                 }
-                composable(NavRoutes.Register.route) {
-                    RegistrationScreen(navController) { email, password ->
-                        authViewModel.onSignUpWithMail(email, password)
-                        navController.popBackStack()
-                    }
+            }
+            composable(NavRoutes.Register.route) {
+                RegistrationScreen(navController) { email, password ->
+                    authViewModel.onSignUpWithMail(email, password)
+                    navController.popBackStack()
                 }
-                composable(NavRoutes.ImageViewer.route) { backStackEntry ->
-                    val imageType = backStackEntry.arguments?.getString("imageType")
+            }
+            composable(NavRoutes.ImageViewer.route) { backStackEntry ->
+                val imageType =
+                    backStackEntry.arguments
+                        ?.getString("imageType")
                         ?.let { ImageType.valueOf(it) } ?: ImageType.POST
-                    val imageId = backStackEntry.arguments?.getString("imageId") ?: ""
+                val imageId = backStackEntry.arguments?.getString("imageId") ?: ""
 
-                    ImageViewerScreen(imageType, imageId, navController)
-                }
+                ImageViewerScreen(imageType, imageId, navController)
             }
         }
     }

@@ -134,6 +134,7 @@ private fun rememberScrollOffset(scrollState: LazyGridState): Float =
 @Composable
 private fun ProfileTopBar(showProfile: Boolean) {
     CenterAlignedTopAppBar(
+        windowInsets = WindowInsets(0),
         title = {
             Text(
                 stringResource(R.string.profile),

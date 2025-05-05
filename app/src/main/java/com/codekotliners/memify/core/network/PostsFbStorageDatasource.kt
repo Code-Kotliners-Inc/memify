@@ -5,7 +5,6 @@ import com.codekotliners.memify.core.data.constants.POSTS_COLLECTION_NAME
 import com.codekotliners.memify.core.data.constants.STORAGE_POSTS_IMAGES_DIRECTORY
 import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.mappers.toPostDto
-import com.codekotliners.memify.core.network.exceptions.PostDatasourceException
 import com.codekotliners.memify.core.network.exceptions.PostDatasourceException.PostNotFoundException
 import com.codekotliners.memify.core.network.models.PostDto
 import com.codekotliners.memify.core.network.utils.InternetChecker
