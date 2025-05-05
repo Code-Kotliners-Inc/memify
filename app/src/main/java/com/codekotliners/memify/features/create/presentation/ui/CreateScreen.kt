@@ -1,6 +1,7 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -35,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
@@ -45,10 +48,11 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +70,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
@@ -77,6 +83,9 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
+import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +115,11 @@ private fun CreateScreenBottomSheet(
     bottomSheetState: SheetState,
     scrollBehavior: TopAppBarScrollBehavior,
     onLogin: () -> Unit,
+    viewModel: CanvasViewModel = hiltViewModel(),
 ) {
+    val showImageViewer = remember { mutableStateOf(false) }
+    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val coroutineScope = rememberCoroutineScope()
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContainerColor = MaterialTheme.colorScheme.surface,
@@ -119,16 +132,38 @@ private fun CreateScreenBottomSheet(
     ) { innerPadding ->
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-            topBar = { CreateScreenTopBar(scrollBehavior) },
+            topBar = {
+                CreateScreenTopBar(
+                    scrollBehavior,
+                    onMenuClick = {
+                        coroutineScope.launch {
+                            val bitmap = viewModel.createBitMap()
+                            bitmapState.value = bitmap
+                            showImageViewer.value = true
+                        }
+                    },
+                )
+            },
         ) { scaffoldInnerPadding ->
-            CreateScreenContent(scaffoldInnerPadding)
+            CreateScreenContent(scaffoldInnerPadding, viewModel)
+
+            if (showImageViewer.value && bitmapState.value != null) {
+                Dialog(onDismissRequest = { showImageViewer.value = false }) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 4.dp,
+                    ) {
+                        ImageViewerScreen(bitmap = bitmapState.value!!)
+                    }
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
+private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit) {
     CenterAlignedTopAppBar(
         title = {
             Text(
@@ -139,7 +174,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
             )
         },
         actions = {
-            IconButton(onClick = { /* Меню */ }) {
+            IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = "Меню",
@@ -156,9 +191,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior) {
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues) {
-    val viewModel: CanvasViewModel = hiltViewModel()
-
+private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
     LazyColumn(
         modifier =
             Modifier

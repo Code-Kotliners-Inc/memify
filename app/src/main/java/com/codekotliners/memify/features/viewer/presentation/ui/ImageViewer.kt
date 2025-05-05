@@ -1,6 +1,7 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -34,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -41,21 +44,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.ImageLoader
 import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 
-data class ImageItem(
-    val title: String,
-    val url: String,
-)
+@Composable
+fun BitmapImage(bitmap: Bitmap) {
+    Image(
+        bitmap = bitmap.asImageBitmap(),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Fit,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerScreen(
-    image: ImageItem,
+    bitmap: Bitmap,
     viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -64,8 +70,8 @@ fun ImageViewerScreen(
             val sendIntent =
                 Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, imageUrl)
-                    type = "text/plain"
+                    putExtra(Intent.EXTRA_STREAM, imageUrl)
+                    type = "image/*"
                 }
             val shareIntent = Intent.createChooser(sendIntent, null)
             context.startActivity(shareIntent)
@@ -74,22 +80,16 @@ fun ImageViewerScreen(
     Scaffold(
         topBar = {
             ImageViewerTopBar(
-                title = image.title,
-                onShareClick = { viewModel.onShareClick(image.url) },
-                onDownloadClick = { viewModel.onDownloadClick() },
+                onShareClick = { viewModel.onShareClick(bitmap) },
+                onDownloadClick = { viewModel.onDownloadClick(bitmap) },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
+                title = "Предпросмотр",
             )
         },
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
-        val painter =
-            rememberAsyncImagePainter(
-                image.url,
-                imageLoader = ImageLoader(LocalContext.current),
-            )
-
         Column(
             modifier =
                 Modifier
@@ -99,7 +99,14 @@ fun ImageViewerScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            ImageBox(painter)
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+            )
         }
     }
 }
@@ -128,6 +135,7 @@ fun ImageBox(painter: AsyncImagePainter) {
                     )
                 }
             }
+
             is AsyncImagePainter.State.Error -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -146,6 +154,7 @@ fun ImageBox(painter: AsyncImagePainter) {
                     )
                 }
             }
+
             else -> {}
         }
     }
