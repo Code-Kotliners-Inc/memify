@@ -1,9 +1,6 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
 import android.graphics.Bitmap
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.Typeface
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -13,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.ViewModel
@@ -56,6 +52,8 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
 
     var showRadialMenu by mutableStateOf(false)
     var radialMenuPosition by mutableStateOf(Offset.Zero)
+
+    private val drawingCanvas = DrawingCanvas(canvasElements)
 
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
@@ -151,50 +149,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
             val height = imageHeight.toInt()
             val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             val canvas = android.graphics.Canvas(bitmap)
-            drawCanvasElements(canvas)
+            drawingCanvas.drawCanvasElements(canvas)
             bitmap
         }
-
-    private fun drawCanvasElements(canvas: android.graphics.Canvas) {
-        canvas.drawColor(Color.White.toArgb())
-        val paint =
-            Paint().apply {
-                isAntiAlias = true
-            }
-        for (element in canvasElements) {
-            when (element) {
-                is ColoredLine -> {
-                    paint.color = element.color.toArgb()
-                    paint.strokeWidth = element.strokeWidth
-                    paint.style = Paint.Style.STROKE
-                    paint.strokeCap = Paint.Cap.ROUND
-                    paint.strokeJoin = Paint.Join.ROUND
-                    val path =
-                        Path().apply {
-                            if (element.points.isNotEmpty()) {
-                                moveTo(element.points.first().x, element.points.first().y)
-                                for (point in element.points.drop(1)) {
-                                    lineTo(point.x, point.y)
-                                }
-                            }
-                        }
-                    canvas.drawPath(path, paint)
-                }
-                is TextElement -> {
-                    paint.color = element.color.toArgb()
-                    // MULTIPLY
-                    paint.textSize = (element.size * 1.6).toFloat()
-                    paint.typeface = Typeface.DEFAULT
-                    paint.style = Paint.Style.FILL
-                    canvas.drawText(
-                        element.text,
-                        element.position.x,
-                        // change
-                        element.position.y,
-                        paint,
-                    )
-                }
-            }
-        }
-    }
 }
