@@ -44,14 +44,15 @@ fun BottomNavigationBar(navController: NavController) {
                 icon = {
                     Box(
                         modifier = Modifier.size(32.dp),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
-                            painter = painterResource(
-                                if (selected) navItem.iconPressed else navItem.iconNotPressed
-                            ),
+                            painter =
+                                painterResource(
+                                    if (selected) navItem.iconPressed else navItem.iconNotPressed,
+                                ),
                             contentDescription = navItem.title,
-                            modifier = Modifier.size(if (selected) 28.dp else 24.dp)
+                            modifier = Modifier.size(if (selected) 28.dp else 24.dp),
                         )
                     }
                 },
