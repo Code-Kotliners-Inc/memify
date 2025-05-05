@@ -27,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,10 +42,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
+import com.codekotliners.memify.features.viewer.domain.model.ImageType
+import com.codekotliners.memify.features.viewer.presentation.state.ImageState
+import com.codekotliners.memify.features.viewer.presentation.ui.components.ErrorScreen
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 
 data class ImageItem(
@@ -55,10 +61,18 @@ data class ImageItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerScreen(
-    image: ImageItem,
+    imageType: ImageType,
+    imageId: String,
+    navController: NavController,
     viewModel: ImageViewerViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val imageState by viewModel.imageState.collectAsState()
+
+    LaunchedEffect(imageType, imageId) {
+        viewModel.load(imageType, imageId)
+    }
+
     LaunchedEffect(Unit) {
         viewModel.shareImageEvent.collect { imageUrl ->
             val sendIntent =
@@ -71,11 +85,11 @@ fun ImageViewerScreen(
             context.startActivity(shareIntent)
         }
     }
+
     Scaffold(
         topBar = {
             ImageViewerTopBar(
-                title = image.title,
-                onShareClick = { viewModel.onShareClick(image.url) },
+                onShareClick = { viewModel.onShareClick() },
                 onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
@@ -84,23 +98,31 @@ fun ImageViewerScreen(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets(0.dp),
     ) { paddingValues ->
-        val painter =
-            rememberAsyncImagePainter(
-                image.url,
-                imageLoader = ImageLoader(LocalContext.current),
-            )
+        when (imageState) {
+            is ImageState.Content -> {
+                val painter =
+                    rememberAsyncImagePainter(
+                        model = (imageState as ImageState.Content).image.url,
+                        imageLoader = ImageLoader(LocalContext.current),
+                    )
 
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            ImageBox(painter)
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues)
+                            .background(MaterialTheme.colorScheme.background),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    ImageBox(painter)
+                }
+            }
+            is ImageState.Error -> ErrorScreen((imageState as ImageState.Error).type)
+            ImageState.Loading -> CenteredCircularProgressIndicator()
+            ImageState.None -> {}
         }
+
     }
 }
 
@@ -158,17 +180,11 @@ fun ImageViewerTopBar(
     onDownloadClick: () -> Unit,
     onPublishClick: () -> Unit,
     onTakeTemplateClick: () -> Unit,
-    title: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
+        title = {},
         actions = {
             IconButton(
                 onClick = { expanded = true },

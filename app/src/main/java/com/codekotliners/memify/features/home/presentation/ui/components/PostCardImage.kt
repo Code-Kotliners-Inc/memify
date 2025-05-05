@@ -1,6 +1,8 @@
 package com.codekotliners.memify.features.home.presentation.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -24,7 +27,7 @@ import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndic
 import com.codekotliners.memify.core.ui.components.CenteredWidget
 
 @Composable
-fun PostCardImage(post: Post) {
+fun PostCardImage(post: Post, onImageClick: () -> Unit) {
     val painter =
         rememberAsyncImagePainter(
             model =
@@ -40,7 +43,13 @@ fun PostCardImage(post: Post) {
         modifier =
             Modifier
                 .aspectRatio(post.width.toFloat() / post.height.toFloat())
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onImageClick()
+                },
     ) {
         when (state) {
             is AsyncImagePainter.State.Error -> {

@@ -23,19 +23,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
+import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
 import com.codekotliners.memify.features.home.presentation.ui.components.EmptyFeed
 import com.codekotliners.memify.features.home.presentation.ui.components.ErrorScreen
-import com.codekotliners.memify.features.home.presentation.ui.components.LoadingIndicator
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardFooter
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardHeader
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardImage
 import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
+import com.codekotliners.memify.features.viewer.domain.model.ImageType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
     val screenState by viewModel.screenState.collectAsState()
@@ -67,11 +71,11 @@ fun HomeScreen(
             when (val currentState = screenState.getCurrentTabState()) {
                 is PostsFeedTabState.None -> {}
                 is PostsFeedTabState.Empty -> EmptyFeed()
-                is PostsFeedTabState.Loading -> LoadingIndicator()
+                is PostsFeedTabState.Loading -> CenteredCircularProgressIndicator()
                 is PostsFeedTabState.Error ->
                     ErrorScreen(currentState.type)
                 is PostsFeedTabState.Content ->
-                    PostsFeed(currentState.posts) { post ->
+                    PostsFeed(currentState.posts, navController) { post ->
                         viewModel.likeClick(post)
                     }
             }
@@ -82,6 +86,7 @@ fun HomeScreen(
 @Composable
 private fun PostsFeed(
     posts: List<Post>,
+    navController: NavController,
     onLikeClick: (Post) -> Unit,
 ) {
     LazyColumn(
@@ -92,7 +97,8 @@ private fun PostsFeed(
         contentPadding = PaddingValues(0.dp),
     ) {
         items(posts) { post ->
-            PostCard(post, onLikeClick)
+            PostCard(post, onLikeClick, onImageClick = { navController.navigate(NavRoutes.ImageViewer.createRoute(
+                ImageType.POST, post.id)) })
         }
     }
 }
@@ -101,6 +107,7 @@ private fun PostsFeed(
 fun PostCard(
     card: Post,
     onLikeClick: (Post) -> Unit,
+    onImageClick: () -> Unit
 ) {
     Card(
         modifier =
@@ -113,7 +120,7 @@ fun PostCard(
     ) {
         Column(Modifier.padding(horizontal = 8.dp)) {
             PostCardHeader(card)
-            PostCardImage(card)
+            PostCardImage(card, onImageClick)
             PostCardFooter(card, onLikeClick)
         }
     }

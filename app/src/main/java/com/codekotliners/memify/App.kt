@@ -5,8 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -27,6 +30,8 @@ import com.codekotliners.memify.features.auth.presentation.viewmodel.Authenticat
 import com.codekotliners.memify.features.create.presentation.ui.CreateScreen
 import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
 import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
+import com.codekotliners.memify.features.viewer.domain.model.ImageType
+import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 
 @Composable
 fun App(
@@ -36,20 +41,20 @@ fun App(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .systemBarsPadding(),
-    ) {
+    Scaffold(
+        bottomBar = {
+            if (NavUtils.shouldShowBottomBar(currentRoute)) {
+                BottomNavigationBar(navController = navController)
+            }
+        },
+    ) { innerPadding ->
         Column {
             NavHost(
                 navController,
                 startDestination = NavRoutes.Home.route,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.padding(innerPadding),
             ) {
-                composable(NavRoutes.Home.route) { HomeScreen() }
+                composable(NavRoutes.Home.route) { HomeScreen(navController) }
                 composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
                 composable(NavRoutes.Profile.route) { ProfileScreen() }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
@@ -65,10 +70,13 @@ fun App(
                         navController.popBackStack()
                     }
                 }
-            }
+                composable(NavRoutes.ImageViewer.route) { backStackEntry ->
+                    val imageType = backStackEntry.arguments?.getString("imageType")
+                        ?.let { ImageType.valueOf(it) } ?: ImageType.POST
+                    val imageId = backStackEntry.arguments?.getString("imageId") ?: ""
 
-            if (NavUtils.shouldShowBottomBar(currentRoute)) {
-                BottomNavigationBar(navController = navController)
+                    ImageViewerScreen(imageType, imageId, navController)
+                }
             }
         }
     }
