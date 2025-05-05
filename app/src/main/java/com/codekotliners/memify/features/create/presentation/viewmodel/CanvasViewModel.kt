@@ -61,7 +61,8 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
 
     fun finalizeCurrentLine() {
         if (currentLine.size > 1) {
-            saveState()
+            history.add(canvasElements.toList())
+            future.clear()
             canvasElements.add(
                 ColoredLine(
                     points = currentLine.toList(),
@@ -92,7 +93,8 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun clearCanvas() {
-        saveState()
+        history.add(canvasElements.toList())
+        future.clear()
         canvasElements.clear()
         currentLine.clear()
     }
@@ -113,14 +115,11 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun saveState() {
-        history.add(canvasElements.toList())
-        future.clear()
-    }
 
     fun finishWriting() {
         if (currentText.isNotBlank()) {
-            saveState()
+            history.add(canvasElements.toList())
+            future.clear()
             canvasElements.add(
                 TextElement(
                     text = currentText,

@@ -18,39 +18,54 @@ class DrawingCanvas(
         val paint = Paint().apply { isAntiAlias = true }
 
         for (element in canvasElements) {
-            if (element is ColoredLine) {
-                paint.color = element.color.toArgb()
-                paint.strokeWidth = element.strokeWidth
-                paint.style = Paint.Style.STROKE
-                paint.strokeCap = Paint.Cap.ROUND
-                paint.strokeJoin = Paint.Join.ROUND
-
-                val points = element.points
-                if (points.isNotEmpty()) {
-                    val path = Path()
-                    val start = points.first()
-                    path.moveTo(start.x, start.y)
-                    for (i in 1 until points.size) {
-                        val point = points[i]
-                        path.lineTo(point.x, point.y)
-                    }
-                    canvas.drawPath(path, paint)
-                }
-                continue
-            }
-
-            if (element is TextElement) {
-                paint.color = element.color.toArgb()
-                paint.textSize = (element.size * 1.6).toFloat()
-                paint.typeface = Typeface.DEFAULT
-                paint.style = Paint.Style.FILL
-                canvas.drawText(
-                    element.text,
-                    element.position.x,
-                    element.position.y,
-                    paint,
-                )
+            when (element) {
+                is ColoredLine -> drawColoredLine(canvas, paint, element)
+                is TextElement -> drawTextElement(canvas, paint, element)
             }
         }
+    }
+
+    private fun drawColoredLine(
+        canvas: android.graphics.Canvas,
+        paint: Paint,
+        line: ColoredLine
+    ) {
+        paint.apply {
+            color = line.color.toArgb()
+            strokeWidth = line.strokeWidth
+            style = Paint.Style.STROKE
+            strokeCap = Paint.Cap.ROUND
+            strokeJoin = Paint.Join.ROUND
+        }
+
+        if (line.points.isNotEmpty()) {
+            val path = Path().apply {
+                moveTo(line.points.first().x, line.points.first().y)
+                for (point in line.points.drop(1)) {
+                    lineTo(point.x, point.y)
+                }
+            }
+            canvas.drawPath(path, paint)
+        }
+    }
+
+    private fun drawTextElement(
+        canvas: android.graphics.Canvas,
+        paint: Paint,
+        textElement: TextElement
+    ) {
+        paint.apply {
+            color = textElement.color.toArgb()
+            textSize = (textElement.size * 1.6).toFloat()
+            typeface = Typeface.DEFAULT
+            style = Paint.Style.FILL
+        }
+
+        canvas.drawText(
+            textElement.text,
+            textElement.position.x,
+            textElement.position.y,
+            paint
+        )
     }
 }
