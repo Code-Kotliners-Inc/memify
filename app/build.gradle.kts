@@ -6,9 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
     id("com.google.firebase.crashlytics")
-    id("com.google.gms.google-services")
 }
-
 android {
     namespace = "com.codekotliners.memify"
     compileSdk = 35
@@ -33,9 +31,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            firebaseCrashlytics {
-                mappingFileUploadEnabled = true
-            }
         }
     }
     compileOptions {
@@ -59,11 +54,6 @@ android {
     ktlint {
         debug = true
         verbose = true
-    }
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
     }
 }
 

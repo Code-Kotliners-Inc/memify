@@ -1,6 +1,7 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -54,6 +57,16 @@ import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.codekotliners.memify.features.viewer.presentation.ui.components.ErrorScreen
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 
+@Composable
+fun BitmapImage(bitmap: Bitmap) {
+    Image(
+        bitmap = bitmap.asImageBitmap(),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.Fit,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImageViewerScreen(
@@ -64,6 +77,7 @@ fun ImageViewerScreen(
 ) {
     val context = LocalContext.current
     val imageState by viewModel.imageState.collectAsState()
+    val bitmap = ""
 
     LaunchedEffect(imageType, imageId) {
         viewModel.load(imageType, imageId)
@@ -74,8 +88,8 @@ fun ImageViewerScreen(
             val sendIntent =
                 Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, imageUrl)
-                    type = "text/plain"
+                    putExtra(Intent.EXTRA_STREAM, imageUrl)
+                    type = "image/*"
                 }
             val shareIntent = Intent.createChooser(sendIntent, null)
             context.startActivity(shareIntent)
@@ -86,10 +100,11 @@ fun ImageViewerScreen(
         topBar = {
             ImageViewerTopBar(
                 onBack = { navController.popBackStack() },
-                onShareClick = { viewModel.onShareClick() },
-                onDownloadClick = { viewModel.onDownloadClick() },
+                onShareClick = { viewModel.onShareClick(bitmap) },
+                onDownloadClick = { viewModel.onDownloadClick(bitmap) },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
+                title = "Предпросмотр",
             )
         },
         modifier = Modifier.fillMaxSize(),
@@ -148,6 +163,7 @@ fun ImageBox(url: String) {
                     )
                 }
             }
+
             is AsyncImagePainter.State.Error -> {
                 Column(
                     modifier = Modifier.fillMaxSize(),
@@ -166,6 +182,7 @@ fun ImageBox(url: String) {
                     )
                 }
             }
+
             else -> {}
         }
     }
@@ -179,6 +196,7 @@ fun ImageViewerTopBar(
     onDownloadClick: () -> Unit,
     onPublishClick: () -> Unit,
     onTakeTemplateClick: () -> Unit,
+    title: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
