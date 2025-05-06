@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.viewer.presentation.state
 
+import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import com.codekotliners.memify.R
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
@@ -7,10 +8,17 @@ import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 sealed class ImageState {
     object None : ImageState()
 
-    object Loading : ImageState()
+    object LoadingMeta : ImageState()
+
+    data class MetaLoaded(
+        val image: GenericImage,
+    ) : ImageState()
+
+    object LoadingBitmap : ImageState()
 
     data class Content(
         val image: GenericImage,
+        val bitmap: Bitmap,
     ) : ImageState()
 
     data class Error(

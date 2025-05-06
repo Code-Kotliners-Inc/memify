@@ -1,7 +1,6 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
-import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,25 +45,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.codekotliners.memify.features.viewer.presentation.ui.components.ErrorScreen
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
-
-@Composable
-fun BitmapImage(bitmap: Bitmap) {
-    Image(
-        bitmap = bitmap.asImageBitmap(),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Fit,
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,10 +62,9 @@ fun ImageViewerScreen(
 ) {
     val context = LocalContext.current
     val imageState by viewModel.imageState.collectAsState()
-    val bitmap = ""
 
     LaunchedEffect(imageType, imageId) {
-        viewModel.load(imageType, imageId)
+        viewModel.loadData(imageType, imageId)
     }
 
     LaunchedEffect(Unit) {
@@ -100,8 +84,8 @@ fun ImageViewerScreen(
         topBar = {
             ImageViewerTopBar(
                 onBack = { navController.popBackStack() },
-                onShareClick = { viewModel.onShareClick(bitmap) },
-                onDownloadClick = { viewModel.onDownloadClick(bitmap) },
+                onShareClick = { viewModel.onShareClick() },
+                onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
                 title = "Предпросмотр",
@@ -111,7 +95,7 @@ fun ImageViewerScreen(
         contentWindowInsets = WindowInsets(0),
     ) { paddingValues ->
         when (imageState) {
-            is ImageState.Content -> {
+            is ImageState.MetaLoaded, is ImageState.Content, is ImageState.LoadingBitmap -> {
                 Column(
                     modifier =
                         Modifier
@@ -121,70 +105,61 @@ fun ImageViewerScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    ImageBox((imageState as ImageState.Content).image.url)
+                    ImageBox(imageState)
                 }
             }
+
             is ImageState.Error -> ErrorScreen((imageState as ImageState.Error).type)
-            ImageState.Loading -> CenteredCircularProgressIndicator()
+            ImageState.LoadingMeta -> CenteredCircularProgressIndicator()
             ImageState.None -> {}
         }
     }
 }
 
 @Composable
-fun ImageBox(url: String) {
-    val painter =
-        rememberAsyncImagePainter(
-            model =
-                ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(url)
-                    .crossfade(true)
-                    .build(),
-        )
-
-    Box {
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit,
-        )
-
-        when (painter.state) {
-            is AsyncImagePainter.State.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(40.dp),
-                        color = Color.Gray,
-                    )
-                }
+fun ImageBox(imageState: ImageState) {
+    when (imageState) {
+        is ImageState.LoadingBitmap -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(40.dp),
+                    color = Color.Gray,
+                )
             }
-
-            is AsyncImagePainter.State.Error -> {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.cloud_off),
-                        contentDescription = null,
-                        modifier = Modifier.size(70.dp),
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Text(
-                        text = stringResource(R.string.error_while_image_loading),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
-            }
-
-            else -> {}
         }
+
+        is ImageState.Content -> {
+            Image(
+                bitmap = imageState.bitmap.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+            )
+        }
+
+        is ImageState.Error -> {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.cloud_off),
+                    contentDescription = null,
+                    modifier = Modifier.size(70.dp),
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.error_while_image_loading),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+        }
+
+        else -> {}
     }
 }
 

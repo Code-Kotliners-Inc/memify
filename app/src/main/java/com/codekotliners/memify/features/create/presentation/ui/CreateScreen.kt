@@ -84,7 +84,6 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
-import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -154,7 +153,7 @@ private fun CreateScreenBottomSheet(
                         shape = RoundedCornerShape(12.dp),
                         tonalElevation = 4.dp,
                     ) {
-                        ImageViewerScreen(bitmap = bitmapState.value!!)
+//                        ImageViewerScreen(bitmap = bitmapState.value!!)
                     }
                 }
             }
