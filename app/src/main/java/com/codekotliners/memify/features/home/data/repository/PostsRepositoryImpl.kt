@@ -3,7 +3,7 @@ package com.codekotliners.memify.features.home.data.repository
 import com.codekotliners.memify.core.mappers.toPost
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.network.models.PostDto
-import com.codekotliners.memify.core.network.PostsDatasource
+import com.codekotliners.memify.core.network.postsdatasource.PostsDatasource
 import com.codekotliners.memify.features.home.domain.repository.PostsRepository
 import com.codekotliners.memify.features.home.mocks.mockUser
 import com.google.firebase.auth.FirebaseAuth
@@ -14,7 +14,7 @@ class PostsRepositoryImpl @Inject constructor(
 ) : PostsRepository {
     override suspend fun getPosts(): List<Post> {
         val postDtos = remoteDatasource.getPosts()
-        return postDtos.map { it.toPost(mockUser, isPostLiked(it)) }.drop(2)
+        return postDtos.map { it.toPost(mockUser, isPostLiked(it)) }
     }
 
     private fun isPostLiked(postDto: PostDto): Boolean {

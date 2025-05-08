@@ -1,8 +1,6 @@
 package com.codekotliners.memify.features.home.presentation.ui.components
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -45,10 +43,12 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
         )
     val state = painter.state
 
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-        ?: error("No SharedTransitionScope found – make sure you’re inside a SharedTransitionLayout")
-    val animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current
-        ?: error("No AnimatedVisibilityScope found – make sure you’re inside your AnimatedContent/NavHost")
+    val sharedTransitionScope =
+        LocalSharedTransitionScope.current
+            ?: error("No SharedTransitionScope found – make sure you’re inside a SharedTransitionLayout")
+    val animatedVisibilityScope =
+        LocalNavAnimatedVisibilityScope.current
+            ?: error("No AnimatedVisibilityScope found – make sure you’re inside your AnimatedContent/NavHost")
 
     Box(
         modifier =
@@ -79,7 +79,7 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
 
             is AsyncImagePainter.State.Success, AsyncImagePainter.State.Empty -> {}
         }
-        with (sharedTransitionScope) {
+        with(sharedTransitionScope) {
             Image(
                 painter = painter,
                 contentDescription = null,
@@ -88,8 +88,8 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .sharedBounds(
-                            sharedContentState = rememberSharedContentState("1"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                            rememberSharedContentState(post.id),
+                            animatedVisibilityScope,
                         ),
                 contentScale = ContentScale.Crop,
             )

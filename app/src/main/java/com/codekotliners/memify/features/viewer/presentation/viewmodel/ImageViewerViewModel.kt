@@ -12,7 +12,7 @@ import android.provider.MediaStore
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import coil.ImageLoader
+import coil.Coil
 import coil.request.ImageRequest
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
@@ -104,7 +104,6 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     suspend fun fetchBitmap(context: Context, imageUrl: String): Bitmap? {
-        val loader = ImageLoader(context)
         val request =
             ImageRequest
                 .Builder(context)
@@ -112,7 +111,7 @@ class ImageViewerViewModel @Inject constructor(
                 .allowHardware(false)
                 .build()
 
-        val result = loader.execute(request)
+        val result = Coil.imageLoader(context).execute(request)
         return (result.drawable as? BitmapDrawable)?.bitmap
     }
 

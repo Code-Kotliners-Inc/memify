@@ -92,6 +92,6 @@
     <string name="auth">Авторизация...</string>
     <string name="popular_tab_name">Популярные</string>
     <string name="new_tab_name">Новые</string>
-    <string name="cat_developer">иди нахуй...</string>
     <string name="preview_screen_title">Предпросмотр</string>
+    <string name="editor_screen_title">Editor</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.codekotliners.memify.core.network
+package com.codekotliners.memify.core.network.postsdatasource
 
 import android.net.Uri
 import com.codekotliners.memify.core.network.models.PostDto

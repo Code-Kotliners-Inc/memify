@@ -34,7 +34,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -51,7 +50,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
@@ -59,6 +60,7 @@ import kotlin.math.min
 
 @Composable
 fun ProfileScreen(
+    navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
@@ -68,12 +70,12 @@ fun ProfileScreen(
 
     val isExtended = scrollOffset >= 0.1f
 
-    Scaffold(
+    AppScaffold(
+        navController = navController,
         modifier =
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-        contentWindowInsets = WindowInsets(0.dp),
         topBar = { ProfileTopBar(showProfile = !isExtended) },
         floatingActionButton = {
             ProfileFloatingActionButton(

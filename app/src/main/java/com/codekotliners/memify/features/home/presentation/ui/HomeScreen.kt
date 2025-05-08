@@ -1,9 +1,7 @@
 package com.codekotliners.memify.features.home.presentation.ui
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +12,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -28,10 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.core.models.Post
-import com.codekotliners.memify.core.navigation.BottomNavigationBar
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
-import com.codekotliners.memify.core.navigation.entities.NavUtils
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
+import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
 import com.codekotliners.memify.features.home.presentation.ui.components.EmptyFeed
 import com.codekotliners.memify.features.home.presentation.ui.components.ErrorScreen
@@ -50,13 +46,13 @@ fun HomeScreen(
     val screenState by viewModel.screenState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-    ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+    AppScaffold(navController) { innerPadding ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+        ) {
             TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
                 screenState.getTabs().forEach { tab ->
                     Tab(
@@ -121,7 +117,6 @@ private fun PostsFeed(
         }
     }
 }
-
 
 @Composable
 fun PostCard(

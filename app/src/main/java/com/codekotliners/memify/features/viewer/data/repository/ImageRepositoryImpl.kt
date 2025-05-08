@@ -1,6 +1,6 @@
 package com.codekotliners.memify.features.viewer.data.repository
 
-import com.codekotliners.memify.core.network.PostsDatasource
+import com.codekotliners.memify.core.network.postsdatasource.PostsDatasource
 import com.codekotliners.memify.features.viewer.data.mappers.toGenericImage
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType

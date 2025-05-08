@@ -5,32 +5,20 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.codekotliners.memify.core.logger.Logger
-import com.codekotliners.memify.core.navigation.BottomNavigationBar
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
-import com.codekotliners.memify.core.navigation.entities.NavUtils
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.auth.presentation.ui.AuthScreen
 import com.codekotliners.memify.features.auth.presentation.ui.LoginScreen
@@ -43,6 +31,7 @@ import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 
 val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
 
@@ -61,13 +50,13 @@ fun App(
             ) {
                 composable(NavRoutes.Home.route) {
                     CompositionLocalProvider(
-                        LocalNavAnimatedVisibilityScope provides this
+                        LocalNavAnimatedVisibilityScope provides this,
                     ) {
                         HomeScreen(navController)
                     }
                 }
-                composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Create.route) { CreateScreen(navController = navController, onLogin = { navController.navigate(NavRoutes.Auth.route) }) }
+                composable(NavRoutes.Profile.route) { ProfileScreen(navController) }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {
                     LoginScreen(navController) { email, password ->
@@ -110,7 +99,7 @@ fun App(
                         }
                     } else {
                         CompositionLocalProvider(
-                            LocalNavAnimatedVisibilityScope provides this
+                            LocalNavAnimatedVisibilityScope provides this,
                         ) {
                             ImageViewerScreen(imageType, imageId, navController)
                         }
