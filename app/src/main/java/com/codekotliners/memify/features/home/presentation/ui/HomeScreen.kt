@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.home.presentation.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +52,8 @@ fun HomeScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.background),
         ) {
             TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
                 screenState.getTabs().forEach { tab ->
@@ -101,7 +103,6 @@ private fun PostsFeed(
     LazyColumn(
         modifier =
             Modifier
-                .padding(vertical = 8.dp)
                 .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
     ) {
