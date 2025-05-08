@@ -1,7 +1,8 @@
 package com.codekotliners.memify.features.viewer.presentation.ui.components
 
 import android.graphics.Bitmap
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -26,7 +27,11 @@ fun TranslatableImage(bitmap: Bitmap) {
             state.readyToAnimate = true
             state.animatedScale.animateTo(
                 targetValue = state.futureScale,
-                animationSpec = tween(durationMillis = 350),
+                animationSpec =
+                    spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessLow,
+                    ),
             )
             state.manualScale = state.futureScale
         }
