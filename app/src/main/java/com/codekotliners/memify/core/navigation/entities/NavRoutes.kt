@@ -17,7 +17,12 @@ sealed class NavRoutes(
 
     data object Login : NavRoutes("Login")
 
-    data object ImageViewer : NavRoutes("ImageViewer/{imageType}/{imageId}") {
+    companion object {
+        const val IMAGE_TYPE = "imageType"
+        const val IMAGE_ID = "imageId"
+    }
+
+    data object ImageViewer : NavRoutes("ImageViewer/{$IMAGE_TYPE}/{$IMAGE_ID}") {
         fun createRoute(type: ImageType, id: String): String =
             "ImageViewer/${type.name}/$id"
     }

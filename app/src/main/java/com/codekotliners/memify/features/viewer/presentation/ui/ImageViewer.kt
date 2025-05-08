@@ -1,8 +1,12 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,14 +34,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -88,7 +96,7 @@ fun ImageViewerScreen(
                 onDownloadClick = { viewModel.onDownloadClick() },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
-                title = "Предпросмотр",
+                title = stringResource(R.string.preview_screen_title),
             )
         },
         modifier = Modifier.fillMaxSize(),
@@ -118,6 +126,20 @@ fun ImageViewerScreen(
 
 @Composable
 fun ImageBox(imageState: ImageState) {
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset(0f, 0f)) }
+
+    // Animate the scale when it goes below 1f
+    val animatedScale by animateFloatAsState(
+        targetValue = if (scale < 1f) 1f else scale,
+        animationSpec =
+            spring(
+                dampingRatio = 0.5f,
+                stiffness = 800f,
+            ),
+        label = "scaleAnimation",
+    )
+
     when (imageState) {
         is ImageState.LoadingBitmap -> {
             Box(
@@ -135,7 +157,25 @@ fun ImageBox(imageState: ImageState) {
             Image(
                 bitmap = imageState.bitmap.asImageBitmap(),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = animatedScale,
+                            scaleY = animatedScale,
+                            translationX = offset.x,
+                            translationY = offset.y,
+                        ).pointerInput(Unit) {
+                            detectTapGestures(
+                                onDoubleTap = {
+                                    scale = if (scale == 1f) 2f else 1f
+                                },
+                            )
+                            detectTransformGestures { _, pan, zoom, _ ->
+                                scale = (scale * zoom).coerceIn(0.8f, 5f)
+                                offset += pan
+                            }
+                        },
                 contentScale = ContentScale.Fit,
             )
         }

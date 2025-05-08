@@ -1,17 +1,29 @@
 package com.codekotliners.memify
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.codekotliners.memify.core.logger.Logger
 import com.codekotliners.memify.core.navigation.BottomNavigationBar
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.navigation.entities.NavUtils
@@ -35,6 +47,7 @@ fun App(
     val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (NavUtils.shouldShowBottomBar(currentRoute)) {
                 BottomNavigationBar(navController = navController)
@@ -62,14 +75,50 @@ fun App(
                     navController.popBackStack()
                 }
             }
-            composable(NavRoutes.ImageViewer.route) { backStackEntry ->
-                val imageType =
-                    backStackEntry.arguments
-                        ?.getString("imageType")
-                        ?.let { ImageType.valueOf(it) } ?: ImageType.POST
-                val imageId = backStackEntry.arguments?.getString("imageId") ?: ""
+            composable(
+                route = NavRoutes.ImageViewer.route,
+                arguments =
+                    listOf(
+                        navArgument(NavRoutes.IMAGE_TYPE) {
+                            type = NavType.StringType
+                            nullable = false
+                        },
+                        navArgument(NavRoutes.IMAGE_ID) {
+                            type = NavType.StringType
+                            nullable = false
+                        },
+                    ),
+                enterTransition = {
+                    expandIn(
+                        expandFrom = Alignment.Center,
+                        animationSpec = tween(300),
+                        initialSize = { IntSize(40, 40) },
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    shrinkOut(
+                        shrinkTowards = Alignment.Center,
+                        animationSpec = tween(300),
+                        targetSize = { IntSize(40, 40) },
+                    ) + fadeOut(animationSpec = tween(300))
+                },
+            ) { backStackEntry ->
+                val imageId =
+                    backStackEntry.arguments!!
+                        .getString(NavRoutes.IMAGE_ID)!!
+                val imageTypeName =
+                    backStackEntry.arguments!!
+                        .getString(NavRoutes.IMAGE_TYPE)!!
+                val imageType = runCatching { ImageType.valueOf(imageTypeName) }.getOrNull()
 
-                ImageViewerScreen(imageType, imageId, navController)
+                if (imageType == null) {
+                    Logger.logError("Attempt to navigate to ImageViewerScreen with bad arguments")
+                    LaunchedEffect(Unit) {
+                        navController.popBackStack()
+                    }
+                } else {
+                    ImageViewerScreen(imageType, imageId, navController)
+                }
             }
         }
     }
