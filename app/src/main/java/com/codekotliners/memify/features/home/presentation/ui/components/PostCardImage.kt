@@ -1,5 +1,8 @@
 package com.codekotliners.memify.features.home.presentation.ui.components
 
+import android.util.Log
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,11 +24,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.codekotliners.memify.LocalNavAnimatedVisibilityScope
+import com.codekotliners.memify.LocalSharedTransitionScope
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.core.ui.components.CenteredWidget
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun PostCardImage(post: Post, onImageClick: () -> Unit) {
     val painter =
@@ -38,6 +44,11 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                     .build(),
         )
     val state = painter.state
+
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+        ?: error("No SharedTransitionScope found – make sure you’re inside a SharedTransitionLayout")
+    val animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current
+        ?: error("No AnimatedVisibilityScope found – make sure you’re inside your AnimatedContent/NavHost")
 
     Box(
         modifier =
@@ -61,19 +72,27 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                     )
                 }
             }
+
             is AsyncImagePainter.State.Loading -> {
                 CenteredCircularProgressIndicator()
             }
+
             is AsyncImagePainter.State.Success, AsyncImagePainter.State.Empty -> {}
         }
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop,
-        )
+        with (sharedTransitionScope) {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .sharedBounds(
+                            sharedContentState = rememberSharedContentState("1"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        ),
+                contentScale = ContentScale.Crop,
+            )
+        }
     }
 }

@@ -14,7 +14,7 @@ class PostsRepositoryImpl @Inject constructor(
 ) : PostsRepository {
     override suspend fun getPosts(): List<Post> {
         val postDtos = remoteDatasource.getPosts()
-        return postDtos.map { it.toPost(mockUser, isPostLiked(it)) }
+        return postDtos.map { it.toPost(mockUser, isPostLiked(it)) }.drop(2)
     }
 
     private fun isPostLiked(postDto: PostDto): Boolean {

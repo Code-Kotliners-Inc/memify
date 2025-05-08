@@ -1,8 +1,11 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
+import android.util.Log
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -53,6 +56,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.codekotliners.memify.LocalNavAnimatedVisibilityScope
+import com.codekotliners.memify.LocalSharedTransitionScope
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
@@ -124,19 +129,21 @@ fun ImageViewerScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ImageBox(imageState: ImageState) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
 
-    // Animate the scale when it goes below 1f
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+        ?: error("No SharedTransitionScope found – make sure you’re inside a SharedTransitionLayout")
+    val animatedVisibilityScope = LocalNavAnimatedVisibilityScope.current
+        ?: error("No AnimatedVisibilityScope found – make sure you’re inside your AnimatedContent/NavHost")
+
     val animatedScale by animateFloatAsState(
         targetValue = if (scale < 1f) 1f else scale,
         animationSpec =
-            spring(
-                dampingRatio = 0.5f,
-                stiffness = 800f,
-            ),
+            tween(300),
         label = "scaleAnimation",
     )
 
@@ -154,30 +161,37 @@ fun ImageBox(imageState: ImageState) {
         }
 
         is ImageState.Content -> {
-            Image(
-                bitmap = imageState.bitmap.asImageBitmap(),
-                contentDescription = null,
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .graphicsLayer(
-                            scaleX = animatedScale,
-                            scaleY = animatedScale,
-                            translationX = offset.x,
-                            translationY = offset.y,
-                        ).pointerInput(Unit) {
-                            detectTapGestures(
-                                onDoubleTap = {
-                                    scale = if (scale == 1f) 2f else 1f
-                                },
+            with(sharedTransitionScope) {
+                Image(
+                    bitmap = imageState.bitmap.asImageBitmap(),
+                    contentDescription = null,
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .graphicsLayer(
+                                scaleX = animatedScale,
+                                scaleY = animatedScale,
+                                translationX = offset.x,
+                                translationY = offset.y,
                             )
-                            detectTransformGestures { _, pan, zoom, _ ->
-                                scale = (scale * zoom).coerceIn(0.8f, 5f)
-                                offset += pan
+                            .pointerInput(Unit) {
+                                detectTapGestures(
+                                    onDoubleTap = {
+                                        scale = if (scale == 1f) 2f else 1f
+                                    },
+                                )
+                                detectTransformGestures { _, pan, zoom, _ ->
+                                    scale = (scale * zoom).coerceIn(0.8f, 5f)
+                                    offset += pan
+                                }
                             }
-                        },
-                contentScale = ContentScale.Fit,
-            )
+                            .sharedBounds(
+                                rememberSharedContentState(key = "1"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            ),
+                    contentScale = ContentScale.Fit,
+                )
+            }
         }
 
         is ImageState.Error -> {
@@ -211,7 +225,7 @@ fun ImageViewerTopBar(
     onDownloadClick: () -> Unit,
     onPublishClick: () -> Unit,
     onTakeTemplateClick: () -> Unit,
-    title: String,
+    title: String = "",
 ) {
     var expanded by remember { mutableStateOf(false) }
 
