@@ -1,10 +1,8 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,9 +51,11 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -64,6 +65,7 @@ import com.codekotliners.memify.R
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -136,31 +138,49 @@ fun ImageViewerScreen(
 
 @Composable
 fun ImageBox(imageState: ImageState) {
+    val coroutineScope = rememberCoroutineScope()
+
     val defaultScale = 1f
-    val maxScale = 3f
-    val minScale = 0.8f
+    val maxScale = 2.5f
+    val minScale = 0.9f
     val doubleTapZoom = 2f
 
+    // scaling using two fingers
     var manualScale by remember { mutableFloatStateOf(1f) }
+    // scaling with double tap
+    val animatedScale = remember { Animatable(initialValue = 1f) }
+    // to handle double tap without twitches
     var futureScale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
-    val coroutineScope = rememberCoroutineScope()
-
-    val animatedScale = remember { Animatable(initialValue = 1f) }
     var scaleSource by remember { mutableIntStateOf(0) }
 
-    var animReady by remember { mutableStateOf(false) }
+    var readyToAnimate by remember { mutableStateOf(false) }
+
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
 
     LaunchedEffect(scaleSource) {
         if (scaleSource != 0) {
             animatedScale.snapTo(manualScale)
-            animReady = true
+            readyToAnimate = true
             animatedScale.animateTo(
                 targetValue = futureScale,
-                animationSpec = tween(durationMillis = 400)
+                animationSpec = tween(durationMillis = 350),
             )
             manualScale = futureScale
+        }
+    }
+
+    var lastGestureTime by remember { mutableLongStateOf(0L) }
+
+    LaunchedEffect(lastGestureTime) {
+        if (manualScale < defaultScale || (manualScale == defaultScale && offset != Offset.Zero)) {
+            delay(80)
+            futureScale = defaultScale
+            offset = Offset.Zero
+
+            readyToAnimate = false
+            ++scaleSource
         }
     }
 
@@ -183,14 +203,27 @@ fun ImageBox(imageState: ImageState) {
                 contentDescription = null,
                 modifier =
                     Modifier
+                        .onSizeChanged { containerSize = it }
                         .fillMaxSize()
                         .graphicsLayer(
-                            scaleX = if (scaleSource != 0 && animReady) animatedScale.value else manualScale,
-                            scaleY = if (scaleSource != 0 && animReady) animatedScale.value else manualScale,
+                            scaleX = if (scaleSource != 0 && readyToAnimate) animatedScale.value else manualScale,
+                            scaleY = if (scaleSource != 0 && readyToAnimate) animatedScale.value else manualScale,
                             translationX = offset.x,
-                            translationY = offset.y
-                        )
-                        .pointerInput(Unit) {
+                            translationY = offset.y,
+                        ).pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+
+                                    when (event.changes.first().pressed) {
+                                        true -> {}
+                                        false -> {
+                                            lastGestureTime = System.currentTimeMillis()
+                                        }
+                                    }
+                                }
+                            }
+                        }.pointerInput(Unit) {
                             detectTapGestures(
                                 onDoubleTap = {
                                     coroutineScope.launch {
@@ -200,13 +233,12 @@ fun ImageBox(imageState: ImageState) {
                                             futureScale = defaultScale
                                             offset = Offset.Zero
                                         }
-                                        animReady = false
+                                        readyToAnimate = false
                                         ++scaleSource
                                     }
-                                }
+                                },
                             )
-                        }
-                        .pointerInput(Unit) {
+                        }.pointerInput(Unit) {
                             detectTransformGestures { _, pan, zoom, _ ->
                                 manualScale = (manualScale * zoom).coerceIn(minScale, maxScale)
                                 offset += pan * manualScale
