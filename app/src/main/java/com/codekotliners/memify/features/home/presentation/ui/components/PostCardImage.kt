@@ -10,24 +10,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.LocalNavAnimatedVisibilityScope
 import com.codekotliners.memify.LocalSharedTransitionScope
-import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
-import com.codekotliners.memify.core.ui.components.CenteredWidget
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -41,7 +37,6 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                     .crossfade(true)
                     .build(),
         )
-    val state = painter.state
 
     val sharedTransitionScope =
         LocalSharedTransitionScope.current
@@ -62,15 +57,9 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                     onImageClick()
                 },
     ) {
-        when (state) {
+        when (painter.state) {
             is AsyncImagePainter.State.Error -> {
-                CenteredWidget {
-                    Icon(
-                        painter = painterResource(id = R.drawable.round_error_outline_24),
-                        modifier = Modifier.width(30.dp).height(30.dp),
-                        contentDescription = null,
-                    )
-                }
+                ErrorPostImage()
             }
 
             is AsyncImagePainter.State.Loading -> {

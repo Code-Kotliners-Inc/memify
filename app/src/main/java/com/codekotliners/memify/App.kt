@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -30,10 +29,10 @@ import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
 
-val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
-
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
+
+val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope?> { null }
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -55,7 +54,12 @@ fun App(
                         HomeScreen(navController)
                     }
                 }
-                composable(NavRoutes.Create.route) { CreateScreen(navController = navController, onLogin = { navController.navigate(NavRoutes.Auth.route) }) }
+                composable(NavRoutes.Create.route) {
+                    CreateScreen(
+                        navController = navController,
+                        onLogin = { navController.navigate(NavRoutes.Auth.route) },
+                    )
+                }
                 composable(NavRoutes.Profile.route) { ProfileScreen(navController) }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {
