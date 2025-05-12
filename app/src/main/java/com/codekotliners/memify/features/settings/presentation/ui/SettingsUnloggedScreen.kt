@@ -27,15 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
-fun SettingsUnLoggedScreen() {
+fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
     Scaffold(
         topBar = {
-            ToolBar()
+            ToolBar(navController)
         },
         content = { paddingValues ->
             Column(
@@ -48,7 +50,7 @@ fun SettingsUnLoggedScreen() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                ThemeChange()
+                ThemeChange(viewModel)
                 Button(
                     onClick = {},
                     modifier =
@@ -69,7 +71,7 @@ fun SettingsUnLoggedScreen() {
 }
 
 @Composable
-private fun ThemeChange() {
+private fun ThemeChange(viewModel: SettingsScreenViewModel) {
     Row(
         modifier =
             Modifier
@@ -87,15 +89,15 @@ private fun ThemeChange() {
             modifier =
                 Modifier
                     .width(64.dp),
-            checked = false,
-            onCheckedChange = {},
+            checked = viewModel.theme.value == "dark",
+            onCheckedChange = { viewModel.changeTheme() },
             colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
         )
     }
 }
 
 @Composable
-private fun ToolBar() {
+private fun ToolBar(navController: NavController) {
     Box(
         modifier =
             Modifier
@@ -104,7 +106,7 @@ private fun ToolBar() {
                 .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = {}, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(onClick = { navController.navigate("Profile") }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),

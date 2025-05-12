@@ -14,4 +14,8 @@ sealed class NavRoutes(
     data object Register : NavRoutes("Register")
 
     data object Login : NavRoutes("Login")
+
+    data object SettingsLogged : NavRoutes("SettingsLogged")
+
+    data object SettingsUnlogged : NavRoutes("SettingsUnlogged")
 }

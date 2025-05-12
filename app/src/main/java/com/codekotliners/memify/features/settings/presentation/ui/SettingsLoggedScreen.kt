@@ -32,12 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.askPassword
@@ -46,10 +48,10 @@ import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
 
 @Composable
-fun SettingsLoggedScreen() {
+fun SettingsLoggedScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            ToolBar()
+            ToolBar(navController)
         },
         content = { paddingValues ->
             Column(
@@ -88,7 +90,7 @@ fun SettingsLoggedScreen() {
 }
 
 @Composable
-private fun ToolBar() {
+private fun ToolBar(navController: NavController) {
     Box(
         modifier =
             Modifier
@@ -97,7 +99,7 @@ private fun ToolBar() {
                 .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = {}, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(onClick = { navController.navigate("Profile") }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),
@@ -319,6 +321,6 @@ private fun ChangePhoto() {
 @Composable
 fun SettingsLoggedScreenPreview() {
     MemifyTheme {
-        SettingsLoggedScreen()
+        SettingsLoggedScreen(navController = NavController(LocalContext.current))
     }
 }

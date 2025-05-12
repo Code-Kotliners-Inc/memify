@@ -27,10 +27,16 @@ import com.codekotliners.memify.features.auth.presentation.viewmodel.Authenticat
 import com.codekotliners.memify.features.create.presentation.ui.CreateScreen
 import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
 import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
+import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
+import com.codekotliners.memify.features.settings.presentation.ui.SettingsLoggedScreen
+import com.codekotliners.memify.features.settings.presentation.ui.SettingsUnLoggedScreen
+import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
 fun App(
     authViewModel: AuthenticationViewModel = hiltViewModel(),
+    settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -51,7 +57,7 @@ fun App(
             ) {
                 composable(NavRoutes.Home.route) { HomeScreen() }
                 composable(NavRoutes.Create.route) { CreateScreen { navController.navigate(NavRoutes.Auth.route) } }
-                composable(NavRoutes.Profile.route) { ProfileScreen() }
+                composable(NavRoutes.Profile.route) { ProfileScreen(profileViewModel, navController) }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {
                     LoginScreen(navController) { email, password ->
@@ -65,6 +71,10 @@ fun App(
                         navController.popBackStack()
                     }
                 }
+                composable(
+                    NavRoutes.SettingsUnlogged.route,
+                ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
+                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController) }
             }
 
             if (NavUtils.shouldShowBottomBar(currentRoute)) {
