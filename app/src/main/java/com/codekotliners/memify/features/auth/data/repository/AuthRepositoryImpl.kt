@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResult
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.UserData
+import com.codekotliners.memify.core.repositories.user.UserRepository
 import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.codekotliners.memify.features.auth.domain.repository.AuthRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -23,6 +25,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
+    private val userRepo: UserRepository,
     @ApplicationContext private val context: Context,
 ) : AuthRepository {
     private val googleSignInClient by lazy {
@@ -54,6 +57,17 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
             Response.Success(true)
+            val user =
+                UserData(
+                    email = email,
+                    password = password,
+                    // TODO дописать получение username
+                    username = email,
+                    newTSI = 0,
+                    photoUrl = null,
+                    phone = null,
+                )
+            userRepo.createUser(user)
             // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
         } catch (e: Exception) {
             Response.Failure(e)

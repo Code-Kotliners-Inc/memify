@@ -7,8 +7,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-private const val ZERO_INDEX = 0
 private const val EMPTY_DATA = ""
+private const val USERS_COLLECTION_NAME = "users"
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -19,7 +19,6 @@ class UserRepositoryImpl @Inject constructor(
             // подразумевается, что пользователь зарегистрировался только что
             // с помощью FirebaseAuth из репозитория AuthRepository
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
-
             val data =
                 hashMapOf(
                     "uid" to user.uid,
@@ -27,7 +26,7 @@ class UserRepositoryImpl @Inject constructor(
                     "username" to userData.username,
                     "photoUrl" to (userData.photoUrl ?: EMPTY_DATA),
                     "phone" to (userData.phone ?: EMPTY_DATA),
-                    "tsi" to (userData.newTSI ?: ZERO_INDEX),
+                    "tsi" to userData.newTSI,
                 )
 
             db
@@ -49,7 +48,6 @@ class UserRepositoryImpl @Inject constructor(
             if (userData.password.isNotEmpty()) {
                 user.updatePassword(userData.password).await()
             }
-
             val updates = mutableMapOf<String, Any>()
             if (userData.username.isNotEmpty()) updates["username"] = userData.username
             userData.photoUrl?.let { updates["photoUrl"] = it }
@@ -117,6 +115,31 @@ class UserRepositoryImpl @Inject constructor(
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
             user.updatePassword(password).await()
             Response.Success(true)
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
+    }
+
+    override suspend fun getUserData(): Response<UserData> {
+        return try {
+            val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
+            val documentSnapshot =
+                FirebaseFirestore.getInstance()
+                    .collection(USERS_COLLECTION_NAME)
+                    .document(user.uid)
+                    .get()
+                    .await()
+
+            if (documentSnapshot.exists()) {
+                val userData =
+                    documentSnapshot.toObject(UserData::class.java) ?: return Response.Failure(
+                        NullPointerException("User data conversion failed"),
+                    )
+
+                return Response.Success(userData)
+            } else {
+                Response.Failure(NoSuchElementException("User document not found"))
+            }
         } catch (e: Exception) {
             Response.Failure(e)
         }
