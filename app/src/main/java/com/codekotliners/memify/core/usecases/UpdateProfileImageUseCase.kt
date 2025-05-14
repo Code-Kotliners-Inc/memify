@@ -12,8 +12,8 @@ import javax.inject.Inject
 class UpdateProfileImageUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) {
-    suspend operator fun invoke(imageUri: Uri): Response<String> {
-        return try {
+    suspend operator fun invoke(imageUri: Uri): Response<String> =
+        try {
             val storage = Firebase.storage
             val imageRef = storage.reference.child("profile_images/${imageUri.lastPathSegment}")
             val uploadTask = imageRef.putFile(imageUri).await()
@@ -27,7 +27,6 @@ class UpdateProfileImageUseCase @Inject constructor(
         } catch (e: Exception) {
             Response.Failure(e)
         }
-    }
 
     suspend fun getProfileImageUrl(): String? {
         val photoUrl =

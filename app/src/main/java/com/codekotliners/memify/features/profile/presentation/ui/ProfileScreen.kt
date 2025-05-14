@@ -255,13 +255,11 @@ private fun ProfileAvatar(
                 .clip(CircleShape)
                 .clickable(
                     onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
-                )
-                .border(
+                ).border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onBackground,
                     shape = CircleShape,
-                )
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                ).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
         if (state.userImageUri != null) {
@@ -315,8 +313,7 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
                         Modifier
                             .tabIndicatorOffset(
                                 tabPositions[state.selectedTab],
-                            )
-                            .padding(
+                            ).padding(
                                 vertical = 10.dp,
                                 horizontal = 16.dp,
                             ),

@@ -30,21 +30,19 @@ object AuthModule {
     ): AuthRepository = AuthRepositoryImpl(firebaseAuth, userRepo, context)
 
     @Provides
-    fun provideFirestore(): FirebaseFirestore {
-        return Firebase.firestore.apply {
+    fun provideFirestore(): FirebaseFirestore =
+        Firebase.firestore.apply {
             // Опциональные настройки Firestore
             firestoreSettings =
-                FirebaseFirestoreSettings.Builder()
+                FirebaseFirestoreSettings
+                    .Builder()
                     .setPersistenceEnabled(true)
                     .build()
         }
-    }
 
     @Provides
     fun provideUserRepository(
         auth: FirebaseAuth,
         db: FirebaseFirestore,
-    ): UserRepository {
-        return UserRepositoryImpl(auth, db)
-    }
+    ): UserRepository = UserRepositoryImpl(auth, db)
 }

@@ -124,7 +124,8 @@ class UserRepositoryImpl @Inject constructor(
         return try {
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
             val documentSnapshot =
-                FirebaseFirestore.getInstance()
+                FirebaseFirestore
+                    .getInstance()
                     .collection(USERS_COLLECTION_NAME)
                     .document(user.uid)
                     .get()
