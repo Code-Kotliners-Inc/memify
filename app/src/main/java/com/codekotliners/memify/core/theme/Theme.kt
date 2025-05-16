@@ -2,7 +2,6 @@ package com.codekotliners.memify.core.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -11,7 +10,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val lightScheme =
@@ -75,69 +73,3 @@ fun MemifyTheme(
         )
     }
 }
-
-data class ExtraColors(
-    val authButtons: AuthButtons,
-) {
-    data class AuthButtons(
-        val mail: ButtonColors,
-        val google: ButtonColors,
-        val vk: ButtonColors,
-    )
-}
-
-val LightExtraColors =
-    ExtraColors(
-        authButtons =
-            ExtraColors.AuthButtons(
-                google =
-                    ButtonColors(
-                        containerColor = Color(0xFF000000),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF4E4E4E),
-                        disabledContentColor = Color.Black,
-                    ),
-                vk =
-                    ButtonColors(
-                        containerColor = Color(0xFF0066FF),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF438EFF),
-                        disabledContentColor = Color.Black,
-                    ),
-                mail =
-                    ButtonColors(
-                        containerColor = Color(0xFFD30808),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFFE84F4F),
-                        disabledContentColor = Color.White,
-                    ),
-            ),
-    )
-
-val DarkExtraColors =
-    ExtraColors(
-        authButtons =
-            ExtraColors.AuthButtons(
-                google =
-                    ButtonColors(
-                        containerColor = Color(0xFF000000),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF4E4E4E),
-                        disabledContentColor = Color.Black,
-                    ),
-                vk =
-                    ButtonColors(
-                        containerColor = Color(0xFF0066FF),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF438EFF),
-                        disabledContentColor = Color.Black,
-                    ),
-                mail =
-                    ButtonColors(
-                        containerColor = Color(0xFFD30808),
-                        contentColor = Color.White,
-                        disabledContainerColor = Color(0xFFE84F4F),
-                        disabledContentColor = Color.White,
-                    ),
-            ),
-    )

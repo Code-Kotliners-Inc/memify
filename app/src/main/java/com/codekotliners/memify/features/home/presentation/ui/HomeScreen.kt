@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.home.presentation.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,57 +24,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.codekotliners.memify.core.models.Post
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
+import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
+import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
 import com.codekotliners.memify.features.home.presentation.ui.components.EmptyFeed
 import com.codekotliners.memify.features.home.presentation.ui.components.ErrorScreen
-import com.codekotliners.memify.features.home.presentation.ui.components.LoadingIndicator
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardFooter
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardHeader
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardImage
 import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
+import com.codekotliners.memify.features.viewer.domain.model.ImageType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
 ) {
     val screenState by viewModel.screenState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
-            screenState.getTabs().forEach { tab ->
-                Tab(
-                    selected = screenState.selectedTab == tab,
-                    onClick = { viewModel.selectTab(tab) },
-                    text = {
-                        Text(
-                            text = stringResource(tab.nameResId),
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    },
-                    selectedContentColor = MaterialTheme.colorScheme.onBackground,
-                    unselectedContentColor = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-        }
-
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = { viewModel.refresh() },
-            modifier = Modifier.fillMaxSize(),
+    AppScaffold(navController) { innerPadding ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.background),
         ) {
-            when (val currentState = screenState.getCurrentTabState()) {
-                is PostsFeedTabState.None -> {}
-                is PostsFeedTabState.Empty -> EmptyFeed()
-                is PostsFeedTabState.Loading -> LoadingIndicator()
-                is PostsFeedTabState.Error ->
-                    ErrorScreen(currentState.type)
-                is PostsFeedTabState.Content ->
-                    PostsFeed(currentState.posts) { post ->
-                        viewModel.likeClick(post)
-                    }
+            TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
+                screenState.getTabs().forEach { tab ->
+                    Tab(
+                        selected = screenState.selectedTab == tab,
+                        onClick = { viewModel.selectTab(tab) },
+                        text = {
+                            Text(
+                                text = stringResource(tab.nameResId),
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        },
+                        selectedContentColor = MaterialTheme.colorScheme.onBackground,
+                        unselectedContentColor = MaterialTheme.colorScheme.onBackground,
+                    )
+                }
+            }
+
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.refresh() },
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                when (val currentState = screenState.getCurrentTabState()) {
+                    is PostsFeedTabState.None -> {}
+                    is PostsFeedTabState.Empty -> EmptyFeed()
+                    is PostsFeedTabState.Loading -> CenteredCircularProgressIndicator()
+                    is PostsFeedTabState.Error ->
+                        ErrorScreen(currentState.type)
+
+                    is PostsFeedTabState.Content ->
+                        PostsFeed(currentState.posts, navController) { post ->
+                            viewModel.likeClick(post)
+                        }
+                }
             }
         }
     }
@@ -82,17 +97,24 @@ fun HomeScreen(
 @Composable
 private fun PostsFeed(
     posts: List<Post>,
+    navController: NavController,
     onLikeClick: (Post) -> Unit,
 ) {
     LazyColumn(
         modifier =
             Modifier
-                .padding(vertical = 8.dp)
                 .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
     ) {
         items(posts) { post ->
-            PostCard(post, onLikeClick)
+            PostCard(post, onLikeClick, onImageClick = {
+                navController.navigate(
+                    NavRoutes.ImageViewer.createRoute(
+                        ImageType.POST,
+                        post.id,
+                    ),
+                )
+            })
         }
     }
 }
@@ -101,6 +123,7 @@ private fun PostsFeed(
 fun PostCard(
     card: Post,
     onLikeClick: (Post) -> Unit,
+    onImageClick: () -> Unit,
 ) {
     Card(
         modifier =
@@ -108,12 +131,12 @@ fun PostCard(
                 .fillMaxWidth()
                 .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
     ) {
         Column(Modifier.padding(horizontal = 8.dp)) {
             PostCardHeader(card)
-            PostCardImage(card)
+            PostCardImage(card, onImageClick)
             PostCardFooter(card, onLikeClick)
         }
     }
