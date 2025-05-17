@@ -20,17 +20,18 @@ class LikesRepositoryImpl @Inject constructor() : LikesRepository {
         val postRef = postsCollection.document(postsDto.id)
 
         try {
-            db.runTransaction { transaction ->
-                transaction.update(
-                    postRef,
-                    "liked",
-                    if (userId !in postsDto.liked.distinct()) {
-                        FieldValue.arrayUnion(userId)
-                    } else {
-                        FieldValue.arrayRemove(userId)
-                    },
-                )
-            }.await()
+            db
+                .runTransaction { transaction ->
+                    transaction.update(
+                        postRef,
+                        "liked",
+                        if (userId !in postsDto.liked.distinct()) {
+                            FieldValue.arrayUnion(userId)
+                        } else {
+                            FieldValue.arrayRemove(userId)
+                        },
+                    )
+                }.await()
         } catch (e: Exception) {
             Log.e("LIKED", e.message.toString())
         }
@@ -41,7 +42,5 @@ class LikesRepositoryImpl @Inject constructor() : LikesRepository {
         return postsDto.liked.contains(userId)
     }
 
-    override suspend fun likesCount(postsDto: PostDto): Int {
-        return postsDto.liked.size
-    }
+    override suspend fun likesCount(postsDto: PostDto): Int = postsDto.liked.size
 }
