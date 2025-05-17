@@ -45,6 +45,7 @@ import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.vk.id.auth.VKIDAuthUiParams
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import com.vk.id.AccessToken
@@ -261,6 +262,7 @@ private fun AddVk(onLogin: (accessToken: AccessToken) -> Unit) {
                 onLogin(token)
             },
             scenario = OneTapTitleScenario.SignIn,
+            authParams = VKIDAuthUiParams { scopes = setOf("photos") },
         )
     }
 }

@@ -75,7 +75,7 @@ fun LongPressMenu(viewModel: CanvasViewModel) {
                         when (index) {
                             0 -> {
                                 viewModel.clearModes()
-                                viewModel.iAmAPainterGodDamnIt = true
+                                viewModel.isPaintingEnabled = true
                             }
                             1 -> {
                                 viewModel.startWriting()

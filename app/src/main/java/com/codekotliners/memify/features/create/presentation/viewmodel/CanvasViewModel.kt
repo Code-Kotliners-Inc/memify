@@ -31,7 +31,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     val currentLine = mutableStateListOf<Offset>()
     val currentLineWidth = mutableFloatStateOf(50f)
     val currentLineColor = mutableStateOf(Color.Black)
-    var isWriting by mutableStateOf(false)
     var currentText by mutableStateOf("")
     var currentTextColor = mutableStateOf(Color.Black)
     var currentTextSize = mutableFloatStateOf(24f)
@@ -46,9 +45,10 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     var imageWidth by mutableFloatStateOf(1f)
     var imageHeight by mutableFloatStateOf(1f)
 
-    // TO REMOVE
-    var iAmAPainterGodDamnIt by mutableStateOf(false)
-    var iAmAWriterGodDamnIt by mutableStateOf(false)
+    var isPaintingEnabled by mutableStateOf(false)
+    var isWritingEnabled by mutableStateOf(false)
+
+    var imageUrl by mutableStateOf<String?>(null)
 
     var showRadialMenu by mutableStateOf(false)
     var radialMenuPosition by mutableStateOf(Offset.Zero)
@@ -76,16 +76,14 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
 
     fun startWriting() {
         clearModes()
-        iAmAWriterGodDamnIt = true
-        isWriting = true
+        isWritingEnabled = true
         showTextPreview = true
         currentText = ""
     }
 
     fun clearModes() {
-        iAmAPainterGodDamnIt = false
-        iAmAWriterGodDamnIt = false
-        isWriting = false
+        isPaintingEnabled = false
+        isWritingEnabled = false
         showTextPreview = false
         showColors = false
         showFonts = false
@@ -130,7 +128,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                 ),
             )
         }
-        isWriting = false
+        isWritingEnabled = false
         currentText = ""
     }
 

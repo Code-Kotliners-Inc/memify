@@ -62,10 +62,24 @@ fun App(
                 composable(
                     NavRoutes.SettingsUnlogged.route,
                 ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
-                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController, settingsViewModel) }
-                composable(NavRoutes.Create.route) {
+                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController) }
+                composable(
+                    route = NavRoutes.Create.route,
+                    arguments =
+                        listOf(
+                            navArgument(NavRoutes.Create.Params.IMAGE_URL) {
+                                type = NavType.StringType
+                                nullable = true
+                            },
+                        ),
+                ) { backStackEntry ->
+                    val imageUrl =
+                        backStackEntry.arguments?.getString(NavRoutes.Create.Params.IMAGE_URL)
+                            ?: "https://i.ytimg.com/vi/E-EtUFH7Ezs/maxresdefault.jpg"
+
                     CreateScreen(
                         navController = navController,
+                        imageUrl = imageUrl,
                         onLogin = { navController.navigate(NavRoutes.Auth.route) },
                     )
                 }
@@ -97,12 +111,8 @@ fun App(
                             },
                         ),
                 ) { backStackEntry ->
-                    val imageId =
-                        backStackEntry.arguments!!
-                            .getString(NavRoutes.IMAGE_ID)!!
-                    val imageTypeName =
-                        backStackEntry.arguments!!
-                            .getString(NavRoutes.IMAGE_TYPE)!!
+                    val imageId = backStackEntry.arguments!!.getString(NavRoutes.IMAGE_ID)!!
+                    val imageTypeName = backStackEntry.arguments!!.getString(NavRoutes.IMAGE_TYPE)!!
                     val imageType = runCatching { ImageType.valueOf(imageTypeName) }.getOrNull()
 
                     if (imageType == null) {
