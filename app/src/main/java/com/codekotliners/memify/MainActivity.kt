@@ -10,9 +10,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
+import androidx.activity.viewModels
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.surfaceDark
 import com.codekotliners.memify.core.theme.surfaceLight
+import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
+
 import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
@@ -41,6 +44,8 @@ fun SetStatusBarBackgroundAndroid15(window: Window) {
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: SettingsScreenViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,8 +53,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             SetStatusBarBackgroundAndroid15(window)
+            val currentTheme = viewModel.theme.value == "dark"
             MemifyTheme(
                 dynamicColor = false,
+                darkTheme = currentTheme,
             ) {
                 App()
             }

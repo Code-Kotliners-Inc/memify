@@ -17,6 +17,10 @@ sealed class NavRoutes(
 
     data object Login : NavRoutes("Login")
 
+    data object SettingsLogged : NavRoutes("SettingsLogged")
+
+    data object SettingsUnlogged : NavRoutes("SettingsUnlogged")
+
     companion object {
         const val IMAGE_TYPE = "imageType"
         const val IMAGE_ID = "imageId"

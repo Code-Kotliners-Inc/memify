@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
+import android.content.res.Resources
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Typeface
@@ -55,9 +56,11 @@ class DrawingCanvas(
         paint: Paint,
         textElement: TextElement,
     ) {
+        val newSize = textElement.size * Resources.getSystem().displayMetrics.scaledDensity
         paint.apply {
             color = textElement.color.toArgb()
-            textSize = (textElement.size * 1.6).toFloat()
+            // поменять
+            textSize = newSize
             typeface = Typeface.DEFAULT
             style = Paint.Style.FILL
         }
@@ -65,7 +68,7 @@ class DrawingCanvas(
         canvas.drawText(
             textElement.text,
             textElement.position.x,
-            textElement.position.y,
+            textElement.position.y + newSize,
             paint,
         )
     }

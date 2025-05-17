@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.profile.presentation.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -47,14 +48,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
+import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
@@ -76,7 +82,7 @@ fun ProfileScreen(
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-        topBar = { ProfileTopBar(showProfile = !isExtended) },
+        topBar = { ProfileTopBar(navController, showProfile = !isExtended) },
         floatingActionButton = {
             ProfileFloatingActionButton(
                 showFloatingBtn = !isExtended,
@@ -134,7 +140,12 @@ private fun rememberScrollOffset(scrollState: LazyGridState): Float =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileTopBar(showProfile: Boolean) {
+private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
+    var route = NavRoutes.SettingsUnlogged.route
+    if (FirebaseAuth.getInstance().currentUser != null) {
+        route = NavRoutes.SettingsLogged.route
+    }
+
     CenterAlignedTopAppBar(
         windowInsets = WindowInsets(0),
         title = {
@@ -157,7 +168,7 @@ private fun ProfileTopBar(showProfile: Boolean) {
         },
         actions = {
             IconButton(
-                onClick = {},
+                onClick = { navController.navigate(route) },
             ) {
                 Icon(
                     Icons.Default.Settings,
@@ -358,5 +369,14 @@ fun MemeItem(index: Int) {
                 color = Color.White,
             )
         }
+    }
+}
+
+@Preview(name = "Light Mode", showSystemUi = true)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Composable
+fun SettingsLoggedScreenPreview() {
+    MemifyTheme {
+        ProfileScreen(navController = NavController(LocalContext.current))
     }
 }
