@@ -6,6 +6,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("com.vk.vkompose") version "0.6.2"
     id("com.google.firebase.crashlytics")
+    id("vkid.manifest.placeholders")
 }
 android {
     namespace = "com.codekotliners.memify"
@@ -36,6 +37,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -105,6 +107,12 @@ dependencies {
 
     // Collections
     implementation(libs.kotlinx.collections.immutable)
+
+    // VKID
+    implementation("com.vk.id:vkid:2.4.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.vk.id:onetap-compose:2.4.0")
 }
 
 vkompose {

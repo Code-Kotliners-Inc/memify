@@ -41,7 +41,7 @@ fun EditingCanvasElements(viewModel: CanvasViewModel) {
             modifier =
                 Modifier
                     .then(
-                        if (viewModel.iAmAPainterGodDamnIt) {
+                        if (viewModel.isPaintingEnabled) {
                             Modifier.drawingCanvas(viewModel)
                         } else {
                             Modifier

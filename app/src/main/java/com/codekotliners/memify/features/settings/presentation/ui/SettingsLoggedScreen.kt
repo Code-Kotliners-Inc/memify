@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.settings.presentation.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,6 +45,8 @@ import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.vk.id.onetap.compose.onetap.OneTap
+import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
 fun SettingsLoggedScreen(navController: NavController) {
@@ -251,27 +252,10 @@ private fun AddVk() {
             style = MaterialTheme.typography.hintText,
         )
 
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(id = R.string.link_account),
-                style = MaterialTheme.typography.suggestNewAccount,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_link_24),
-                    contentDescription = stringResource(id = R.string.link_account_hint),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-        }
+        OneTap(
+            onAuth = { _, _ -> null },
+            scenario = OneTapTitleScenario.SignIn,
+        )
     }
 }
 
@@ -317,7 +301,7 @@ private fun ChangePhoto() {
 }
 
 @Preview(name = "Light Mode", showSystemUi = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+// @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
 fun SettingsLoggedScreenPreview() {
     MemifyTheme {

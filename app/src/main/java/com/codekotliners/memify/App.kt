@@ -28,7 +28,6 @@ import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
 import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
-import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.codekotliners.memify.features.settings.presentation.ui.SettingsLoggedScreen
 import com.codekotliners.memify.features.settings.presentation.ui.SettingsUnLoggedScreen
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
@@ -43,7 +42,6 @@ val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope
 fun App(
     authViewModel: AuthenticationViewModel = hiltViewModel(),
     settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
 
@@ -64,9 +62,23 @@ fun App(
                     NavRoutes.SettingsUnlogged.route,
                 ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
                 composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController) }
-                composable(NavRoutes.Create.route) {
+                composable(
+                    route = NavRoutes.Create.route,
+                    arguments =
+                        listOf(
+                            navArgument(NavRoutes.Create.Params.IMAGE_URL) {
+                                type = NavType.StringType
+                                nullable = true
+                            },
+                        ),
+                ) { backStackEntry ->
+                    val imageUrl =
+                        backStackEntry.arguments?.getString(NavRoutes.Create.Params.IMAGE_URL)
+                            ?: "https://i.ytimg.com/vi/E-EtUFH7Ezs/maxresdefault.jpg"
+
                     CreateScreen(
                         navController = navController,
+                        imageUrl = imageUrl,
                         onLogin = { navController.navigate(NavRoutes.Auth.route) },
                     )
                 }
@@ -98,12 +110,8 @@ fun App(
                             },
                         ),
                 ) { backStackEntry ->
-                    val imageId =
-                        backStackEntry.arguments!!
-                            .getString(NavRoutes.IMAGE_ID)!!
-                    val imageTypeName =
-                        backStackEntry.arguments!!
-                            .getString(NavRoutes.IMAGE_TYPE)!!
+                    val imageId = backStackEntry.arguments!!.getString(NavRoutes.IMAGE_ID)!!
+                    val imageTypeName = backStackEntry.arguments!!.getString(NavRoutes.IMAGE_TYPE)!!
                     val imageType = runCatching { ImageType.valueOf(imageTypeName) }.getOrNull()
 
                     if (imageType == null) {
