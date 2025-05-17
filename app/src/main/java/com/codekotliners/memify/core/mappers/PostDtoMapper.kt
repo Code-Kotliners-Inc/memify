@@ -16,3 +16,14 @@ fun PostDto.toPost(author: User, isLiked: Boolean): Post =
         isLiked = isLiked,
         author = author,
     )
+
+fun Post.toPostDto(): PostDto =
+    PostDto(
+        id = id,
+        imageUrl = imageUrl,
+        creatorId = creatorId,
+        liked = liked,
+        templateId = templateId,
+        height = height,
+        width = width
+    )
