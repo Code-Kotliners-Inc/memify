@@ -70,6 +70,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
@@ -88,15 +90,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateScreen(
     navController: NavController,
+    imageUrl: String,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel = hiltViewModel(),
 ) {
+    LaunchedEffect(imageUrl) {
+        viewModel.imageUrl = imageUrl
+    }
+
     val bottomSheetState =
         rememberStandardBottomSheetState(
-            initialValue = SheetValue.PartiallyExpanded,
+            initialValue = SheetValue.Expanded,
             confirmValueChange = { newValue ->
                 newValue != SheetValue.Hidden
             },
+            skipHiddenState = false,
         )
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = bottomSheetState)
 
@@ -145,7 +153,15 @@ private fun CreateScreenBottomSheet(
         sheetContainerColor = MaterialTheme.colorScheme.surface,
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
         sheetContent = {
-            TemplatesFeedScreen({ onLogin() }, {})
+            TemplatesFeedScreen(
+                onLoginClicked = { onLogin() },
+                onTemplateSelected = { url ->
+                    viewModel.imageUrl = url
+                    coroutineScope.launch {
+                        bottomSheetState.partialExpand()
+                    }
+                },
+            )
         },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
@@ -252,35 +268,34 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // TO REMOVE
         Row {
             Button(onClick = {
-                viewModel.iAmAPainterGodDamnIt = !viewModel.iAmAPainterGodDamnIt
-                viewModel.iAmAWriterGodDamnIt = false
+                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
+                viewModel.isWritingEnabled = false
             }) { Text("paint") }
             Button(onClick = {
-                viewModel.iAmAWriterGodDamnIt = !viewModel.iAmAWriterGodDamnIt
-                viewModel.iAmAPainterGodDamnIt = false
+                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
+                viewModel.isPaintingEnabled = false
             }) { Text("write") }
         }
 
         ImageBox(viewModel)
 
-        if (viewModel.isWriting) {
+        if (viewModel.isWritingEnabled) {
             TextInputDialog(viewModel)
         }
 
         AnimatedVisibility(
-            visible = (viewModel.iAmAPainterGodDamnIt == false && viewModel.iAmAWriterGodDamnIt == false),
+            visible = (viewModel.isPaintingEnabled == false && viewModel.isWritingEnabled == false),
         ) {
             InstrumentsTextBox()
         }
 
-        AnimatedVisibility(visible = viewModel.iAmAPainterGodDamnIt) {
+        AnimatedVisibility(visible = viewModel.isPaintingEnabled) {
             DrawingRow(viewModel)
         }
 
-        AnimatedVisibility(visible = viewModel.iAmAWriterGodDamnIt) {
+        AnimatedVisibility(visible = viewModel.isWritingEnabled) {
             TextEditingRow(viewModel)
         }
     }
@@ -305,7 +320,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
                 .then(
-                    if (viewModel.iAmAWriterGodDamnIt) {
+                    if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
                         Modifier
@@ -318,8 +333,18 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                     translationY = offset.y,
                 ).transformable(state = state),
     ) {
+        val painter =
+            rememberAsyncImagePainter(
+                model =
+                    ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(viewModel.imageUrl)
+                        .crossfade(true)
+                        .build(),
+            )
+
         Image(
-            painter = painterResource(id = R.drawable.meme),
+            painter = painter,
             contentDescription = null,
             contentScale = ContentScale.Fit,
             modifier = Modifier.matchParentSize(),
@@ -354,6 +379,6 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 fun CreateScreenPreview() {
     MemifyTheme {
         val navController = NavController(LocalContext.current)
-        CreateScreen(navController, {})
+        CreateScreen(navController, "", {})
     }
 }
