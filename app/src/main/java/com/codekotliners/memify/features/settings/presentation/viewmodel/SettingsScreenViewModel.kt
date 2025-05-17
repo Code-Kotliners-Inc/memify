@@ -15,10 +15,12 @@ class SettingsScreenViewModel @Inject constructor(
     val theme: State<String> = _theme
 
     fun changeTheme() {
-        if (sharedPreferences.contains("theme") && sharedPreferences.getString(
+        if (sharedPreferences.contains("theme") &&
+            sharedPreferences.getString(
                 "theme",
-                ""
-            ) == "dark" || !sharedPreferences.contains("theme")
+                "",
+            ) == "dark" ||
+            !sharedPreferences.contains("theme")
         ) {
             sharedPreferences.edit().putString("theme", "light").apply()
             _theme.value = "light"

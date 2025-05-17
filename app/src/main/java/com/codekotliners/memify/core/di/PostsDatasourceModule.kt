@@ -1,7 +1,7 @@
 package com.codekotliners.memify.core.di
 
-import com.codekotliners.memify.core.network.PostsDatasource
-import com.codekotliners.memify.core.network.PostsFbStorageDatasource
+import com.codekotliners.memify.core.network.postsdatasource.PostsDatasource
+import com.codekotliners.memify.core.network.postsdatasource.PostsFbStorageDatasource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -65,8 +65,7 @@ fun TemplatesFeedScreen(
                     TemplatesGrid(
                         currentState = currentState,
                         onTemplateSelected = onTemplateSelected,
-                        { viewModel.loadDataForTab(pageState.selectedTab) },
-                    )
+                    ) { viewModel.loadDataForTab(pageState.selectedTab) }
                 }
 
                 TabState.Empty -> NoContentTab()

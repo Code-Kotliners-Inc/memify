@@ -35,7 +35,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -58,6 +57,7 @@ import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
+import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -66,8 +66,8 @@ import kotlin.math.min
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
     navController: NavController,
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.value
     val scrollState = rememberLazyGridState()
@@ -76,12 +76,12 @@ fun ProfileScreen(
 
     val isExtended = scrollOffset >= 0.1f
 
-    Scaffold(
+    AppScaffold(
+        navController = navController,
         modifier =
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-        contentWindowInsets = WindowInsets(0.dp),
         topBar = { ProfileTopBar(navController, showProfile = !isExtended) },
         floatingActionButton = {
             ProfileFloatingActionButton(
@@ -147,6 +147,7 @@ private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
     }
 
     CenterAlignedTopAppBar(
+        windowInsets = WindowInsets(0),
         title = {
             Text(
                 stringResource(R.string.profile),

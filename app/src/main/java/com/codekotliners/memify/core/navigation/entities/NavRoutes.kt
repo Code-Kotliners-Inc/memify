@@ -1,5 +1,7 @@
 package com.codekotliners.memify.core.navigation.entities
 
+import com.codekotliners.memify.features.viewer.domain.model.ImageType
+
 sealed class NavRoutes(
     val route: String,
 ) {
@@ -18,4 +20,14 @@ sealed class NavRoutes(
     data object SettingsLogged : NavRoutes("SettingsLogged")
 
     data object SettingsUnlogged : NavRoutes("SettingsUnlogged")
+
+    companion object {
+        const val IMAGE_TYPE = "imageType"
+        const val IMAGE_ID = "imageId"
+    }
+
+    data object ImageViewer : NavRoutes("ImageViewer/{$IMAGE_TYPE}/{$IMAGE_ID}") {
+        fun createRoute(type: ImageType, id: String): String =
+            "ImageViewer/${type.name}/$id"
+    }
 }
