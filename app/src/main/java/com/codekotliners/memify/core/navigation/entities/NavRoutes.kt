@@ -7,7 +7,11 @@ sealed class NavRoutes(
 ) {
     data object Home : NavRoutes("Home")
 
-    data object Create : NavRoutes("Create")
+    data object Create : NavRoutes("Create") {
+        object Params {
+            const val IMAGE_URL = "image_url"
+        }
+    }
 
     data object Profile : NavRoutes("Profile")
 

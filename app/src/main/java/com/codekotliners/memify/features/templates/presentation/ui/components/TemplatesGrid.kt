@@ -19,11 +19,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 
 @Composable
-fun TemplatesGrid(currentState: TabState.Content, onTemplateSelected: (Template) -> Unit, onLoadMore: () -> Unit) {
+fun TemplatesGrid(currentState: TabState.Content, onTemplateSelected: (String) -> Unit, onLoadMore: () -> Unit) {
     val listState = rememberLazyStaggeredGridState()
     val preloadWhenLeft = 10
 

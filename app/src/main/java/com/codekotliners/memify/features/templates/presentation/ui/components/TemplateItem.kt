@@ -24,7 +24,7 @@ import com.codekotliners.memify.core.ui.components.CenteredWidget
 import com.codekotliners.memify.core.models.Template
 
 @Composable
-fun TemplateItem(template: Template, onTemplateSelected: (Template) -> Unit) {
+fun TemplateItem(template: Template, onTemplateSelected: (String) -> Unit) {
     val painter =
         rememberAsyncImagePainter(
             model =
@@ -37,7 +37,7 @@ fun TemplateItem(template: Template, onTemplateSelected: (Template) -> Unit) {
     val state = painter.state
 
     Card(
-        onClick = { onTemplateSelected(template) },
+        onClick = { onTemplateSelected(template.url) },
         modifier =
             Modifier
                 .aspectRatio(template.width.toFloat() / template.height.toFloat())
