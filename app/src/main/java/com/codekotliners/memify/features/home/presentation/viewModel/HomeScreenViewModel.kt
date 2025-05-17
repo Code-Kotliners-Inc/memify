@@ -23,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val repository: PostsRepository,
-    private val likesRepository: LikesRepository
+    private val likesRepository: LikesRepository,
 ) : ViewModel() {
     private val _screenState = MutableStateFlow(MainFeedScreenState(selectedTab = MainFeedTab.POPULAR))
     val screenState = _screenState.asStateFlow()
@@ -103,23 +103,29 @@ class HomeScreenViewModel @Inject constructor(
             val tabState = newState.getCurrentTabState()
 
             if (tabState is PostsFeedTabState.Content) {
-                val updatedPosts = tabState.posts.map { post ->
-                    if (post.id == postId) {
-                        val isLiked: Boolean
-                        val newLiked = post.liked.toMutableList().apply {
-                            if (userId in this) {
-                                remove(userId)
-                                isLiked = false
-                            } else {
-                                add(userId)
-                                isLiked = true
-                            }
+                val updatedPosts =
+                    tabState.posts.map { post ->
+                        if (post.id == postId) {
+                            val isLiked: Boolean
+                            val newLiked =
+                                post.liked.toMutableList().apply {
+                                    if (userId in this) {
+                                        remove(userId)
+                                        isLiked = false
+                                    } else {
+                                        add(userId)
+                                        isLiked = true
+                                    }
+                                }
+                            post.copy(liked = newLiked, isLiked = isLiked)
+                        } else {
+                            post
                         }
-                        post.copy(liked = newLiked, isLiked = isLiked)
-                    } else post
-                }
+                    }
                 newState.updatedCurrentTab(PostsFeedTabState.Content(updatedPosts))
-            } else newState
+            } else {
+                newState
+            }
         }
     }
 }

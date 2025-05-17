@@ -11,8 +11,7 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class LikesRepositoryImpl @Inject constructor(): LikesRepository {
-
+class LikesRepositoryImpl @Inject constructor() : LikesRepository {
     private val db = Firebase.firestore
     private val postsCollection = db.collection(POSTS_COLLECTION_NAME)
 
@@ -22,11 +21,15 @@ class LikesRepositoryImpl @Inject constructor(): LikesRepository {
 
         try {
             db.runTransaction { transaction ->
-                transaction.update(postRef, "liked", if (userId !in postsDto.liked.distinct()) {
-                    FieldValue.arrayUnion(userId)
-                } else {
-                    FieldValue.arrayRemove(userId)
-                })
+                transaction.update(
+                    postRef,
+                    "liked",
+                    if (userId !in postsDto.liked.distinct()) {
+                        FieldValue.arrayUnion(userId)
+                    } else {
+                        FieldValue.arrayRemove(userId)
+                    },
+                )
             }.await()
         } catch (e: Exception) {
             Log.e("LIKED", e.message.toString())

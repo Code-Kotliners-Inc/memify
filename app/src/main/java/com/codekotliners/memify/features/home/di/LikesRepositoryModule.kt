@@ -11,5 +11,5 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 abstract class LikesRepositoryModule {
     @Binds
-    abstract fun bindLikesRepository(impl: LikesRepositoryImpl) : LikesRepository
+    abstract fun bindLikesRepository(impl: LikesRepositoryImpl): LikesRepository
 }

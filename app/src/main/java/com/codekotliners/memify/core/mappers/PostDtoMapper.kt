@@ -25,5 +25,5 @@ fun Post.toPostDto(): PostDto =
         liked = liked,
         templateId = templateId,
         height = height,
-        width = width
+        width = width,
     )
