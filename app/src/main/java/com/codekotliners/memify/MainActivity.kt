@@ -15,8 +15,10 @@ import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.surfaceDark
 import com.codekotliners.memify.core.theme.surfaceLight
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
+import com.vk.id.VKID
 
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @Composable
 fun SetStatusBarBackgroundAndroid15(window: Window) {
@@ -48,6 +50,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        VKID.init(this)
+        VKID.instance.setLocale(Locale("ru"))
 
         enableEdgeToEdge()
 
