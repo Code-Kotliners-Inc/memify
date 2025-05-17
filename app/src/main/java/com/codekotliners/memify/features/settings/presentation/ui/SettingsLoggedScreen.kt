@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.MemifyTheme
@@ -45,12 +45,15 @@ import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
+import com.vk.id.AccessToken
 import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
-fun SettingsLoggedScreen(navController: NavController) {
-    Scaffold(
+fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
+    AppScaffold(
         topBar = {
             ToolBar(navController)
         },
@@ -70,7 +73,7 @@ fun SettingsLoggedScreen(navController: NavController) {
                 ChangeName()
                 ChangePhoto()
                 PasswordChange()
-                AddVk()
+                AddVk { token -> viewModel.onLogIn(token) }
                 Button(
                     onClick = {},
                     modifier =
@@ -87,6 +90,7 @@ fun SettingsLoggedScreen(navController: NavController) {
                 }
             }
         },
+        navController = navController,
     )
 }
 
@@ -238,7 +242,7 @@ private fun NameField(label: String) {
 }
 
 @Composable
-private fun AddVk() {
+private fun AddVk(onLogin: (accessToken: AccessToken) -> Unit) {
     Column(
         modifier =
             Modifier
@@ -253,7 +257,9 @@ private fun AddVk() {
         )
 
         OneTap(
-            onAuth = { _, _ -> null },
+            onAuth = { oAuth, token ->
+                onLogin(token)
+            },
             scenario = OneTapTitleScenario.SignIn,
         )
     }
@@ -305,6 +311,6 @@ private fun ChangePhoto() {
 @Composable
 fun SettingsLoggedScreenPreview() {
     MemifyTheme {
-        SettingsLoggedScreen(navController = NavController(LocalContext.current))
+        SettingsLoggedScreen(navController = NavController(LocalContext.current), viewModel = hiltViewModel())
     }
 }

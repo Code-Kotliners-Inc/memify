@@ -31,11 +31,12 @@ import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 
 @Composable
 fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
-    Scaffold(
+    AppScaffold(
         topBar = {
             ToolBar(navController)
         },
@@ -67,6 +68,7 @@ fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScre
                 }
             }
         },
+        navController = navController
     )
 }
 

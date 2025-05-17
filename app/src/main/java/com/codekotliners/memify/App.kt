@@ -43,7 +43,6 @@ val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope
 fun App(
     authViewModel: AuthenticationViewModel = hiltViewModel(),
     settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
 
@@ -63,7 +62,7 @@ fun App(
                 composable(
                     NavRoutes.SettingsUnlogged.route,
                 ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
-                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController) }
+                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController, settingsViewModel) }
                 composable(NavRoutes.Create.route) {
                     CreateScreen(
                         navController = navController,

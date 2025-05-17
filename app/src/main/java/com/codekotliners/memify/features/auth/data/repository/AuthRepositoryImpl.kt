@@ -2,8 +2,11 @@ package com.codekotliners.memify.features.auth.data.repository
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.models.UserData
+import com.codekotliners.memify.core.repositories.user.UserRepository
 import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.codekotliners.memify.features.auth.domain.repository.AuthRepository
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -23,6 +26,7 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
+    private val userRepo: UserRepository,
     @ApplicationContext private val context: Context,
 ) : AuthRepository {
     private val googleSignInClient by lazy {
@@ -53,6 +57,17 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun firebaseCreateAccount(email: String, password: String) =
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
+            val user =
+                UserData(
+                    email = email,
+                    password = password,
+                    // TODO дописать получение username
+                    username = email,
+                    newTSI = 0,
+                    photoUrl = null,
+                    phone = null,
+                )
+            userRepo.createUser(user)
             Response.Success(true)
             // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
         } catch (e: Exception) {
@@ -65,6 +80,7 @@ class AuthRepositoryImpl @Inject constructor(
             Response.Success(true)
             // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
         } catch (e: Exception) {
+            throw e
             Response.Failure(e)
         }
 
