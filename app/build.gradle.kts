@@ -113,6 +113,9 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.vk.id:onetap-compose:2.4.0")
+    implementation("com.vk.id:vk-sdk-support:2.4.0")
+    implementation("com.vk:android-sdk-core:4.1.0")
+    implementation("com.vk:android-sdk-api:4.1.0")
 }
 
 vkompose {

@@ -45,6 +45,7 @@ import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.vk.id.auth.VKIDAuthUiParams
 import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
@@ -255,6 +256,7 @@ private fun AddVk() {
         OneTap(
             onAuth = { _, _ -> null },
             scenario = OneTapTitleScenario.SignIn,
+            authParams = VKIDAuthUiParams { scopes = setOf("photos") },
         )
     }
 }

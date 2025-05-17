@@ -94,4 +94,6 @@
     <string name="new_tab_name">Новые</string>
     <string name="preview_screen_title">Предпросмотр</string>
     <string name="editor_screen_title">Editor</string>
+
+    <integer name="com_vk_sdk_AppId">53575911</integer>
 </resources>

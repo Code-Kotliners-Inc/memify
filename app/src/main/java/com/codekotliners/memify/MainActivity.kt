@@ -7,16 +7,15 @@ import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
-import androidx.activity.viewModels
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.surfaceDark
 import com.codekotliners.memify.core.theme.surfaceLight
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import com.vk.id.VKID
-
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 

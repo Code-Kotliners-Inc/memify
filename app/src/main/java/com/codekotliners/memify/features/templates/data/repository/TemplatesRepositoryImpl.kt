@@ -1,13 +1,19 @@
 package com.codekotliners.memify.features.templates.data.repository
 
-import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.core.models.Template
+import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesFilter
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
+import com.vk.api.sdk.VK
+import com.vk.id.vksdksupport.withVKIDToken
+import com.vk.sdk.api.photos.PhotosService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TemplatesRepositoryImpl @Inject constructor(
@@ -36,15 +42,40 @@ class TemplatesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getNewTemplates(limit: Long, refresh: Boolean): Flow<Template> {
-        val (data, nextToStart) =
-            remoteDatasource.getFilteredTemplates(
-                TemplatesFilter.New(),
-                limit,
-                newTemplatesConfig.nextStart,
-            )
-        newTemplatesConfig.setNextStart(nextToStart)
+        return withContext(Dispatchers.IO) {
+            val result = mutableListOf<Template>()
+            val response =
+                VK.executeSync(
+                    PhotosService()
+                        .photosGet(ownerId = VK.getUserId(), albumId = "saved")
+                        .withVKIDToken(),
+                )
 
-        return data
+            response.items.forEach {
+                val image = it.sizes?.findLast { it.url != null }
+                if (image != null) {
+                    val template =
+                        Template(
+                            id = "",
+                            name = "photoFromVkSaved",
+                            url = image.url ?: throw IllegalStateException("Url can not be null"),
+                            width = image.width ?: throw IllegalStateException("Width can not be null"),
+                            height = image.height ?: throw IllegalStateException("Height can not be null"),
+                        )
+                    result.add(template)
+                }
+            }
+            result.asFlow()
+        }
+//        val (data, nextToStart) =
+//            remoteDatasource.getFilteredTemplates(
+//                TemplatesFilter.New(),
+//                limit,
+//                newTemplatesConfig.nextStart,
+//            )
+//        newTemplatesConfig.setNextStart(nextToStart)
+//
+//        return data
     }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {

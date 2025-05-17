@@ -33,9 +33,9 @@ fun TemplatesGrid(currentState: TabState.Content, onTemplateSelected: (Template)
                 val totalItems = listState.layoutInfo.totalItemsCount
                 val lastVisible = visibleItems.lastOrNull()?.index ?: 0
 
-                if (lastVisible >= totalItems - preloadWhenLeft && !currentState.isLoadingMore) {
-                    onLoadMore()
-                }
+//                if (lastVisible >= totalItems - preloadWhenLeft && !currentState.isLoadingMore) {
+//                    onLoadMore()
+//                }
             }
     }
 
