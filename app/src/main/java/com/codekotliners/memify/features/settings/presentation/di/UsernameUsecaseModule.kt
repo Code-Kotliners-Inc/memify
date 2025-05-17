@@ -2,7 +2,6 @@ package com.codekotliners.memify.features.settings.presentation.di
 
 import com.codekotliners.memify.core.repositories.user.UserRepository
 import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserNameUseCase
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

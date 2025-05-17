@@ -28,7 +28,6 @@ import com.codekotliners.memify.features.home.presentation.ui.HomeScreen
 import com.codekotliners.memify.features.profile.presentation.ui.ProfileScreen
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
-import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.codekotliners.memify.features.settings.presentation.ui.SettingsLoggedScreen
 import com.codekotliners.memify.features.settings.presentation.ui.SettingsUnLoggedScreen
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
@@ -62,7 +61,7 @@ fun App(
                 composable(
                     NavRoutes.SettingsUnlogged.route,
                 ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
-                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController) }
+                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController, settingsViewModel) }
                 composable(
                     route = NavRoutes.Create.route,
                     arguments =

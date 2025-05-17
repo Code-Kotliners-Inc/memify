@@ -2,7 +2,6 @@ package com.codekotliners.memify.features.auth.data.repository
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.activity.result.ActivityResult
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.models.UserData

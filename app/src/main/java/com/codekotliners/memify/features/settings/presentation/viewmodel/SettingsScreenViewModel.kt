@@ -1,7 +1,6 @@
 package com.codekotliners.memify.features.settings.presentation.viewmodel
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
