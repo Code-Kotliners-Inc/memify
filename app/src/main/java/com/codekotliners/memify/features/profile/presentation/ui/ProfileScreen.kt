@@ -1,12 +1,11 @@
 package com.codekotliners.memify.features.profile.presentation.ui
 
-
+import android.content.res.Configuration
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,8 +59,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.rememberAsyncImagePainter
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
@@ -125,7 +124,6 @@ fun ProfileScreen(
             FeedTabBar(state = state, onSelectTab = { index -> viewModel.selectTab(index) })
 
             MemesFeed(
-                state = state,
                 scrollState = scrollState,
             )
         }
@@ -356,7 +354,6 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
 @Composable
 fun MemesFeed(
     scrollState: LazyGridState,
-    state: ProfileState,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
