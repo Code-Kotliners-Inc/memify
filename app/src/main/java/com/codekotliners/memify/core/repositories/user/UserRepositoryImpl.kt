@@ -120,7 +120,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserData(): Response<UserData> {
+    override suspend fun getUserPhotoUrl(): Response<String?> {
         return try {
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
             val documentSnapshot =
@@ -132,12 +132,8 @@ class UserRepositoryImpl @Inject constructor(
                     .await()
 
             if (documentSnapshot.exists()) {
-                val userData =
-                    documentSnapshot.toObject(UserData::class.java) ?: return Response.Failure(
-                        NullPointerException("User data conversion failed"),
-                    )
-
-                return Response.Success(userData)
+                val photoUrl = documentSnapshot.getString("photoUrl")
+                return Response.Success(photoUrl)
             } else {
                 Response.Failure(NoSuchElementException("User document not found"))
             }

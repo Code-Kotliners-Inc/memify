@@ -22,6 +22,10 @@ data class ProfileState(
 class ProfileViewModel @Inject constructor(
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
 ) : ViewModel() {
+    private val _state = mutableStateOf(ProfileState())
+
+    val state: State<ProfileState> = _state
+
     init {
         viewModelScope.launch {
             _state.value =
@@ -30,9 +34,6 @@ class ProfileViewModel @Inject constructor(
                 )
         }
     }
-
-    private val _state = mutableStateOf(ProfileState())
-    val state: State<ProfileState> = _state
 
     fun selectTab(index: Int) {
         _state.value = _state.value.copy(selectedTab = index)
