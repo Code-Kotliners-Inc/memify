@@ -74,7 +74,8 @@ class AuthenticationViewModel @Inject constructor(
 
     fun handleGoogleSignInResult(result: ActivityResult) =
         handleAuthRequest {
-            repository.handleGoogleSignInResult(result)
+            val res: Response<Boolean> = repository.handleGoogleSignInResult(result)
+            res
         }
 
     private fun handleAuthRequest(block: suspend () -> Response<Boolean>) {

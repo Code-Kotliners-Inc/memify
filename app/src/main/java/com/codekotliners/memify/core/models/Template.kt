@@ -9,4 +9,5 @@ data class Template(
     val url: String,
     val width: Int,
     val height: Int,
+    val isFavourite: Boolean?,
 )

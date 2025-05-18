@@ -2,6 +2,7 @@ package com.codekotliners.memify.features.auth.presentation.ui
 
 import android.content.Context
 import android.content.res.Configuration
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,7 +78,10 @@ fun AuthScreen(
     if (authState == AuthState.Unauthenticated) {
         AuthScreenContent(
             navController = navController,
-            onGoogleLauncherClick = { googleLauncher.launch(viewModel.getGoogleSignInIntent()) },
+            onGoogleLauncherClick = {
+                googleLauncher.launch(viewModel.getGoogleSignInIntent())
+                Log.d("ETST", "SDFSDDSFSD")
+            },
             onVkLauncherClick = {},
             onLogInWithGoogle = { tokenId -> viewModel.onLogInWithGoogle(tokenId) },
         )

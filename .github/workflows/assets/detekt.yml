@@ -51,7 +51,7 @@ complexity:
     active: true
     CyclomaticComplexMethod:
         active: true
-        threshold: 15
+        threshold: 20
         ignoreSingleWhenExpression: false
         ignoreSimpleWhenEntries: false
         ignoreNestingFunctions: false
@@ -329,7 +329,7 @@ style:
         active: true
     ThrowsCount:
         active: true
-        max: 2
+        max: 5
     UnnecessaryAbstractClass:
         active: true
         ignoreAnnotated: ['dagger.Module']

@@ -9,4 +9,8 @@ interface TemplatesRepository {
     suspend fun getNewTemplates(limit: Long, refresh: Boolean = false): Flow<Template>
 
     suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean = false): Flow<Template>
+
+    suspend fun toggleLike(id: String): Boolean
+
+    suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template>
 }

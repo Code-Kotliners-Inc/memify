@@ -36,5 +36,6 @@ enum class Tab(
     BEST(nameResId = R.string.Best),
     NEW(nameResId = R.string.New),
     FAVOURITE(nameResId = R.string.Favourites),
+    VK_IMAGES(nameResId = R.string.templates_tab_vk),
     ;
 }

@@ -27,6 +27,7 @@ val likeRedLight = Color(0xFFFF0000)
 val likeRedDark = Color(0xFFB71C1C)
 
 data class ExtraColors(
+    val likeButtonColor: Color,
     val authButtons: AuthButtons,
 ) {
     data class AuthButtons(
@@ -38,6 +39,7 @@ data class ExtraColors(
 
 val LightExtraColors =
     ExtraColors(
+        likeButtonColor = likeRedLight,
         authButtons =
             ExtraColors.AuthButtons(
                 google =
@@ -66,6 +68,7 @@ val LightExtraColors =
 
 val DarkExtraColors =
     ExtraColors(
+        likeButtonColor = likeRedDark,
         authButtons =
             ExtraColors.AuthButtons(
                 google =

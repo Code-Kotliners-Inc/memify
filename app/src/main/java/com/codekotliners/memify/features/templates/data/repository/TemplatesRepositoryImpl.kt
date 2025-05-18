@@ -30,9 +30,13 @@ class TemplatesRepositoryImpl @Inject constructor(
         if (refresh) {
             bestTemplatesConfig.reset()
         }
+        var userId: String? = null
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            userId = FirebaseAuth.getInstance().currentUser!!.uid
+        }
         val (data, nextToStart) =
             remoteDatasource.getFilteredTemplates(
-                TemplatesFilter.Best(),
+                TemplatesFilter.Best(userId),
                 limit,
                 bestTemplatesConfig.nextStart,
             )
@@ -42,7 +46,27 @@ class TemplatesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getNewTemplates(limit: Long, refresh: Boolean): Flow<Template> {
+        var userId: String? = null
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            userId = FirebaseAuth.getInstance().currentUser!!.uid
+        }
+        val (data, nextToStart) =
+            remoteDatasource.getFilteredTemplates(
+                TemplatesFilter.New(userId),
+                limit,
+                newTemplatesConfig.nextStart,
+            )
+        newTemplatesConfig.setNextStart(nextToStart)
+
+        return data
+    }
+
+    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> {
         return withContext(Dispatchers.IO) {
+            if (!VK.isLoggedIn()) {
+                return@withContext flow {} // throw custom exception?
+            }
+
             val result = mutableListOf<Template>()
             val response =
                 VK.executeSync(
@@ -61,21 +85,13 @@ class TemplatesRepositoryImpl @Inject constructor(
                             url = image.url ?: throw IllegalStateException("Url can not be null"),
                             width = image.width ?: throw IllegalStateException("Width can not be null"),
                             height = image.height ?: throw IllegalStateException("Height can not be null"),
+                            isFavourite = false,
                         )
                     result.add(template)
                 }
             }
             result.asFlow()
         }
-//        val (data, nextToStart) =
-//            remoteDatasource.getFilteredTemplates(
-//                TemplatesFilter.New(),
-//                limit,
-//                newTemplatesConfig.nextStart,
-//            )
-//        newTemplatesConfig.setNextStart(nextToStart)
-//
-//        return data
     }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {
@@ -83,26 +99,28 @@ class TemplatesRepositoryImpl @Inject constructor(
             return flow { }
         }
 
-        val result: Flow<Template>
-        if (FirebaseAuth.getInstance().currentUser == null) {
-            result = flow { throw IllegalStateException("User not logged in") }
-        } else {
-            if (refresh) {
-                favouritesTemplatesConfig.reset()
+        val result: Flow<Template> =
+            if (FirebaseAuth.getInstance().currentUser == null) {
+                flow { throw IllegalStateException("User not logged in") }
+            } else {
+                if (refresh) {
+                    favouritesTemplatesConfig.reset()
+                }
+
+                val userId = FirebaseAuth.getInstance().currentUser!!.uid
+                val (data, nextToStart) =
+                    remoteDatasource.getFilteredTemplates(
+                        TemplatesFilter.Favorites(userId),
+                        limit,
+                        favouritesTemplatesConfig.nextStart,
+                    )
+
+                favouritesTemplatesConfig.setNextStart(nextToStart)
+                data
             }
-
-            val userId = FirebaseAuth.getInstance().currentUser!!.uid
-            val (data, nextToStart) =
-                remoteDatasource.getFilteredTemplates(
-                    TemplatesFilter.Favorites(userId),
-                    limit,
-                    favouritesTemplatesConfig.nextStart,
-                )
-
-            favouritesTemplatesConfig.setNextStart(nextToStart)
-            result = data
-        }
 
         return result
     }
+
+    override suspend fun toggleLike(id: String): Boolean = remoteDatasource.toggleLikeById(id)
 }
