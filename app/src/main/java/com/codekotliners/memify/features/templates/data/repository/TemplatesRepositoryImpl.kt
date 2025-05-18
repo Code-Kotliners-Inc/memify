@@ -61,12 +61,8 @@ class TemplatesRepositoryImpl @Inject constructor(
         return data
     }
 
-    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> {
-        return withContext(Dispatchers.IO) {
-            if (!VK.isLoggedIn()) {
-                return@withContext flow {} // throw custom exception?
-            }
-
+    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> =
+        withContext(Dispatchers.IO) {
             val result = mutableListOf<Template>()
             val response =
                 VK.executeSync(
@@ -75,16 +71,16 @@ class TemplatesRepositoryImpl @Inject constructor(
                         .withVKIDToken(),
                 )
 
-            response.items.forEach {
-                val image = it.sizes?.findLast { it.url != null }
+            response.items.forEach { item ->
+                val image = item.sizes?.findLast { image -> image.url != null }
                 if (image != null) {
                     val template =
                         Template(
                             id = "",
                             name = "photoFromVkSaved",
                             url = image.url ?: throw IllegalStateException("Url can not be null"),
-                            width = image.width ?: throw IllegalStateException("Width can not be null"),
-                            height = image.height ?: throw IllegalStateException("Height can not be null"),
+                            width = image.width,
+                            height = image.height,
                             isFavourite = false,
                         )
                     result.add(template)
@@ -92,7 +88,6 @@ class TemplatesRepositoryImpl @Inject constructor(
             }
             result.asFlow()
         }
-    }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {
         if (!refresh && favouritesTemplatesConfig.scrollState == ScrollState.REACHED_END) {

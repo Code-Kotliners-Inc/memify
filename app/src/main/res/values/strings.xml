@@ -96,5 +96,5 @@
     <string name="editor_screen_title">Editor</string>
     <string name="templates_tab_vk">ВК</string>
 
-    <integer name="com_vk_sdk_AppId">53575911</integer>
+    <integer name="com_vk_sdk_AppId">53583099</integer>
 </resources>

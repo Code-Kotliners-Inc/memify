@@ -45,15 +45,18 @@ import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
-import com.vk.id.auth.VKIDAuthUiParams
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import com.vk.id.AccessToken
+import com.vk.id.auth.VKIDAuthUiParams
 import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
-fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
+fun SettingsLoggedScreen(
+    navController: NavController,
+    viewModel: SettingsScreenViewModel,
+) {
     AppScaffold(
         topBar = {
             ToolBar(navController)
