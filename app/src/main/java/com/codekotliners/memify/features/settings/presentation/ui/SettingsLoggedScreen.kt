@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -29,22 +31,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
+import com.vk.id.onetap.compose.onetap.OneTap
+import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
-fun SettingsUnLoggedScreen() {
+fun SettingsLoggedScreen(navController: NavController) {
     Scaffold(
         topBar = {
-            ToolBar()
+            ToolBar(navController)
         },
         content = { paddingValues ->
             Column(
@@ -53,43 +61,7 @@ fun SettingsUnLoggedScreen() {
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                         .padding(paddingValues)
-                        .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                ThemeChange()
-                Button(
-                    onClick = {},
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.login),
-                        style = MaterialTheme.typography.authButton,
-                        modifier = Modifier.padding(10.dp),
-                    )
-                }
-            }
-        },
-    )
-}
-
-@Composable
-fun SettingsLoggedScreen() {
-    Scaffold(
-        topBar = {
-            ToolBar()
-        },
-        content = { paddingValues ->
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(paddingValues)
+                        .verticalScroll(rememberScrollState())
                         .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -119,7 +91,7 @@ fun SettingsLoggedScreen() {
 }
 
 @Composable
-private fun ToolBar() {
+private fun ToolBar(navController: NavController) {
     Box(
         modifier =
             Modifier
@@ -128,7 +100,7 @@ private fun ToolBar() {
                 .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = {}, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(onClick = { navController.navigate("Profile") }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),
@@ -280,27 +252,10 @@ private fun AddVk() {
             style = MaterialTheme.typography.hintText,
         )
 
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(id = R.string.link_account),
-                style = MaterialTheme.typography.suggestNewAccount,
-                modifier = Modifier.padding(start = 10.dp),
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_link_24),
-                    contentDescription = stringResource(id = R.string.link_account_hint),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-        }
+        OneTap(
+            onAuth = { _, _ -> null },
+            scenario = OneTapTitleScenario.SignIn,
+        )
     }
 }
 
@@ -342,5 +297,14 @@ private fun ChangePhoto() {
                         .weight(1f),
             )
         }
+    }
+}
+
+@Preview(name = "Light Mode", showSystemUi = true)
+// @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Composable
+fun SettingsLoggedScreenPreview() {
+    MemifyTheme {
+        SettingsLoggedScreen(navController = NavController(LocalContext.current))
     }
 }

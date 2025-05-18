@@ -3,7 +3,7 @@ package com.codekotliners.memify.features.home.data.repository
 import com.codekotliners.memify.core.mappers.toPost
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.network.models.PostDto
-import com.codekotliners.memify.core.network.PostsDatasource
+import com.codekotliners.memify.core.network.postsdatasource.PostsDatasource
 import com.codekotliners.memify.features.home.domain.repository.PostsRepository
 import com.codekotliners.memify.features.home.mocks.mockUser
 import com.google.firebase.auth.FirebaseAuth

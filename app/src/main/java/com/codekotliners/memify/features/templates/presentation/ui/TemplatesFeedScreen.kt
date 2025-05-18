@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.codekotliners.memify.core.models.Template
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorTab
 import com.codekotliners.memify.features.templates.presentation.ui.components.LoadingTab
@@ -27,7 +26,7 @@ import com.codekotliners.memify.features.templates.presentation.viewmodel.Templa
 @Composable
 fun TemplatesFeedScreen(
     onLoginClicked: () -> Unit,
-    onTemplateSelected: (Template) -> Unit,
+    onTemplateSelected: (String) -> Unit,
     viewModel: TemplatesFeedViewModel = hiltViewModel(),
 ) {
     val pageState by viewModel.pageState.collectAsState()
@@ -65,8 +64,7 @@ fun TemplatesFeedScreen(
                     TemplatesGrid(
                         currentState = currentState,
                         onTemplateSelected = onTemplateSelected,
-                        { viewModel.loadDataForTab(pageState.selectedTab) },
-                    )
+                    ) { viewModel.loadDataForTab(pageState.selectedTab) }
                 }
 
                 TabState.Empty -> NoContentTab()

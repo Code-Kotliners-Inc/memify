@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -16,11 +17,13 @@ import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Stable
 @HiltViewModel
-class CanvasViewModel @Inject constructor() : ViewModel() {
+open class CanvasViewModel @Inject constructor() : ViewModel() {
     private val history = mutableStateListOf<List<CanvasElement>>()
     private val future = mutableStateListOf<List<CanvasElement>>()
 
@@ -28,7 +31,6 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     val currentLine = mutableStateListOf<Offset>()
     val currentLineWidth = mutableFloatStateOf(50f)
     val currentLineColor = mutableStateOf(Color.Black)
-    var isWriting by mutableStateOf(false)
     var currentText by mutableStateOf("")
     var currentTextColor = mutableStateOf(Color.Black)
     var currentTextSize = mutableFloatStateOf(24f)
@@ -43,12 +45,15 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     var imageWidth by mutableFloatStateOf(1f)
     var imageHeight by mutableFloatStateOf(1f)
 
-    // TO REMOVE
-    var iAmAPainterGodDamnIt by mutableStateOf(false)
-    var iAmAWriterGodDamnIt by mutableStateOf(false)
+    var isPaintingEnabled by mutableStateOf(false)
+    var isWritingEnabled by mutableStateOf(false)
+
+    var imageUrl by mutableStateOf<String?>(null)
 
     var showRadialMenu by mutableStateOf(false)
     var radialMenuPosition by mutableStateOf(Offset.Zero)
+
+    private val drawingCanvas = DrawingCanvas(canvasElements)
 
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
@@ -56,7 +61,8 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
 
     fun finalizeCurrentLine() {
         if (currentLine.size > 1) {
-            saveState()
+            history.add(canvasElements.toList())
+            future.clear()
             canvasElements.add(
                 ColoredLine(
                     points = currentLine.toList(),
@@ -70,16 +76,14 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
 
     fun startWriting() {
         clearModes()
-        iAmAWriterGodDamnIt = true
-        isWriting = true
+        isWritingEnabled = true
         showTextPreview = true
         currentText = ""
     }
 
     fun clearModes() {
-        iAmAPainterGodDamnIt = false
-        iAmAWriterGodDamnIt = false
-        isWriting = false
+        isPaintingEnabled = false
+        isWritingEnabled = false
         showTextPreview = false
         showColors = false
         showFonts = false
@@ -87,7 +91,8 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
     }
 
     fun clearCanvas() {
-        saveState()
+        history.add(canvasElements.toList())
+        future.clear()
         canvasElements.clear()
         currentLine.clear()
     }
@@ -108,14 +113,10 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun saveState() {
-        history.add(canvasElements.toList())
-        future.clear()
-    }
-
     fun finishWriting() {
         if (currentText.isNotBlank()) {
-            saveState()
+            history.add(canvasElements.toList())
+            future.clear()
             canvasElements.add(
                 TextElement(
                     text = currentText,
@@ -127,7 +128,7 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
                 ),
             )
         }
-        isWriting = false
+        isWritingEnabled = false
         currentText = ""
     }
 
@@ -137,4 +138,14 @@ class CanvasViewModel @Inject constructor() : ViewModel() {
             canvasElements[index] = element.copy(position = newPosition)
         }
     }
+
+    suspend fun createBitMap(): Bitmap =
+        withContext(Dispatchers.Default) {
+            val width = imageWidth.toInt()
+            val height = imageHeight.toInt()
+            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bitmap)
+            drawingCanvas.drawCanvasElements(canvas)
+            bitmap
+        }
 }
