@@ -2,15 +2,11 @@ package com.codekotliners.memify.features.auth.presentation.ui
 
 import android.content.Context
 import android.content.res.Configuration
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +45,8 @@ import com.codekotliners.memify.core.theme.registerButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthState
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
+
+const val LOGIN_SUCCESS_EVENT = "login_successful"
 
 @Composable
 fun AuthScreen(
@@ -80,9 +77,7 @@ fun AuthScreen(
             navController = navController,
             onGoogleLauncherClick = {
                 googleLauncher.launch(viewModel.getGoogleSignInIntent())
-                Log.d("ETST", "SDFSDDSFSD")
             },
-            onVkLauncherClick = {},
             onLogInWithGoogle = { tokenId -> viewModel.onLogInWithGoogle(tokenId) },
         )
     } else {
@@ -91,55 +86,9 @@ fun AuthScreen(
 }
 
 @Composable
-fun AuthScreenContent(
-    navController: NavController,
-    onGoogleLauncherClick: () -> Unit,
-    onVkLauncherClick: () -> Unit,
-    onLogInWithGoogle: (String) -> Unit,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth(),
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.auth),
-                contentDescription = null,
-                modifier =
-                    Modifier.fillMaxWidth(),
-                contentScale = ContentScale.Fit,
-            )
-        }
-        Box(
-            modifier =
-                Modifier
-                    .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            LogInMethods(
-                navController = navController,
-                onGoogleLauncherClick = onGoogleLauncherClick,
-                onVkLauncherClick = onVkLauncherClick,
-            )
-
-            GoogleSignInHandler { tokenId -> onLogInWithGoogle(tokenId) }
-        }
-    }
-}
-
-@Composable
 fun LogInMethods(
     navController: NavController,
     onGoogleLauncherClick: () -> Unit,
-    onVkLauncherClick: () -> Unit,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -152,13 +101,6 @@ fun LogInMethods(
             icon = painterResource(id = R.drawable.google_icon),
             buttonColor = LocalExtraColors.current.authButtons.google,
             onClick = onGoogleLauncherClick,
-        )
-
-        AuthButton(
-            text = stringResource(R.string.login_vk_button),
-            icon = painterResource(id = R.drawable.vk_icon),
-            buttonColor = LocalExtraColors.current.authButtons.vk,
-            onClick = onVkLauncherClick,
         )
 
         AuthButton(
@@ -236,6 +178,10 @@ fun AuthButton(
 
 private fun NavController.navigateToHome() {
     navigate(NavRoutes.Home.route) {
+        previousBackStackEntry
+            ?.savedStateHandle
+            ?.set(LOGIN_SUCCESS_EVENT, true)
+
         popUpTo(NavRoutes.Auth.route) {
             inclusive = true
             saveState = true

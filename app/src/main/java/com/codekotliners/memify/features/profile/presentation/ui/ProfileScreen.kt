@@ -41,6 +41,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,10 +55,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.features.auth.presentation.ui.LOGIN_SUCCESS_EVENT
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -69,6 +72,19 @@ fun ProfileScreen(
     navController: NavController,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val loginResult =
+        currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<Boolean>(LOGIN_SUCCESS_EVENT)
+
+    LaunchedEffect(loginResult) {
+        if (loginResult == true) {
+            viewModel.login()
+            currentBackStackEntry.savedStateHandle.remove<Boolean>(LOGIN_SUCCESS_EVENT)
+        }
+    }
+
     val state = viewModel.state.value
     val scrollState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
@@ -109,7 +125,9 @@ fun ProfileScreen(
                 isExtended = isExtended,
                 scrollOffset = scrollOffset,
                 state = state,
-                onLoginClick = { viewModel.login() },
+                onLoginClick = {
+                    navController.navigate(NavRoutes.Auth.route)
+                },
             )
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
