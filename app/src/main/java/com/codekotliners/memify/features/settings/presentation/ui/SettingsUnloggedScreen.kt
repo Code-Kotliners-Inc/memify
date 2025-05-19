@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,13 +17,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
@@ -32,6 +32,7 @@ import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.suggestNewAccount
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
+import androidx.compose.runtime.getValue
 
 @Composable
 fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
@@ -73,6 +74,15 @@ fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScre
 
 @Composable
 private fun ThemeChange(viewModel: SettingsScreenViewModel) {
+    val themeMode by viewModel.theme.collectAsState()
+
+    val checkboxState =
+        when (themeMode) {
+            "dark" -> ToggleableState.On
+            "light" -> ToggleableState.Off
+            else -> ToggleableState.Indeterminate
+        }
+
     Row(
         modifier =
             Modifier
@@ -86,13 +96,12 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
             style = MaterialTheme.typography.suggestNewAccount,
         )
         Spacer(modifier = Modifier.weight(1f))
-        Switch(
-            modifier =
-                Modifier
-                    .width(64.dp),
-            checked = viewModel.theme.value == "dark",
-            onCheckedChange = { viewModel.changeTheme() },
-            colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
+
+        TriStateCheckbox(
+            state = checkboxState,
+            onClick = {
+                viewModel.changeTheme()
+            },
         )
     }
 }
