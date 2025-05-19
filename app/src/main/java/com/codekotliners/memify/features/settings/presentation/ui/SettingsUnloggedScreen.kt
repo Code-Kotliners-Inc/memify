@@ -33,6 +33,7 @@ import com.codekotliners.memify.core.theme.suggestNewAccount
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import androidx.compose.runtime.getValue
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
 
 @Composable
 fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
@@ -112,11 +113,10 @@ private fun ToolBar(navController: NavController) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(MaterialTheme.colorScheme.background),
+                .background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = { navController.navigate("Profile") }, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(onClick = { navController.navigate(NavRoutes.Profile) }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),

@@ -36,10 +36,4 @@ class SettingsScreenViewModel @Inject constructor(
             updateUserNameUseCase.updateUserName(accessToken.userData.firstName)
         }
     }
-
-    fun onLogIn(accessToken: AccessToken) {
-        viewModelScope.launch {
-            updateUserNameUseCase.updateUserName(accessToken.userData.firstName)
-        }
-    }
 }
