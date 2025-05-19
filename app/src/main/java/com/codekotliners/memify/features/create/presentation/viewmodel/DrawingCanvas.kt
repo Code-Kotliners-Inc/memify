@@ -18,7 +18,6 @@ class DrawingCanvas(
     private val canvasElements: SnapshotStateList<CanvasElement>
 ) {
     fun drawCanvasElements(canvas: android.graphics.Canvas) {
-        //canvas.drawColor(Color.White.toArgb())
         val paint = Paint().apply { style = Paint.Style.FILL
             isAntiAlias = true }
 
@@ -26,7 +25,6 @@ class DrawingCanvas(
             when (element) {
                 is ColoredLine -> drawColoredLine(canvas, paint, element)
                 is TextElement -> drawTextElement(canvas, paint, element)
-                //is ImageElement -> drawImage(canvas, paint, element)
             }
         }
     }
@@ -77,9 +75,4 @@ class DrawingCanvas(
             paint,
         )
     }
-    /*
-    private fun drawImage(canvas: android.graphics.Canvas,paint: Paint, element: ImageElement){
-        canvas.drawBitmap(element.bitmap, paint)
-    }
-     */
 }

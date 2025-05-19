@@ -160,8 +160,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
             val width = imageWidth.toInt()
             val height = imageHeight.toInt()
             val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-            //val canvas = Canvas(bitmap)
-            //Log.d("lsj", "$imageUrl")
             imageUrl?.let { url ->
                 val request = ImageRequest.Builder(context)
                     .data(url)
@@ -172,9 +170,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                     val drawable = result.drawable
                     val bgBitmap = (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true) ?: drawable.toBitmap()
                     val canvas = Canvas(bgBitmap)
-                    Log.i("widthheight", "${bgBitmap.width}, ${bgBitmap.height}")
                     canvas.drawBitmap(bgBitmap, null, Rect(0, 0, bgBitmap.width, bgBitmap.height), null)
-
                     drawingCanvas.drawCanvasElements(canvas)
                     return@withContext bgBitmap
                 }
