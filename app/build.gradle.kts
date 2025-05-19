@@ -67,6 +67,10 @@ dependencies {
 
     // Room Database
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.coil.base)
+    implementation(libs.coil.base)
+    implementation(libs.androidx.browser)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 

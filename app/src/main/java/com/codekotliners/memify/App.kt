@@ -59,9 +59,11 @@ fun App(
                     }
                 }
                 composable(
-                    NavRoutes.SettingsUnlogged.route,
-                ) { SettingsUnLoggedScreen(navController, settingsViewModel) }
-                composable(NavRoutes.SettingsLogged.route) { SettingsLoggedScreen(navController, settingsViewModel) }
+                    NavRoutes.SettingsUnlogged.route,)
+                { SettingsUnLoggedScreen(navController, settingsViewModel) }
+                composable(
+                    NavRoutes.SettingsLogged.route)
+                { SettingsLoggedScreen(navController, settingsViewModel) }
                 composable(
                     route = NavRoutes.Create.route,
                     arguments =

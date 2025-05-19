@@ -1,18 +1,21 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.Typeface
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
+import com.codekotliners.memify.features.create.domain.ImageElement
 import com.codekotliners.memify.features.create.domain.TextElement
 
 class DrawingCanvas(
-    private val canvasElements: SnapshotStateList<CanvasElement>,
+    private val canvasElements: SnapshotStateList<CanvasElement>
 ) {
     fun drawCanvasElements(canvas: android.graphics.Canvas) {
         canvas.drawColor(Color.White.toArgb())
@@ -22,6 +25,7 @@ class DrawingCanvas(
             when (element) {
                 is ColoredLine -> drawColoredLine(canvas, paint, element)
                 is TextElement -> drawTextElement(canvas, paint, element)
+                //is ImageElement -> drawImage(canvas, paint, element)
             }
         }
     }
@@ -72,4 +76,9 @@ class DrawingCanvas(
             paint,
         )
     }
+    /*
+    private fun drawImage(canvas: android.graphics.Canvas,paint: Paint, element: ImageElement){
+        canvas.drawBitmap(element.bitmap, paint)
+    }
+     */
 }

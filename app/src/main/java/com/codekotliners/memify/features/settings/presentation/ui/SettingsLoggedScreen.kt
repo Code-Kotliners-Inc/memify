@@ -26,13 +26,17 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
@@ -53,10 +58,7 @@ import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
-fun SettingsLoggedScreen(
-    navController: NavController,
-    viewModel: SettingsScreenViewModel,
-) {
+fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
     AppScaffold(
         topBar = {
             ToolBar(navController)
@@ -73,11 +75,11 @@ fun SettingsLoggedScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                ThemeChange()
+                ThemeChange(viewModel)
                 ChangeName()
                 ChangePhoto()
                 PasswordChange()
-                AddVk { token -> viewModel.onLogIn(token) }
+                AddVk {token -> viewModel.onLogIn(token)}
                 Button(
                     onClick = {},
                     modifier =
@@ -108,7 +110,8 @@ private fun ToolBar(navController: NavController) {
                 .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        IconButton(onClick = { navController.navigate("Profile") }, modifier = Modifier.align(Alignment.CenterStart)) {
+        val route = NavRoutes.Profile.route
+        IconButton(onClick = { navController.navigate(route) }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),
@@ -149,13 +152,22 @@ private fun ChangeName() {
 }
 
 @Composable
-private fun ThemeChange() {
+private fun ThemeChange(viewModel: SettingsScreenViewModel) {
+    val themeMode by viewModel.theme.collectAsState()
+
+    val checkboxState =
+        when (themeMode) {
+            "dark" -> ToggleableState.On
+            "light" -> ToggleableState.Off
+            else -> ToggleableState.Indeterminate
+        }
+
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 30.dp, vertical = 10.dp),
+        Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
+            .padding(horizontal = 30.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -163,13 +175,12 @@ private fun ThemeChange() {
             style = MaterialTheme.typography.suggestNewAccount,
         )
         Spacer(modifier = Modifier.weight(1f))
-        Switch(
-            modifier =
-                Modifier
-                    .width(64.dp),
-            checked = false,
-            onCheckedChange = {},
-            colors = SwitchDefaults.colors(MaterialTheme.colorScheme.primary),
+
+        TriStateCheckbox(
+            state = checkboxState,
+            onClick = {
+                viewModel.changeTheme()
+            },
         )
     }
 }
@@ -310,7 +321,7 @@ private fun ChangePhoto() {
         }
     }
 }
-
+/*
 @Preview(name = "Light Mode", showSystemUi = true)
 // @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -319,3 +330,4 @@ fun SettingsLoggedScreenPreview() {
         SettingsLoggedScreen(navController = NavController(LocalContext.current), viewModel = hiltViewModel())
     }
 }
+*/
