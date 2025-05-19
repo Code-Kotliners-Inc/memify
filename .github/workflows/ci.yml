@@ -33,6 +33,9 @@ jobs:
       - name: Set up Firebase config
         run: echo "${{ secrets.FIREBASE_CONFIG }}" > app/src/google-services.json
 
+      - name: Set up VK config
+        run: echo "${{ secrets.VKID_SECRETS }}" > app/secrets.properties
+
       - name: Build debug
         run: ./gradlew assembleDebug
 
