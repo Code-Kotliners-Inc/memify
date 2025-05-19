@@ -18,8 +18,9 @@ class DrawingCanvas(
     private val canvasElements: SnapshotStateList<CanvasElement>
 ) {
     fun drawCanvasElements(canvas: android.graphics.Canvas) {
-        canvas.drawColor(Color.White.toArgb())
-        val paint = Paint().apply { isAntiAlias = true }
+        //canvas.drawColor(Color.White.toArgb())
+        val paint = Paint().apply { style = Paint.Style.FILL
+            isAntiAlias = true }
 
         for (element in canvasElements) {
             when (element) {

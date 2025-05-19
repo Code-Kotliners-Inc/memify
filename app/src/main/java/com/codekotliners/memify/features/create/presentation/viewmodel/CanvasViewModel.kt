@@ -174,7 +174,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                     val canvas = Canvas(bgBitmap)
                     Log.i("widthheight", "${bgBitmap.width}, ${bgBitmap.height}")
                     canvas.drawBitmap(bgBitmap, null, Rect(0, 0, bgBitmap.width, bgBitmap.height), null)
-                    //canvas.drawRect(Rect(0, 0, 50, 50), Paint().apply { color=color.red })
+
                     drawingCanvas.drawCanvasElements(canvas)
                     return@withContext bgBitmap
                 }
