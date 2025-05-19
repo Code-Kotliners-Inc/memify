@@ -30,6 +30,9 @@ class ProfileViewModel @Inject constructor(
     val state: State<ProfileState> = _state
 
     init {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
         viewModelScope.launch {
             VKID.instance.getUserData(
                 callback =

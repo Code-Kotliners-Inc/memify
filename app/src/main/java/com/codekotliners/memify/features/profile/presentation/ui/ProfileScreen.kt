@@ -60,7 +60,7 @@ import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
-import com.codekotliners.memify.features.auth.presentation.ui.LOGIN_SUCCESS_EVENT
+import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -76,12 +76,12 @@ fun ProfileScreen(
     val loginResult =
         currentBackStackEntry
             ?.savedStateHandle
-            ?.get<Boolean>(LOGIN_SUCCESS_EVENT)
+            ?.get<Boolean>(AUTH_SUCCESS_EVENT)
 
     LaunchedEffect(loginResult) {
         if (loginResult == true) {
             viewModel.login()
-            currentBackStackEntry.savedStateHandle.remove<Boolean>(LOGIN_SUCCESS_EVENT)
+            currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
         }
     }
 
