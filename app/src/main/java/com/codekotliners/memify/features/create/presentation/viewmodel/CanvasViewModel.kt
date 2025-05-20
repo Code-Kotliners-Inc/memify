@@ -160,8 +160,9 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                 val result = context.imageLoader.execute(request)
                 if (result is SuccessResult) {
                     val drawable = result.drawable
-                    val bgBitmap = (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-                        ?: drawable.toBitmap()
+                    val bgBitmap =
+                        (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
+                            ?: drawable.toBitmap()
                     val canvas = Canvas(bgBitmap)
                     canvas.drawBitmap(bgBitmap, null, Rect(0, 0, bgBitmap.width, bgBitmap.height), null)
                     drawingCanvas.drawCanvasElements(canvas)
