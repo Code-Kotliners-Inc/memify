@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.ImageRequest
+import com.codekotliners.memify.core.repositories.MemeRepository
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
@@ -34,6 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
     private val repository: ImageRepository,
+    private val memeRepository: MemeRepository,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<Uri>()
@@ -155,6 +157,11 @@ class ImageViewerViewModel @Inject constructor(
             FileOutputStream(file).use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             }
+
+            viewModelScope.launch {
+                memeRepository.saveMeme(file.absolutePath)
+            }
+
             MediaScannerConnection.scanFile(
                 context,
                 arrayOf(file.absolutePath),
