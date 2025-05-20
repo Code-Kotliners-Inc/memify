@@ -116,8 +116,12 @@ private fun ToolBar(navController: NavController) {
                 .background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center,
     ) {
-        val route = NavRoutes.Profile.route
-        IconButton(onClick = { navController.navigate(route) }, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(
+            onClick = {
+                navController.navigate(NavRoutes.Profile.route)
+            },
+            modifier = Modifier.align(Alignment.CenterStart),
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),

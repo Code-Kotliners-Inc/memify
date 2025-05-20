@@ -35,7 +35,7 @@ class AuthenticationViewModel @Inject constructor(
         checkCurrentUser()
     }
 
-    private fun checkCurrentUser() {
+    fun checkCurrentUser() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
@@ -52,30 +52,22 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
+    fun getGoogleSignInIntent(): Intent = repository.getGoogleSignInIntent()
+
     fun onLogInWithGoogle(idToken: String) =
         handleAuthRequest {
             repository.firebaseGoogleAuth(idToken)
-        }
-
-    fun onLogInWithMail(email: String, password: String) =
-        handleAuthRequest {
-            repository.firebaseSignIn(email, password)
-        }
-
-    fun onSignUpWithMail(email: String, password: String) =
-        handleAuthRequest {
-            repository.firebaseCreateAccount(email, password)
-        }
-
-    fun onLogInWithVk(idToken: String) =
-        handleAuthRequest {
-            repository.firebaseVKAuth(idToken)
         }
 
     fun handleGoogleSignInResult(result: ActivityResult) =
         handleAuthRequest {
             val res: Response<Boolean> = repository.handleGoogleSignInResult(result)
             res
+        }
+
+    fun onLogInWithMail(email: String, password: String) =
+        handleAuthRequest {
+            repository.firebaseSignIn(email, password)
         }
 
     private fun handleAuthRequest(block: suspend () -> Response<Boolean>) {
@@ -102,6 +94,4 @@ class AuthenticationViewModel @Inject constructor(
         _authState.value = AuthState.Loading
         _authState.value = AuthState.Unauthenticated
     }
-
-    fun getGoogleSignInIntent(): Intent = repository.getGoogleSignInIntent()
 }

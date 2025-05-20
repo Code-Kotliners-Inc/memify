@@ -53,15 +53,14 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
-    override suspend fun firebaseCreateAccount(email: String, password: String) =
+    override suspend fun firebaseCreateAccount(name: String, email: String, password: String) =
         try {
             auth.createUserWithEmailAndPassword(email, password).await()
             val user =
                 UserData(
                     email = email,
                     password = password,
-                    // TODO дописать получение username
-                    username = email,
+                    username = name,
                     newTSI = 0,
                     photoUrl = null,
                     phone = null,
@@ -92,10 +91,6 @@ class AuthRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Response.Failure(e)
         }
-
-    override suspend fun firebaseVKAuth(idToken: String): Response<Boolean> {
-        TODO("Когда-нибудь, когда-нибудь...")
-    }
 
     override suspend fun firebaseSignOut() =
         try {

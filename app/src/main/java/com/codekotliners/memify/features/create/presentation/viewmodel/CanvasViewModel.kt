@@ -152,7 +152,8 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
             val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
             imageUrl?.let { url ->
                 val request =
-                    ImageRequest.Builder(context)
+                    ImageRequest
+                        .Builder(context)
                         .data(url)
                         .allowHardware(false)
                         .build()

@@ -93,10 +93,7 @@ fun App(
                     }
                 }
                 composable(NavRoutes.Register.route) {
-                    RegistrationScreen(navController) { email, password ->
-                        authViewModel.onSignUpWithMail(email, password)
-                        navController.popBackStack()
-                    }
+                    RegistrationScreen(navController)
                 }
                 composable(
                     route = NavRoutes.ImageViewer.route,

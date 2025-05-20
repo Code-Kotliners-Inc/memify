@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.repositories.user.UserRepository
+import com.google.firebase.auth.FirebaseAuth
 import com.vk.id.VKID
 import com.vk.id.VKIDUser
 import com.vk.id.refreshuser.VKIDGetUserCallback
@@ -29,6 +30,9 @@ class ProfileViewModel @Inject constructor(
     val state: State<ProfileState> = _state
 
     init {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
         viewModelScope.launch {
             VKID.instance.getUserData(
                 callback =
@@ -54,6 +58,8 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun login() {
-        _state.value = _state.value.copy(isLoggedIn = true)
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
     }
 }
