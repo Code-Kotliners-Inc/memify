@@ -20,19 +20,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.features.templates.presentation.state.TabState
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
-fun TemplatesGrid(currentState: TabState.Content, onTemplateSelected: (String) -> Unit, onLoadMore: () -> Unit) {
+fun TemplatesGrid(
+    currentState: TabState.Content,
+    onTemplateSelected: (String) -> Unit,
+    onLoadMore: () -> Unit,
+    onLikeToggle: (id: String) -> Unit,
+) {
     val listState = rememberLazyStaggeredGridState()
-    val preloadWhenLeft = 10
+    val preloadWhenLeft = 2
 
     LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
-            .collect { visibleItems ->
-                val totalItems = listState.layoutInfo.totalItemsCount
-                val lastVisible = visibleItems.lastOrNull()?.index ?: 0
-
-                if (lastVisible >= totalItems - preloadWhenLeft && !currentState.isLoadingMore) {
+        snapshotFlow {
+            val info = listState.layoutInfo
+            val totalItems = info.totalItemsCount
+            val lastVisible = info.visibleItemsInfo.lastOrNull()?.index ?: 0
+            lastVisible >= totalItems - preloadWhenLeft
+        }.distinctUntilChanged()
+            .filter { it }
+            .collect {
+                if (!currentState.isLoadingMore) {
                     onLoadMore()
                 }
             }
@@ -50,7 +60,11 @@ fun TemplatesGrid(currentState: TabState.Content, onTemplateSelected: (String) -
         contentPadding = PaddingValues(0.dp),
         content = {
             items(currentState.templates) { template ->
-                TemplateItem(template = template, onTemplateSelected = onTemplateSelected)
+                TemplateItem(
+                    template = template,
+                    onTemplateSelected = onTemplateSelected,
+                    onLikeToggle,
+                )
             }
             item(span = StaggeredGridItemSpan.FullLine) {
                 if (currentState.isLoadingMore) {

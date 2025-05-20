@@ -31,8 +31,10 @@ fun ErrorTab(errorType: ErrorType, onLoginClicked: () -> Unit) {
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onLoginClicked) {
-            Text(text = stringResource(R.string.log_in_account))
+        if (errorType == ErrorType.NEED_LOGIN) {
+            Button(onClick = onLoginClicked) {
+                Text(text = stringResource(R.string.log_in_account))
+            }
         }
     }
 }

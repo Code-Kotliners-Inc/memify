@@ -1,11 +1,19 @@
 package com.codekotliners.memify.features.templates.domain.datasource
 
 sealed class TemplatesFilter {
-    class New : TemplatesFilter()
+    open val userId: String? = null
 
-    class Best : TemplatesFilter()
-
-    data class Favorites(
-        val userId: String,
+    class New(
+        override val userId: String? = null,
     ) : TemplatesFilter()
+
+    class Best(
+        override val userId: String? = null,
+    ) : TemplatesFilter()
+
+    class Favorites(
+        val id: String,
+    ) : TemplatesFilter() {
+        override val userId: String get() = id
+    }
 }

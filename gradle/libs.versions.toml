@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.1"
+coil = "2.7.0"
 firebaseBom = "32.7.0"
 coilCompose = "2.6.0"
 hiltAndroid = "2.50"
@@ -17,7 +18,8 @@ composeBom = "2025.03.00"
 navigationCompose = "2.8.9"
 playServicesAuth = "21.3.0"
 roomRuntime = "2.4.3"
-#firebaseStorageKtx = "21.0.1"
+coilBase = "2.6.0"
+browser = "1.4.0"
 
 
 [libraries]
@@ -27,6 +29,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 firebase-auth = { module = "com.google.firebase:firebase-auth" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -52,6 +55,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+coil-base = { group = "io.coil-kt", name = "coil-base", version.ref = "coilBase" }
+androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx"}
 
 [plugins]

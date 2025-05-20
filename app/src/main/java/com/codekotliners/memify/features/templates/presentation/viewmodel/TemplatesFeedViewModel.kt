@@ -3,6 +3,8 @@ package com.codekotliners.memify.features.templates.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
+import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
+import com.codekotliners.memify.features.templates.exceptions.VKUnauthorizedActionException
 import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 import com.codekotliners.memify.features.templates.presentation.state.Tab
 import com.codekotliners.memify.features.templates.presentation.state.TabState
@@ -34,6 +36,42 @@ class TemplatesFeedViewModel @Inject constructor(
         loadDataForTab(_pageState.value.selectedTab)
     }
 
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage
+
+    fun clearToast() {
+        _toastMessage.value = null
+    }
+
+    fun onLikeToggle(id: String) {
+        viewModelScope.launch {
+            var res =
+                try {
+                    repository.toggleLike(id)
+                } catch (e: UnauthorizedActionException) {
+                    _toastMessage.value = e.message
+                    return@launch
+                }
+
+            _pageState.update {
+                it.updatedCurrentTabState(
+                    TabState.Content(
+                        it.getTemplatesOfSelectedState().map {
+                            if (it.id == id) {
+                                it.copy(
+                                    isFavourite = res,
+                                )
+                            } else {
+                                it
+                            }
+                        },
+                        false,
+                    ),
+                )
+            }
+        }
+    }
+
     fun startRefresh() {
         _isRefreshing.value = true
     }
@@ -56,7 +94,9 @@ class TemplatesFeedViewModel @Inject constructor(
     }
 
     fun loadDataForTab(tab: Tab) {
-        if (_pageState.value.getCurrentState() is TabState.Loading) return
+        if (_pageState.value.getCurrentState() is TabState.Loading) {
+            return
+        }
         val currentState = _pageState.value.getCurrentState()
         if (!isRefreshing.value &&
             currentState is TabState.Content &&
@@ -87,23 +127,36 @@ class TemplatesFeedViewModel @Inject constructor(
                         repository.getNewTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                     Tab.FAVOURITE ->
                         repository.getFavouriteTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.VK_IMAGES ->
+                        repository.getVkTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                 }
 
             dataFlow
                 .onEmpty {
                     delay(1000) // to show loading in UI
-                    _pageState.update {
-                        it.updatedCurrentTabState(
-                            TabState.Content(
-                                it.getTemplatesOfSelectedState(),
-                                false,
-                            ),
-                        )
+                    if (currentState is TabState.Content &&
+                        currentState.templates.isEmpty()
+                    ) {
+                        _pageState.update {
+                            it.updatedCurrentTabState(
+                                TabState.Empty,
+                            )
+                        }
+                    } else {
+                        _pageState.update {
+                            it.updatedCurrentTabState(
+                                TabState.Content(
+                                    it.getTemplatesOfSelectedState(),
+                                    false,
+                                ),
+                            )
+                        }
                     }
                 }.catch { e ->
                     var errorType =
                         when (e) {
-                            is IllegalStateException -> ErrorType.NEED_LOGIN
+                            is UnauthorizedActionException -> ErrorType.NEED_LOGIN
+                            is VKUnauthorizedActionException -> ErrorType.NEED_LINK_VK
                             is FirebaseFirestoreException -> ErrorType.NETWORK
                             else -> ErrorType.UNKNOWN
                         }
@@ -115,6 +168,16 @@ class TemplatesFeedViewModel @Inject constructor(
                     _pageState.update { it.updatedCurrentContent(template) }
                 }
 
+            if (_pageState.value.getCurrentState() is TabState.Content) {
+                _pageState.update {
+                    it.updatedCurrentTabState(
+                        TabState.Content(
+                            it.getTemplatesByState(it.getCurrentState()),
+                            false,
+                        ),
+                    )
+                }
+            }
             finishRefresh()
         }
     }

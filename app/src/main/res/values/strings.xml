@@ -94,4 +94,34 @@
     <string name="new_tab_name">Новые</string>
     <string name="preview_screen_title">Предпросмотр</string>
     <string name="editor_screen_title">Editor</string>
+    <string name="templates_tab_vk">ВК</string>
+    <string name="not_less_than_8_symbols_requirement">не менее 8 символов</string>
+    <string name="require_special_character">хотя бы один специальный символ</string>
+    <string name="require_numeric_character">хотя бы одну цифру</string>
+    <string name="require_uppercase_character">хотя бы одну заглавную букву</string>
+    <string name="password_requirements_header">Требования к паролю:</string>
+    <string name="email_cannot_be_empty">Это поле не может быть пустым</string>
+    <string name="invalid_email_format">Неверный формат email</string>
+
+    <string name="name_cannot_be_empty">Имя не может быть пустым</string>
+    <string name="name_too_short">Имя слишком короткое</string>
+
+    <string name="passwords_do_not_match">Пароли не совпадают</string>
+
+    <integer name="com_vk_sdk_AppId">53583099</integer>
+
+    <string name="registration_failed">Ошибка регистрации</string>
+    <string name="registration_error_network">Проблемы с интернет-соединением. Проверьте подключение и попробуйте снова.</string>
+    <string name="registration_error_general">Не удалось завершить регистрацию. Пожалуйста, попробуйте позже.</string>
+    <string name="registration_error_unknown">Произошла неизвестная ошибка</string>
+    <string name="error_details">Подробности: %s</string>
+    <string name="try_again">Попробовать снова</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">Ok</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Темная</string>
+    <string name="system">Системная</string>
+
+    <string name="registration_error_email_already_used">Этот адресс электронной почты уже кем-то используется.</string>
+    <string name="link_vk_account_message">Привяжите Ваш аккаунт ВК в настройках, чтобы воспользоваться этой функцией</string>
 </resources>

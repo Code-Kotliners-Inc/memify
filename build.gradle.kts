@@ -1,3 +1,5 @@
+import java.util.Properties
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     alias(libs.plugins.android.application) apply false
@@ -10,8 +12,22 @@ plugins {
 }
 
 vkidManifestPlaceholders {
+    fun error() =
+        logger.error(
+            "Warning! Build will not work!" +
+                "\nCreate the 'secrets.properties' file in the 'sample/app' folder" +
+                " and add your 'VKIDClientID' and 'VKIDClientSecret' to it.",
+        )
+
+    val properties = Properties()
+    properties.load(file("app/secrets.properties").inputStream())
+    val clientId = properties["VKIDClientID"] ?: error()
+    val clientSecret = properties["VKIDClientSecret"] ?: error()
+
+    init(
+        clientId = clientId.toString(),
+        clientSecret = clientSecret.toString(),
+    )
     vkidRedirectHost = "vk.com"
-    vkidRedirectScheme = "vk53575911"
-    vkidClientId = "53575911"
-    vkidClientSecret = "a66rJ56oU0Z58tXNG5If"
+    vkidRedirectScheme = "vk53583099"
 }

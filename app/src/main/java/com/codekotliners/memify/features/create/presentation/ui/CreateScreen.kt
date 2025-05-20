@@ -2,6 +2,7 @@ package com.codekotliners.memify.features.create.presentation.ui
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -135,6 +136,7 @@ private fun CreateScreenBottomSheet(
 
     val showImageViewer = remember { mutableStateOf(false) }
     val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val context = LocalContext.current
 
     BottomSheetScaffold(
         topBar = {
@@ -142,8 +144,9 @@ private fun CreateScreenBottomSheet(
                 scrollBehavior,
                 onMenuClick = {
                     coroutineScope.launch {
-                        val bitmap = viewModel.createBitMap()
+                        val bitmap = viewModel.createBitMap(context)
                         bitmapState.value = bitmap
+                        Log.i("bib", "${bitmap.height}, ${bitmap.width}")
                         showImageViewer.value = true
                     }
                 },

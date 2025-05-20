@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +70,7 @@ fun LoginScreen(
                         )
                     }
                 },
+                windowInsets = WindowInsets(0.dp),
             )
         },
         modifier = Modifier.fillMaxSize(),
@@ -85,7 +88,7 @@ fun LoginScreen(
             Image(
                 painter = painterResource(id = R.drawable.auth),
                 contentDescription = stringResource(R.string.security_icon),
-                modifier = Modifier.padding(bottom = 30.dp).weight(0.5f),
+                modifier = Modifier.padding(bottom = 10.dp).weight(0.5f),
             )
 
             LoginForm(onLoginClicked = onLoginClicked)
@@ -114,6 +117,13 @@ fun LoginForm(onLoginClicked: (String, String) -> Unit) {
             onClick = {
                 onLoginClicked(email.text, password.text)
             },
+            colors =
+                ButtonColors(
+                    MaterialTheme.colorScheme.primary,
+                    MaterialTheme.colorScheme.onPrimary,
+                    Color.Gray,
+                    Color.White,
+                ),
             modifier =
                 Modifier
                     .fillMaxWidth()

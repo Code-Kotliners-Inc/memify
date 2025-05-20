@@ -15,9 +15,9 @@ val errorLight = Color(0xFFE60023)
 
 val primaryDark = Color(0xFF0077FF)
 val onPrimaryDark = Color(0xFF000000)
-val primaryContainerDark = Color(0xFF333333)
-val onPrimaryContainerDark = Color(0xFF747474)
-val backgroundDark = Color(0xFF333333)
+val primaryContainerDark = Color(0xFF282828)
+val onPrimaryContainerDark = Color(0xFF8C8C8C)
+val backgroundDark = Color(0xFF2C2C2C)
 val onBackgroundDark = Color(0xFFFFFFFF)
 val surfaceDark = Color(0xFF222222)
 val onSurfaceDark = Color(0xFFFFFFFF)
@@ -27,6 +27,7 @@ val likeRedLight = Color(0xFFFF0000)
 val likeRedDark = Color(0xFFB71C1C)
 
 data class ExtraColors(
+    val likeButtonColor: Color,
     val authButtons: AuthButtons,
 ) {
     data class AuthButtons(
@@ -38,6 +39,7 @@ data class ExtraColors(
 
 val LightExtraColors =
     ExtraColors(
+        likeButtonColor = likeRedLight,
         authButtons =
             ExtraColors.AuthButtons(
                 google =
@@ -66,6 +68,7 @@ val LightExtraColors =
 
 val DarkExtraColors =
     ExtraColors(
+        likeButtonColor = likeRedDark,
         authButtons =
             ExtraColors.AuthButtons(
                 google =

@@ -2,8 +2,10 @@ package com.codekotliners.memify.core.repositories.user
 
 import com.codekotliners.memify.core.models.UserData
 import com.codekotliners.memify.features.auth.domain.entities.Response
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -12,8 +14,9 @@ private const val USERS_COLLECTION_NAME = "users"
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore,
 ) : UserRepository {
+    private val db: FirebaseFirestore = Firebase.firestore
+
     override suspend fun createUser(userData: UserData): Response<Boolean> {
         return try {
             // подразумевается, что пользователь зарегистрировался только что

@@ -5,7 +5,6 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Typeface
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
@@ -15,8 +14,11 @@ class DrawingCanvas(
     private val canvasElements: SnapshotStateList<CanvasElement>,
 ) {
     fun drawCanvasElements(canvas: android.graphics.Canvas) {
-        canvas.drawColor(Color.White.toArgb())
-        val paint = Paint().apply { isAntiAlias = true }
+        val paint =
+            Paint().apply {
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
 
         for (element in canvasElements) {
             when (element) {

@@ -6,6 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.core.repositories.user.UserRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.vk.id.VKID
+import com.vk.id.VKIDUser
+import com.vk.id.refreshuser.VKIDGetUserCallback
+import com.vk.id.refreshuser.VKIDGetUserFail
 import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,12 +20,13 @@ import javax.inject.Inject
 data class ProfileState(
     val selectedTab: Int = 0,
     val isLoggedIn: Boolean = false,
-    val userName: String = "MemeMaker2011",
+    var userName: String = "MemeMaker2011",
     val userImageUri: Uri? = null,
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
+    user: UserRepository,
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
 ) : ViewModel() {
     private val _state = mutableStateOf(ProfileState())
@@ -27,6 +34,27 @@ class ProfileViewModel @Inject constructor(
     val state: State<ProfileState> = _state
 
     init {
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
+        viewModelScope.launch {
+            VKID.instance.getUserData(
+                callback =
+                    object : VKIDGetUserCallback {
+                        override fun onSuccess(user: VKIDUser) {
+                            state.value.userName = user.firstName
+                        }
+
+                        override fun onFail(fail: VKIDGetUserFail) {
+                            when (fail) {
+                                is VKIDGetUserFail.FailedApiCall -> fail.description
+                                is VKIDGetUserFail.IdTokenTokenExpired -> fail.description
+                                is VKIDGetUserFail.NotAuthenticated -> fail.description
+                            }
+                        }
+                    },
+            )
+        }
         viewModelScope.launch {
             _state.value =
                 _state.value.copy(
@@ -40,7 +68,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun login() {
-        _state.value = _state.value.copy(isLoggedIn = true)
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+        }
     }
 
     fun updateAvatar(uri: Uri) {

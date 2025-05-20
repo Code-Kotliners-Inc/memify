@@ -83,6 +83,7 @@ private fun VerificationTopBar(navController: NavHostController) {
                 )
             }
         },
+        windowInsets = WindowInsets(0.dp),
         colors =
             TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),

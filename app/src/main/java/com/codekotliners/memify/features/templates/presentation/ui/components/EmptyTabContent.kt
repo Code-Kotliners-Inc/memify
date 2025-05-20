@@ -18,6 +18,6 @@ fun NoContentTab() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = stringResource(R.string.empty_templates_tab_message), style = MaterialTheme.typography.bodyMedium)
+        Text(text = stringResource(R.string.empty_templates_tab_message), style = MaterialTheme.typography.bodyLarge)
     }
 }

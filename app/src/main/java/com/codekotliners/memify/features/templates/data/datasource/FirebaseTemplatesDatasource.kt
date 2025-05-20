@@ -10,9 +10,12 @@ import com.codekotliners.memify.features.templates.data.mappers.toTemplate
 import com.codekotliners.memify.features.templates.domain.datasource.DatasourceResult
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDatasource
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesFilter
+import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Transaction
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -34,7 +37,9 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource<Do
             when (type) {
                 is TemplatesFilter.Best -> queryBest(limitToFetch, startWith)
                 is TemplatesFilter.New -> queryNew(limitToFetch, startWith)
-                is TemplatesFilter.Favorites -> queryFavourites(type.userId, limitToFetch, startWith)
+                is TemplatesFilter.Favorites -> {
+                    queryFavourites(type.userId, limitToFetch, startWith)
+                }
             }
 
         val snap = queryByType.get().await()
@@ -45,16 +50,43 @@ class FirebaseTemplatesDatasource @Inject constructor() : TemplatesDatasource<Do
                 null
             }
         return DatasourceResult(
-            fetchTemplates(snap.documents.dropLast(1)),
+            fetchTemplates(type.userId, snap.documents.dropLast(1)),
             nextToStart,
         )
     }
 
-    private fun fetchTemplates(documents: List<DocumentSnapshot>): Flow<Template> =
+    override suspend fun toggleLikeById(id: String): Boolean {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            throw UnauthorizedActionException("User not logged in")
+        }
+
+        val docRef = templatesCollection.document(id)
+
+        val task =
+            db.runTransaction { transaction: Transaction ->
+                val snapshot = transaction.get(docRef)
+
+                val currentList = snapshot.get(FIELD_TEMPLATE_FAVOURITED_BY_ARRAY) as? List<String> ?: emptyList()
+
+                val newValue = currentList.contains(userId)
+                val updatedList =
+                    currentList.toMutableList().apply {
+                        if (contains(userId)) remove(userId) else add(userId)
+                    }
+
+                transaction.update(docRef, FIELD_TEMPLATE_FAVOURITED_BY_ARRAY, updatedList)
+                !newValue
+            }
+
+        return task.await()
+    }
+
+    private fun fetchTemplates(currentUserId: String?, documents: List<DocumentSnapshot>): Flow<Template> =
         flow {
             documents.forEach { doc ->
                 try {
-                    emit(doc.toTemplate())
+                    emit(doc.toTemplate(currentUserId))
                 } catch (e: Exception) {
                     Logger.log(Logger.Level.ERROR, "Templates parsing", "For document: ${doc.id} ${e.message}")
                 }
