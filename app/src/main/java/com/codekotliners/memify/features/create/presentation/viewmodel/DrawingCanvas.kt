@@ -1,25 +1,24 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
 import android.content.res.Resources
-import android.graphics.Bitmap
 import android.graphics.Paint
 import android.graphics.Path
-import android.graphics.RectF
 import android.graphics.Typeface
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
-import com.codekotliners.memify.features.create.domain.ImageElement
 import com.codekotliners.memify.features.create.domain.TextElement
 
 class DrawingCanvas(
-    private val canvasElements: SnapshotStateList<CanvasElement>
+    private val canvasElements: SnapshotStateList<CanvasElement>,
 ) {
     fun drawCanvasElements(canvas: android.graphics.Canvas) {
-        val paint = Paint().apply { style = Paint.Style.FILL
-            isAntiAlias = true }
+        val paint =
+            Paint().apply {
+                style = Paint.Style.FILL
+                isAntiAlias = true
+            }
 
         for (element in canvasElements) {
             when (element) {

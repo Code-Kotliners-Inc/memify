@@ -56,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -115,9 +114,9 @@ fun CreateScreen(
     ) { padding ->
         Box(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(padding),
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding),
         ) {
             CreateScreenBottomSheet(scaffoldState, bottomSheetState, onLogin, viewModel)
         }
@@ -207,10 +206,10 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
             }
         },
         colors =
-        TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-        ),
+            TopAppBarDefaults.centerAlignedTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                titleContentColor = MaterialTheme.colorScheme.onSurface,
+            ),
         scrollBehavior = scrollBehavior,
     )
 }
@@ -219,10 +218,10 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
     LazyColumn(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-            .background(MaterialTheme.colorScheme.background),
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(bottom = 80.dp),
     ) {
@@ -238,19 +237,19 @@ private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasVi
 fun BottomSheetHandle(bottomSheetState: SheetState) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-            .height(50.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .height(50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector =
-            if (bottomSheetState.targetValue == SheetValue.Expanded) {
-                Icons.Default.KeyboardArrowDown
-            } else {
-                Icons.Default.KeyboardArrowUp
-            },
+                if (bottomSheetState.targetValue == SheetValue.Expanded) {
+                    Icons.Default.KeyboardArrowDown
+                } else {
+                    Icons.Default.KeyboardArrowUp
+                },
             contentDescription = stringResource(R.string.description_swipe_bottom_sheet),
             modifier = Modifier.size(24.dp),
         )
@@ -319,32 +318,32 @@ private fun ImageBox(viewModel: CanvasViewModel) {
 
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
-            .padding(4.dp)
-            .then(
-                if (viewModel.isWritingEnabled) {
-                    Modifier.clickable(onClick = { viewModel.startWriting() })
-                } else {
-                    Modifier
-                },
-            ).graphicsLayer(
-                scaleX = scale,
-                scaleY = scale,
-                rotationZ = angle,
-                translationX = offset.x,
-                translationY = offset.y,
-            ).transformable(state = state),
+            Modifier
+                .fillMaxWidth()
+                .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
+                .padding(4.dp)
+                .then(
+                    if (viewModel.isWritingEnabled) {
+                        Modifier.clickable(onClick = { viewModel.startWriting() })
+                    } else {
+                        Modifier
+                    },
+                ).graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    rotationZ = angle,
+                    translationX = offset.x,
+                    translationY = offset.y,
+                ).transformable(state = state),
     ) {
         val painter =
             rememberAsyncImagePainter(
                 model =
-                ImageRequest
-                    .Builder(LocalContext.current)
-                    .data(viewModel.imageUrl)
-                    .crossfade(true)
-                    .build(),
+                    ImageRequest
+                        .Builder(LocalContext.current)
+                        .data(viewModel.imageUrl)
+                        .crossfade(true)
+                        .build(),
             )
 
         Image(
@@ -359,9 +358,9 @@ private fun ImageBox(viewModel: CanvasViewModel) {
         if (viewModel.showTextPreview) {
             Box(
                 modifier =
-                Modifier
-                    .fillMaxSize()
-                    .wrapContentSize(Alignment.Center),
+                    Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(Alignment.Center),
             ) {
                 Text(
                     text = "A",
