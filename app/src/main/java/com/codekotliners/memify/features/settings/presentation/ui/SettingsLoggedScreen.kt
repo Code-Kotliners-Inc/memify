@@ -18,27 +18,37 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TriStateCheckbox
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
+import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.askPassword
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
@@ -144,37 +154,79 @@ private fun ChangeName() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThemeChange(viewModel: SettingsScreenViewModel) {
     val themeMode by viewModel.theme.collectAsState()
 
-    val checkboxState =
-        when (themeMode) {
-            "dark" -> ToggleableState.On
-            "light" -> ToggleableState.Off
-            else -> ToggleableState.Indeterminate
-        }
+    var expanded by remember { mutableStateOf(false) }
+    val themeOptions =
+        mapOf(
+            "light" to stringResource(id = R.string.light),
+            "dark" to stringResource(id = R.string.dark),
+            "system" to stringResource(id = R.string.system),
+        )
+    val selectedOptionText = themeOptions[themeMode] ?: stringResource(R.string.theme)
 
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 30.dp, vertical = 10.dp),
+                .padding(horizontal = 10.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = stringResource(id = R.string.theme),
-            style = MaterialTheme.typography.suggestNewAccount,
-        )
-        Spacer(modifier = Modifier.weight(1f))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+        ) {
+            TextField(
+                value = selectedOptionText.replaceFirstChar { it.uppercaseChar() },
+                onValueChange = {},
+                readOnly = true,
+                textStyle = MaterialTheme.typography.suggestNewAccount,
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        disabledContainerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                shape = RoundedCornerShape(20.dp),
+                modifier =
+                    Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+            )
 
-        TriStateCheckbox(
-            state = checkboxState,
-            onClick = {
-                viewModel.changeTheme()
-            },
-        )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier =
+                    Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(20.dp),
+                        ),
+            ) {
+                themeOptions.forEach { (key, value) ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = value.replaceFirstChar { it.uppercaseChar() },
+                                style = MaterialTheme.typography.suggestNewAccount,
+                            )
+                        },
+                        onClick = {
+                            viewModel.setTheme(key)
+                            expanded = false
+                        },
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -314,7 +366,7 @@ private fun ChangePhoto() {
         }
     }
 }
-/*
+
 @Preview(name = "Light Mode", showSystemUi = true)
 // @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -323,4 +375,3 @@ fun SettingsLoggedScreenPreview() {
         SettingsLoggedScreen(navController = NavController(LocalContext.current), viewModel = hiltViewModel())
     }
 }
-*/

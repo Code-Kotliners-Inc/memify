@@ -25,15 +25,14 @@ class SettingsScreenViewModel @Inject constructor(
         _theme.value = sharedPreferences.getString("theme", null)
     }
 
-    fun changeTheme() {
-        val new = if (_theme.value == "dark") "light" else "dark"
-        sharedPreferences.edit { putString("theme", new) }
-        _theme.value = new
-    }
-
     fun onLogIn(accessToken: AccessToken) {
         viewModelScope.launch {
             updateUserNameUseCase.updateUserName(accessToken.userData.firstName)
         }
+    }
+
+    fun setTheme(theme: String) {
+        sharedPreferences.edit { putString("theme", theme) }
+        _theme.value = theme
     }
 }

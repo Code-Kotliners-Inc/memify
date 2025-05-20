@@ -118,6 +118,9 @@
     <string name="try_again">Попробовать снова</string>
     <string name="cancel">Отмена</string>
     <string name="ok">Ok</string>
+    <string name="light">Светлая</string>
+    <string name="dark">Темная</string>
+    <string name="system">Системная</string>
 
     <string name="registration_error_email_already_used">Этот адресс электронной почты уже кем-то используется.</string>
 </resources>
