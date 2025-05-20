@@ -6,5 +6,5 @@ data class UserData(
     val username: String,
     val photoUrl: String?,
     val phone: String?,
-    val newTSI: Int?,
+    val newTSI: Int,
 )
