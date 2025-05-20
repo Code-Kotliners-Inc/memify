@@ -1,9 +1,15 @@
 package com.codekotliners.memify.features.profile.presentation.ui
 
 import android.content.res.Configuration
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +32,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -47,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
@@ -89,7 +96,6 @@ fun ProfileScreen(
     val scrollState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
     val scrollOffset = rememberScrollOffset(scrollState)
-
     val isExtended = scrollOffset >= 0.1f
 
     AppScaffold(
@@ -128,6 +134,7 @@ fun ProfileScreen(
                 onLoginClick = {
                     navController.navigate(NavRoutes.Auth.route)
                 },
+                onAvatarClick = { uri -> viewModel.updateAvatar(uri) },
             )
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
@@ -135,7 +142,6 @@ fun ProfileScreen(
             FeedTabBar(state = state, onSelectTab = { index -> viewModel.selectTab(index) })
 
             MemesFeed(
-                state = state,
                 scrollState = scrollState,
             )
         }
@@ -222,12 +228,17 @@ private fun ProfileExtended(
     scrollOffset: Float,
     state: ProfileState,
     onLoginClick: () -> Unit,
+    onAvatarClick: (Uri) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ProfileAvatar(scrollOffset = scrollOffset, state = state)
+        ProfileAvatar(
+            scrollOffset = scrollOffset,
+            state = state,
+            onClick = onAvatarClick,
+        )
 
         Box(modifier = Modifier.height(20.dp * scrollOffset))
 
@@ -254,41 +265,51 @@ private fun ProfileExtended(
 }
 
 @Composable
-private fun ProfileAvatar(scrollOffset: Float, state: ProfileState) {
+private fun ProfileAvatar(
+    scrollOffset: Float,
+    state: ProfileState,
+    onClick: (Uri) -> Unit,
+) {
+    val pickMedia =
+        rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+            if (uri != null) {
+                Log.d("PhotoPicker", "Selected URI: $uri")
+                onClick(uri)
+            } else {
+                Log.d("PhotoPicker", "No media selected")
+            }
+        }
+
     Box(
         modifier =
             Modifier
                 .size(100.dp * scrollOffset)
-                .border(
+                .clip(CircleShape)
+                .clickable(
+                    onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
+                ).border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onBackground,
                     shape = CircleShape,
-                ),
+                ).background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center,
     ) {
-        Button(
-            onClick = {},
-            colors =
-                ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
-        ) {
-            if (state.userImage != null) {
-                Image(
-                    state.userImage,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                )
-            } else {
-                Icon(
-                    Icons.Default.Person,
-                    contentDescription = null,
-                    modifier = Modifier.size(50.dp * scrollOffset),
-                )
-            }
+        if (state.userImageUri != null) {
+            Image(
+                modifier = Modifier.fillMaxSize(),
+                painter =
+                    rememberAsyncImagePainter(
+                        model = state.userImageUri,
+                    ),
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+            )
+        } else {
+            Icon(
+                Icons.Default.Person,
+                contentDescription = null,
+                modifier = Modifier.size(50.dp * scrollOffset),
+            )
         }
     }
 }
@@ -351,7 +372,6 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
 @Composable
 fun MemesFeed(
     scrollState: LazyGridState,
-    state: ProfileState,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),

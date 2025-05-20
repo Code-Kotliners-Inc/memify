@@ -1,8 +1,9 @@
 package com.codekotliners.memify.features.profile.presentation.viewmodel
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.repositories.user.UserRepository
@@ -11,6 +12,7 @@ import com.vk.id.VKID
 import com.vk.id.VKIDUser
 import com.vk.id.refreshuser.VKIDGetUserCallback
 import com.vk.id.refreshuser.VKIDGetUserFail
+import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,15 +20,17 @@ import javax.inject.Inject
 data class ProfileState(
     val selectedTab: Int = 0,
     val isLoggedIn: Boolean = false,
-    var userName: String = "MemeMaker2011",
-    val userImage: ImageVector? = null,
+    val userName: String = "MemeMaker2011",
+    val userImageUri: Uri? = null,
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     user: UserRepository,
+    private val updateProfileImageUseCase: UpdateProfileImageUseCase,
 ) : ViewModel() {
     private val _state = mutableStateOf(ProfileState())
+
     val state: State<ProfileState> = _state
 
     init {
@@ -50,6 +54,11 @@ class ProfileViewModel @Inject constructor(
                         }
                     },
             )
+        viewModelScope.launch {
+            _state.value =
+                _state.value.copy(
+                    userImageUri = updateProfileImageUseCase.getProfileImageUrl()?.toUri(),
+                )
         }
     }
 
@@ -60,6 +69,13 @@ class ProfileViewModel @Inject constructor(
     fun login() {
         if (FirebaseAuth.getInstance().currentUser != null) {
             _state.value = _state.value.copy(isLoggedIn = true)
+        }
+    }
+
+    fun updateAvatar(uri: Uri) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(userImageUri = uri)
+            updateProfileImageUseCase(uri)
         }
     }
 }

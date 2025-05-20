@@ -57,6 +57,7 @@ kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collec
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 coil-base = { group = "io.coil-kt", name = "coil-base", version.ref = "coilBase" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "browser" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -67,6 +67,17 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             userRepo.createUser(user)
             Response.Success(true)
+            val user =
+                UserData(
+                    email = email,
+                    password = password,
+                    // TODO дописать получение username
+                    username = email,
+                    newTSI = 0,
+                    photoUrl = null,
+                    phone = null,
+                )
+            userRepo.createUser(user)
             // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
         } catch (e: Exception) {
             Response.Failure(e)

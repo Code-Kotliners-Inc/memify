@@ -15,4 +15,6 @@ interface UserRepository {
     suspend fun updateTSI(newTSI: Int): Response<Boolean>
 
     suspend fun updatePassword(password: String): Response<Boolean>
+
+    suspend fun getUserPhotoUrl(): Response<String?>
 }

@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.coil.base)
     implementation(libs.androidx.browser)
+    implementation(libs.firebase.storage.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
