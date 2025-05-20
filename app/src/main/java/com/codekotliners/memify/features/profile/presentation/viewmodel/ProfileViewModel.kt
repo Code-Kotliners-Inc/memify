@@ -20,7 +20,7 @@ import javax.inject.Inject
 data class ProfileState(
     val selectedTab: Int = 0,
     val isLoggedIn: Boolean = false,
-    val userName: String = "MemeMaker2011",
+    var userName: String = "MemeMaker2011",
     val userImageUri: Uri? = null,
 )
 
@@ -54,6 +54,7 @@ class ProfileViewModel @Inject constructor(
                         }
                     },
             )
+        }
         viewModelScope.launch {
             _state.value =
                 _state.value.copy(

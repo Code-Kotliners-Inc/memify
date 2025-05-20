@@ -27,6 +27,7 @@ enum class ErrorType(
     NETWORK(R.string.network_errormessage),
     NEED_LOGIN(R.string.need_authenticated_message),
     UNKNOWN(R.string.unknown_error_message),
+    NEED_LINK_VK(R.string.link_vk_account_message),
     ;
 }
 

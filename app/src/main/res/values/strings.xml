@@ -123,4 +123,5 @@
     <string name="system">Системная</string>
 
     <string name="registration_error_email_already_used">Этот адресс электронной почты уже кем-то используется.</string>
+    <string name="link_vk_account_message">Привяжите Ваш аккаунт ВК в настройках, чтобы воспользоваться этой функцией</string>
 </resources>

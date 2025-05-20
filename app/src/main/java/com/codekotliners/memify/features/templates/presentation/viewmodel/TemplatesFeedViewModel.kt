@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
+import com.codekotliners.memify.features.templates.exceptions.VKUnauthorizedActionException
 import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 import com.codekotliners.memify.features.templates.presentation.state.Tab
 import com.codekotliners.memify.features.templates.presentation.state.TabState
@@ -154,7 +155,8 @@ class TemplatesFeedViewModel @Inject constructor(
                 }.catch { e ->
                     var errorType =
                         when (e) {
-                            is IllegalStateException -> ErrorType.NEED_LOGIN
+                            is UnauthorizedActionException -> ErrorType.NEED_LOGIN
+                            is VKUnauthorizedActionException -> ErrorType.NEED_LINK_VK
                             is FirebaseFirestoreException -> ErrorType.NETWORK
                             else -> ErrorType.UNKNOWN
                         }
