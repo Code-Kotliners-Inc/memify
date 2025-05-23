@@ -7,7 +7,7 @@ import com.codekotliners.memify.R
 import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.codekotliners.memify.features.auth.domain.repository.AuthRepository
 import com.codekotliners.memify.features.auth.presentation.state.RegistrationEvent
-import com.codekotliners.memify.features.auth.presentation.state.UiState
+import com.codekotliners.memify.features.auth.presentation.state.RegistrationUiState
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.ConfirmPasswordErrorCode
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.EmailErrorCode
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.NameErrorCode
@@ -27,16 +27,16 @@ import javax.inject.Inject
 class RegistrationViewModel @Inject constructor(
     private val auth: AuthRepository,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(RegistrationUiState())
+    val uiState: StateFlow<RegistrationUiState> = _uiState.asStateFlow()
 
-    private val UiState.hasUppercase: Boolean
+    private val RegistrationUiState.hasUppercase: Boolean
         get() = password.any(Char::isUpperCase)
-    private val UiState.hasDigit: Boolean
+    private val RegistrationUiState.hasDigit: Boolean
         get() = password.any(Char::isDigit)
-    private val UiState.hasSpecialChar: Boolean
+    private val RegistrationUiState.hasSpecialChar: Boolean
         get() = password.any { !it.isLetterOrDigit() }
-    private val UiState.meetsLength: Boolean
+    private val RegistrationUiState.meetsLength: Boolean
         get() = password.length >= 8
 
     fun onEvent(event: RegistrationEvent) {
@@ -74,7 +74,7 @@ class RegistrationViewModel @Inject constructor(
         _uiState.update { it.copy(registrationErrorCode = null) }
     }
 
-    private fun UiState.validateEmail(): UiState {
+    private fun RegistrationUiState.validateEmail(): RegistrationUiState {
         val errors =
             buildList {
                 if (email.isBlank()) {
@@ -86,7 +86,7 @@ class RegistrationViewModel @Inject constructor(
         return copy(emailErrors = errors)
     }
 
-    private fun UiState.validateName(): UiState {
+    private fun RegistrationUiState.validateName(): RegistrationUiState {
         val errors =
             buildList {
                 if (name.isBlank()) {
@@ -98,7 +98,7 @@ class RegistrationViewModel @Inject constructor(
         return copy(nameErrors = errors)
     }
 
-    private fun UiState.validateConfirmPassword(): UiState {
+    private fun RegistrationUiState.validateConfirmPassword(): RegistrationUiState {
         val errors =
             buildList {
                 if (confirmPassword != password) add(ConfirmPasswordErrorCode.Mismatch)
@@ -106,7 +106,7 @@ class RegistrationViewModel @Inject constructor(
         return copy(confirmPasswordErrors = errors)
     }
 
-    private fun UiState.validatePassword(): UiState {
+    private fun RegistrationUiState.validatePassword(): RegistrationUiState {
         val errors =
             buildList {
                 if (!meetsLength) add(PasswordErrorCode.TooShort)
@@ -150,7 +150,7 @@ class RegistrationViewModel @Inject constructor(
                 is Response.Failure<*> -> {
                     val registrationErrorCode =
                         when (result.error) {
-                            is FirebaseNetworkException, is IOException -> R.string.registration_error_network
+                            is FirebaseNetworkException, is IOException -> R.string.auth_error_network
                             is FirebaseAuthUserCollisionException -> R.string.registration_error_email_already_used
                             else -> R.string.registration_error_general
                         }

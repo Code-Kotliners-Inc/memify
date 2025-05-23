@@ -5,7 +5,7 @@ import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.EmailEr
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.NameErrorCode
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.PasswordErrorCode
 
-data class UiState(
+data class RegistrationUiState(
     val name: String = "",
     val email: String = "",
     val password: String = "",

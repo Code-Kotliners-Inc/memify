@@ -16,6 +16,7 @@ sealed interface TabState {
     data class Content(
         val templates: List<Template>,
         val isLoadingMore: Boolean,
+        val reachedEnd: Boolean,
     ) : TabState
 
     data object Empty : TabState

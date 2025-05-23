@@ -19,7 +19,6 @@
     <string name="take_template_action">Взять шаблон</string>
     <string name="error_while_image_loading">Ошибка загрузки изображения</string>
     <string name="login_google_button">Войти с помощью Google</string>
-    <string name="login_vk_button">Войти с помощью VK</string>
     <string name="login_mail_button">Войти с помощью почты</string>
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_button">Зарегистрироваться</string>
@@ -101,7 +100,7 @@
     <string name="require_uppercase_character">хотя бы одну заглавную букву</string>
     <string name="password_requirements_header">Требования к паролю:</string>
     <string name="email_cannot_be_empty">Это поле не может быть пустым</string>
-    <string name="invalid_email_format">Неверный формат email</string>
+    <string name="invalid_email_format">Неверный формат электронной почты</string>
 
     <string name="name_cannot_be_empty">Имя не может быть пустым</string>
     <string name="name_too_short">Имя слишком короткое</string>
@@ -111,8 +110,10 @@
     <integer name="com_vk_sdk_AppId">53583099</integer>
 
     <string name="registration_failed">Ошибка регистрации</string>
-    <string name="registration_error_network">Проблемы с интернет-соединением. Проверьте подключение и попробуйте снова.</string>
+    <string name="login_failed">Ошибка входа</string>
+    <string name="auth_error_network">Проблемы с интернет-соединением. Проверьте подключение и попробуйте снова.</string>
     <string name="registration_error_general">Не удалось завершить регистрацию. Пожалуйста, попробуйте позже.</string>
+    <string name="login_error_general">Не удалось войти в аккаунт. Пожалуйста, проверьте введенные данные.</string>
     <string name="registration_error_unknown">Произошла неизвестная ошибка</string>
     <string name="error_details">Подробности: %s</string>
     <string name="try_again">Попробовать снова</string>

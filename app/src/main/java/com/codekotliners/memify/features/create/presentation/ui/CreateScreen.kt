@@ -118,7 +118,7 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(scaffoldState, bottomSheetState, onLogin, viewModel)
+            CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel)
         }
     }
 }
@@ -126,6 +126,7 @@ fun CreateScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreateScreenBottomSheet(
+    navController: NavController,
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     onLogin: () -> Unit,
@@ -157,6 +158,7 @@ private fun CreateScreenBottomSheet(
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
         sheetContent = {
             TemplatesFeedScreen(
+                navController = navController,
                 onLoginClicked = { onLogin() },
                 onTemplateSelected = { url ->
                     viewModel.imageUrl = url

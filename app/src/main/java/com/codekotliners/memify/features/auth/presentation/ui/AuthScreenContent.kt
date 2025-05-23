@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,30 +44,50 @@ fun AuthScreenContent(
     onGoogleLauncherClick: () -> Unit,
     onLogInWithGoogle: (String) -> Unit,
 ) {
+    val gradient =
+        Brush.verticalGradient(
+            colors =
+                listOf(
+                    LocalExtraColors.current.authButtons.gradientUp,
+                    LocalExtraColors.current.authButtons.gradientDown,
+                ),
+        )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.SpaceBetween,
         modifier =
             Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+                .background(MaterialTheme.colorScheme.background)
+                .background(brush = gradient),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.auth),
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-            contentScale = ContentScale.Fit,
-        )
+        Spacer(modifier = Modifier.height(30.dp))
 
-        LogInMethods(
-            navController = navController,
-            onGoogleLauncherClick = onGoogleLauncherClick,
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.auth),
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                contentScale = ContentScale.Fit,
+            )
+        }
 
-        GoogleSignInHandler { tokenId -> onLogInWithGoogle(tokenId) }
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 60.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+        ) {
+            LogInMethods(
+                navController = navController,
+                onGoogleLauncherClick = onGoogleLauncherClick,
+            )
+            GoogleSignInHandler { tokenId -> onLogInWithGoogle(tokenId) }
+        }
     }
 }
 
@@ -77,7 +98,7 @@ fun LogInMethods(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.Bottom),
         modifier =
             Modifier.fillMaxSize(),
     ) {
@@ -95,7 +116,7 @@ fun LogInMethods(
             onClick = { navController.navigateToEmailLogin() },
         )
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(0.dp).padding(0.dp))
 
         NoAccountSection(
             onRegisterClick = { navController.navigateToRegister() },
@@ -143,8 +164,9 @@ fun AuthButton(
         shape = RoundedCornerShape(16.dp),
         modifier =
             Modifier
-                .fillMaxWidth(0.88f)
-                .height(54.dp),
+                .fillMaxWidth()
+                .height(54.dp)
+                .padding(horizontal = 36.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
