@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.codekotliners.memify.R
-import kotlin.collections.forEach
 
 @Composable
 fun PasswordErrorCode.toUiMessage(): String =
@@ -23,6 +22,13 @@ fun EmailErrorCode.toUiMessage(): String =
     when (this) {
         EmailErrorCode.Empty -> stringResource(R.string.email_cannot_be_empty)
         EmailErrorCode.InvalidFormat -> stringResource(R.string.invalid_email_format)
+    }
+
+@Composable
+fun LoginErrorCode.toUiMessage(): String =
+    when (this) {
+        LoginErrorCode.Empty -> stringResource(R.string.email_cannot_be_empty)
+        LoginErrorCode.InvalidFormat -> stringResource(R.string.invalid_email_format)
     }
 
 @Composable
@@ -51,6 +57,19 @@ fun PasswordErrors(errors: List<PasswordErrorCode>) {
                 val message = "- " + error.toUiMessage()
                 Text(message, color = Color.Red, style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+fun LoginErrors(errors: List<LoginErrorCode>) {
+    Column {
+        errors.forEach {
+            Text(
+                text = it.toUiMessage(),
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+            )
         }
     }
 }

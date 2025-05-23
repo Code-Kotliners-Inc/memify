@@ -87,10 +87,7 @@ fun App(
                 composable(NavRoutes.Profile.route) { ProfileScreen(navController) }
                 composable(NavRoutes.Auth.route) { AuthScreen(navController, authViewModel) }
                 composable(NavRoutes.Login.route) {
-                    LoginScreen(navController) { email, password ->
-                        authViewModel.onLogInWithMail(email, password)
-                        navController.popBackStack()
-                    }
+                    LoginScreen(navController)
                 }
                 composable(NavRoutes.Register.route) {
                     RegistrationScreen(navController)
