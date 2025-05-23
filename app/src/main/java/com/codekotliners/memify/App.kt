@@ -44,10 +44,23 @@ val LocalNavAnimatedVisibilityScope = compositionLocalOf<AnimatedVisibilityScope
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun App(
+    destinationScreen: String?,
     authViewModel: AuthenticationViewModel = hiltViewModel(),
     settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
+
+    LaunchedEffect(destinationScreen) {
+        if (destinationScreen == "creation") {
+            navController.navigate(NavRoutes.Create.route) {
+                popUpTo(NavRoutes.Home.route) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
 
     SharedTransitionLayout {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
@@ -165,6 +178,6 @@ fun App(
 @Composable
 fun AppPreview() {
     MemifyTheme {
-        App()
+        App(null)
     }
 }

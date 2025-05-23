@@ -82,6 +82,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val destination = intent?.extras?.getString("shortcut_destination")
+
         enableEdgeToEdge()
 
         setContent {
@@ -100,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = false,
                 darkTheme = themeKind,
             ) {
-                App()
+                App(destination)
             }
         }
     }
