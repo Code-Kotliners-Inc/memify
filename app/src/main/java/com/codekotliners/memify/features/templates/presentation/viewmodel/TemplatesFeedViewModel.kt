@@ -11,7 +11,6 @@ import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.state.TemplatesPageState
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -32,12 +31,12 @@ class TemplatesFeedViewModel @Inject constructor(
 
     val limitPerRequest: Long = 30
 
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage
+
     init {
         loadDataForTab(_pageState.value.selectedTab)
     }
-
-    private val _toastMessage = MutableStateFlow<String?>(null)
-    val toastMessage: StateFlow<String?> = _toastMessage
 
     fun clearToast() {
         _toastMessage.value = null
@@ -65,7 +64,8 @@ class TemplatesFeedViewModel @Inject constructor(
                                 it
                             }
                         },
-                        false,
+                        it.getIsLoadingMoreByState(it.getCurrentState()),
+                        it.getReachedEndByState(it.getCurrentState()),
                     ),
                 )
             }
@@ -78,7 +78,6 @@ class TemplatesFeedViewModel @Inject constructor(
 
     fun finishRefresh() {
         viewModelScope.launch {
-            delay(300)
             _isRefreshing.value = false
         }
     }
@@ -90,6 +89,9 @@ class TemplatesFeedViewModel @Inject constructor(
 
     fun selectTab(tab: Tab) {
         _pageState.update { it.copy(selectedTab = tab) }
+        if (tab == Tab.FAVOURITE) {
+            refresh()
+        }
         loadDataForTab(tab)
     }
 
@@ -100,7 +102,7 @@ class TemplatesFeedViewModel @Inject constructor(
         val currentState = _pageState.value.getCurrentState()
         if (!isRefreshing.value &&
             currentState is TabState.Content &&
-            currentState.isLoadingMore
+            (currentState.isLoadingMore || currentState.reachedEnd)
         ) {
             return
         }
@@ -113,6 +115,7 @@ class TemplatesFeedViewModel @Inject constructor(
                     TabState.Content(
                         it.getTemplatesByState(it.getCurrentState()),
                         true,
+                        false,
                     ),
                 )
             }
@@ -133,7 +136,6 @@ class TemplatesFeedViewModel @Inject constructor(
 
             dataFlow
                 .onEmpty {
-                    delay(1000) // to show loading in UI
                     if (currentState is TabState.Content &&
                         currentState.templates.isEmpty()
                     ) {
@@ -147,6 +149,7 @@ class TemplatesFeedViewModel @Inject constructor(
                             it.updatedCurrentTabState(
                                 TabState.Content(
                                     it.getTemplatesOfSelectedState(),
+                                    false,
                                     false,
                                 ),
                             )
@@ -174,6 +177,7 @@ class TemplatesFeedViewModel @Inject constructor(
                         TabState.Content(
                             it.getTemplatesByState(it.getCurrentState()),
                             false,
+                            it.getReachedEndByState(it.getCurrentState()),
                         ),
                     )
                 }

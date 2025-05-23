@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,7 +23,7 @@ import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 @Composable
 fun ErrorTab(errorType: ErrorType, onLoginClicked: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(40.dp),
+        modifier = Modifier.fillMaxSize().padding(40.dp).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

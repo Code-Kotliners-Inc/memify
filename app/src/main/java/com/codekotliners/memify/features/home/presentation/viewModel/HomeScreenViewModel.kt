@@ -13,7 +13,6 @@ import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabSta
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -41,7 +40,6 @@ class HomeScreenViewModel @Inject constructor(
 
     private fun stopRefreshing() {
         viewModelScope.launch {
-            delay(300)
             _isRefreshing.value = false
         }
     }

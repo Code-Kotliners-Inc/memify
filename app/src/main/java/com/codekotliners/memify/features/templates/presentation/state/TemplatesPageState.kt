@@ -31,6 +31,18 @@ data class TemplatesPageState(
         }
     }
 
+    fun getReachedEndByState(state: TabState): Boolean {
+        return when (state) {
+            is TabState.None -> false
+            is TabState.Loading -> false
+            is TabState.Error -> false
+            is TabState.Content -> {
+                return state.reachedEnd
+            }
+            is TabState.Empty -> false
+        }
+    }
+
     fun getTemplatesByState(state: TabState): List<Template> {
         return when (state) {
             is TabState.None -> emptyList<Template>()
@@ -66,7 +78,11 @@ data class TemplatesPageState(
 
     fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
         val updatedContent = { currentState: TabState ->
-            TabState.Content(getTemplatesByState(currentState) + newTemplate, getIsLoadingMoreByState(currentState))
+            TabState.Content(
+                getTemplatesByState(currentState) + newTemplate,
+                getIsLoadingMoreByState(currentState),
+                false,
+            )
         }
         return when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = updatedContent(bestTemplatesState))
