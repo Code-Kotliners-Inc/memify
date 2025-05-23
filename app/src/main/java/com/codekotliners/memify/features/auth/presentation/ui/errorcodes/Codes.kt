@@ -6,6 +6,12 @@ sealed class EmailErrorCode {
     object InvalidFormat : EmailErrorCode()
 }
 
+sealed class LoginErrorCode {
+    object Empty : LoginErrorCode()
+
+    object InvalidFormat : LoginErrorCode()
+}
+
 sealed class NameErrorCode {
     object Empty : NameErrorCode()
 

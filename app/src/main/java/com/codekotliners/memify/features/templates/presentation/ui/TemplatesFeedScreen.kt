@@ -20,6 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorTab
 import com.codekotliners.memify.features.templates.presentation.ui.components.LoadingTab
@@ -30,13 +33,13 @@ import com.codekotliners.memify.features.templates.presentation.viewmodel.Templa
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TemplatesFeedScreen(
+    navController: NavController,
     onLoginClicked: () -> Unit,
     onTemplateSelected: (String) -> Unit,
     viewModel: TemplatesFeedViewModel = hiltViewModel(),
 ) {
     val pageState by viewModel.pageState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
-
     val toastMessage by viewModel.toastMessage.collectAsState()
 
     val context = LocalContext.current
@@ -45,6 +48,16 @@ fun TemplatesFeedScreen(
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             viewModel.clearToast()
         }
+    }
+
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val loginResult =
+        currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<Boolean>(AUTH_SUCCESS_EVENT)
+
+    LaunchedEffect(loginResult) {
+        viewModel.refresh()
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -98,5 +111,5 @@ fun TemplatesFeedScreen(
 @Preview(showSystemUi = true)
 @Composable
 fun PreviewTemplatesFeed() {
-    TemplatesFeedScreen({}, {})
+    TemplatesFeedScreen(NavController(LocalContext.current), {}, {})
 }

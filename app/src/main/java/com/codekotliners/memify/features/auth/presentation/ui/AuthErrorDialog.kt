@@ -11,7 +11,8 @@ import androidx.compose.ui.res.stringResource
 import com.codekotliners.memify.R
 
 @Composable
-fun RegistrationErrorDialog(
+fun AuthErrorDialog(
+    titleMessage: String,
     errorMessage: String,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
@@ -21,7 +22,7 @@ fun RegistrationErrorDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = stringResource(R.string.registration_failed),
+                text = titleMessage,
                 style = MaterialTheme.typography.headlineSmall,
             )
         },
