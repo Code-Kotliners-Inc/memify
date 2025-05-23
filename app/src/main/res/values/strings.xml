@@ -124,4 +124,8 @@
 
     <string name="registration_error_email_already_used">Этот адресс электронной почты уже кем-то используется.</string>
     <string name="link_vk_account_message">Привяжите Ваш аккаунт ВК в настройках, чтобы воспользоваться этой функцией</string>
+
+    <string name="shortcut_short_label">Создать</string>
+    <string name="shortcut_long_label">Создать новый мем</string>
+    <string name="shortcut_disabled_message">Функция создания мема отсюда недоступна</string>
 </resources>
