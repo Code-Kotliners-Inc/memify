@@ -95,6 +95,7 @@ class TemplatesFeedViewModel @Inject constructor(
         loadDataForTab(tab)
     }
 
+    @Suppress("detekt.LongMethod")
     fun loadDataForTab(tab: Tab) {
         if (_pageState.value.getCurrentState() is TabState.Loading) {
             return
@@ -150,7 +151,7 @@ class TemplatesFeedViewModel @Inject constructor(
                                 TabState.Content(
                                     it.getTemplatesOfSelectedState(),
                                     false,
-                                    false,
+                                    true,
                                 ),
                             )
                         }
