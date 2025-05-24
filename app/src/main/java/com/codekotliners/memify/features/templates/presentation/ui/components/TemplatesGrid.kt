@@ -14,14 +14,22 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.features.templates.presentation.state.TabState
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun TemplatesGrid(
@@ -31,22 +39,32 @@ fun TemplatesGrid(
     onLikeToggle: (id: String) -> Unit,
 ) {
     val listState = rememberLazyStaggeredGridState()
-    val preloadWhenLeft = 2
-
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            val info = listState.layoutInfo
-            val totalItems = info.totalItemsCount
-            val lastVisible = info.visibleItemsInfo.lastOrNull()?.index ?: 0
-            lastVisible >= totalItems - preloadWhenLeft
-        }.distinctUntilChanged()
-            .filter { it }
-            .collect {
-                if (!currentState.isLoadingMore) {
-                    onLoadMore()
+    val preloadWhenLeft = 20
+    val coroutineScope = rememberCoroutineScope()
+    var bumpLoading by remember { mutableStateOf(false) }
+    val isAtBottom by remember {
+        derivedStateOf {
+            val layout = listState.layoutInfo
+            val lastVisible = layout.visibleItemsInfo.lastOrNull()?.index ?: 0
+            lastVisible >= layout.totalItemsCount - preloadWhenLeft
+        }
+    }
+    val nestedScroll =
+        remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    if (available.y < 0 && isAtBottom && !bumpLoading) {
+                        bumpLoading = true
+                        coroutineScope.launch {
+                            delay(400)
+                            bumpLoading = false
+                            onLoadMore()
+                        }
+                    }
+                    return Offset.Zero
                 }
             }
-    }
+        }
 
     LazyVerticalStaggeredGrid(
         state = listState,
@@ -56,7 +74,8 @@ fun TemplatesGrid(
         modifier =
             Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .nestedScroll(nestedScroll),
         contentPadding = PaddingValues(0.dp),
         content = {
             items(currentState.templates) { template ->
@@ -67,7 +86,7 @@ fun TemplatesGrid(
                 )
             }
             item(span = StaggeredGridItemSpan.FullLine) {
-                if (currentState.isLoadingMore) {
+                if (currentState.isLoadingMore || bumpLoading) {
                     Box(
                         modifier =
                             Modifier

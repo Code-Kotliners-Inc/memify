@@ -1,5 +1,6 @@
 package com.codekotliners.memify.features.settings.presentation.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
@@ -65,6 +67,7 @@ import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
 fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
+    val route = NavRoutes.Profile.route
     AppScaffold(
         topBar = {
             ToolBar(navController)
@@ -82,12 +85,15 @@ fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreen
                 verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
                 ThemeChange(viewModel)
-                ChangeName()
+                ChangeName(viewModel)
                 ChangePhoto()
-                PasswordChange()
+                PasswordChange(viewModel)
                 AddVk { token -> viewModel.onLogIn(token) }
                 Button(
-                    onClick = {},
+                    onClick = {
+                        viewModel.singOut()
+                        navController.navigate(route)
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth(),
@@ -132,7 +138,8 @@ private fun ToolBar(navController: NavController) {
 }
 
 @Composable
-private fun ChangeName() {
+private fun ChangeName(viewModel: SettingsScreenViewModel) {
+    var userName by remember { mutableStateOf("") }
     Column(
         modifier =
             Modifier
@@ -145,10 +152,10 @@ private fun ChangeName() {
             text = stringResource(id = R.string.user_name),
             style = MaterialTheme.typography.hintText,
         )
-        NameField(stringResource(id = R.string.name_blank))
+        NameField(stringResource(id = R.string.name_blank), userName, { currName -> userName = currName })
 
         Button(
-            onClick = { },
+            onClick = { viewModel.updateUserName(userName) },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
         ) {
@@ -235,7 +242,11 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
 }
 
 @Composable
-private fun PasswordChange() {
+private fun PasswordChange(viewModel: SettingsScreenViewModel) {
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
+    var repeatPassword by remember { mutableStateOf("") }
+    val context = LocalContext.current
     Column(
         modifier =
             Modifier
@@ -249,14 +260,30 @@ private fun PasswordChange() {
             style = MaterialTheme.typography.hintText,
         )
 
-        PasswordField(stringResource(id = R.string.require_current_password), "", {})
+        PasswordField(stringResource(id = R.string.require_current_password), currentPassword) { newCurr ->
+            currentPassword = newCurr
+        }
 
-        PasswordField(stringResource(id = R.string.require_new_password), "", {})
+        PasswordField(stringResource(id = R.string.require_new_password), newPassword) { newNew ->
+            newPassword = newNew
+        }
 
-        PasswordField(stringResource(id = R.string.repeat_new_password), "", {})
+        PasswordField(stringResource(id = R.string.repeat_new_password), repeatPassword) { NewRep ->
+            repeatPassword = NewRep
+        }
 
         Button(
-            onClick = { },
+            onClick = {
+                if (newPassword != repeatPassword) {
+                    Toast
+                        .makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    viewModel.onSaveBut(currentPassword, newPassword, repeatPassword) { resultMessage ->
+                        Toast.makeText(context, resultMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
         ) {
@@ -287,10 +314,10 @@ private fun PasswordField(label: String, value: String, onValueChange: (String) 
 }
 
 @Composable
-private fun NameField(label: String) {
+private fun NameField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
-        value = "",
-        onValueChange = { },
+        value = value,
+        onValueChange = onValueChange,
         label = {
             Text(
                 label,

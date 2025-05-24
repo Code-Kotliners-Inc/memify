@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -65,7 +64,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -74,7 +72,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.R
-import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.BitmapViewer
@@ -85,6 +82,7 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
+import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +92,7 @@ fun CreateScreen(
     imageUrl: String,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel = hiltViewModel(),
+    viewModelViewer: ImageViewerViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
@@ -118,7 +117,7 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(scaffoldState, bottomSheetState, onLogin, viewModel)
+            CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
         }
     }
 }
@@ -126,10 +125,12 @@ fun CreateScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreateScreenBottomSheet(
+    navController: NavController,
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel,
+    viewModelViewer: ImageViewerViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
@@ -157,6 +158,7 @@ private fun CreateScreenBottomSheet(
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
         sheetContent = {
             TemplatesFeedScreen(
+                navController = navController,
                 onLoginClicked = { onLogin() },
                 onTemplateSelected = { url ->
                     viewModel.imageUrl = url
@@ -177,7 +179,12 @@ private fun CreateScreenBottomSheet(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 4.dp,
                 ) {
-                    BitmapViewer(bitmap = bitmapState.value!!)
+                    BitmapViewer(
+                        bitmap = bitmapState.value!!,
+                        navController = navController,
+                        viewModel = viewModelViewer,
+                    )
+                    // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
         }
@@ -375,7 +382,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
         }
     }
 }
-
+/*
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -385,3 +392,4 @@ fun CreateScreenPreview() {
         CreateScreen(navController, "", {})
     }
 }
+*/
