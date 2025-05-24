@@ -3,6 +3,7 @@ package com.codekotliners.memify.core.repositories.user
 import com.codekotliners.memify.core.models.UserData
 import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
@@ -113,10 +114,18 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updatePassword(password: String): Response<Boolean> {
+    override suspend fun updatePassword(currentPassword: String, newPassword: String): Response<Boolean> {
         return try {
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
-            user.updatePassword(password).await()
+            val email = user.email ?: return Response.Failure(IllegalStateException("User email missing"))
+            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+            user.reauthenticate(credential).await()
+            user.updatePassword(newPassword).await()
+            db
+                .collection("users")
+                .document(user.uid)
+                .update("password", newPassword)
+                .await()
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
