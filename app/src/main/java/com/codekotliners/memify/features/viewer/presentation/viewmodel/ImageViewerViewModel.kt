@@ -170,4 +170,8 @@ class ImageViewerViewModel @Inject constructor(
             return uri
         }
     }
+
+    fun setBitmapOnly(bitmap: Bitmap) {
+        _imageState.value = ImageState.Content(GenericImage("", ""), bitmap)
+    }
 }
