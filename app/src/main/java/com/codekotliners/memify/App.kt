@@ -48,7 +48,7 @@ fun App(
     destinationScreen: String?,
     authViewModel: AuthenticationViewModel = hiltViewModel(),
     settingsViewModel: SettingsScreenViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
 

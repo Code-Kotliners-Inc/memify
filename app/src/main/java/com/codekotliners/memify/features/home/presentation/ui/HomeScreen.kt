@@ -47,7 +47,7 @@ import com.codekotliners.memify.features.viewer.domain.model.ImageType
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    profileViewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val loginResult =
@@ -69,10 +69,10 @@ fun HomeScreen(
     AppScaffold(navController) { innerPadding ->
         Column(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.background),
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .background(MaterialTheme.colorScheme.background),
         ) {
             TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
                 screenState.getTabs().forEach { tab ->
