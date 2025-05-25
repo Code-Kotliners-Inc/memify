@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -26,7 +26,6 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -38,24 +37,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
-import com.codekotliners.memify.core.theme.askPassword
+import com.codekotliners.memify.core.theme.ThemeMode
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.core.theme.hintText
 import com.codekotliners.memify.core.theme.suggestNewAccount
 import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.features.settings.presentation.ui.compoments.NameField
+import com.codekotliners.memify.features.settings.presentation.ui.compoments.PasswordField
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import com.vk.id.AccessToken
 import com.vk.id.auth.VKIDAuthUiParams
@@ -64,7 +63,6 @@ import com.vk.id.onetap.compose.onetap.OneTapTitleScenario
 
 @Composable
 fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
-    val route = NavRoutes.Profile.route
     AppScaffold(
         topBar = {
             ToolBar(navController)
@@ -85,23 +83,18 @@ fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreen
                 ChangeName(viewModel)
                 ChangePhoto()
                 PasswordChange(viewModel)
-                AddVk { token -> viewModel.onLogIn(token) }
-                Button(
-                    onClick = {
-                        viewModel.singOut()
-                        navController.navigate(route)
-                    },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.logout),
-                        style = MaterialTheme.typography.authButton,
-                        modifier = Modifier.padding(10.dp),
-                    )
+                AddVk { token ->
+                    viewModel.onLogIn(token)
+                }
+                AccountControl {
+                    viewModel.singOut()
+                    navController.navigate(NavRoutes.SettingsUnlogged.route) {
+                        popUpTo(NavRoutes.SettingsLogged.route) {
+                            inclusive = true
+                            saveState = false
+                        }
+                        launchSingleTop = true
+                    }
                 }
             }
         },
@@ -119,8 +112,7 @@ private fun ToolBar(navController: NavController) {
                 .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center,
     ) {
-        val route = NavRoutes.Profile.route
-        IconButton(onClick = { navController.navigate(route) }, modifier = Modifier.align(Alignment.CenterStart)) {
+        IconButton(onClick = { navController.popBackStack() }, modifier = Modifier.align(Alignment.CenterStart)) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = stringResource(id = R.string.go_backBtn),
@@ -167,28 +159,27 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
     val themeMode by viewModel.theme.collectAsState()
 
     var expanded by remember { mutableStateOf(false) }
-    val themeOptions =
-        mapOf(
-            "light" to stringResource(id = R.string.light),
-            "dark" to stringResource(id = R.string.dark),
-            "system" to stringResource(id = R.string.system),
-        )
-    val selectedOptionText = themeOptions[themeMode] ?: stringResource(R.string.theme)
+    val selectedOptionText = themeMode.resId
 
     Row(
         modifier =
             Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 10.dp, vertical = 10.dp),
+                .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        Text(
+            text = stringResource(R.string.theme_title),
+            style = MaterialTheme.typography.suggestNewAccount,
+        )
+        Spacer(Modifier.width(100.dp))
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
         ) {
             TextField(
-                value = selectedOptionText.replaceFirstChar { it.uppercaseChar() },
+                value = stringResource(selectedOptionText),
                 onValueChange = {},
                 readOnly = true,
                 textStyle = MaterialTheme.typography.suggestNewAccount,
@@ -200,6 +191,9 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         disabledContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
                     ),
                 shape = RoundedCornerShape(20.dp),
                 modifier =
@@ -211,23 +205,23 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
+                shape = RoundedCornerShape(20.dp),
                 modifier =
                     Modifier
                         .background(
                             color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(20.dp),
                         ),
             ) {
-                themeOptions.forEach { (key, value) ->
+                ThemeMode.entries.forEach { mode ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = value.replaceFirstChar { it.uppercaseChar() },
+                                text = stringResource(mode.resId),
                                 style = MaterialTheme.typography.suggestNewAccount,
                             )
                         },
                         onClick = {
-                            viewModel.setTheme(key)
+                            viewModel.setTheme(mode)
                             expanded = false
                         },
                     )
@@ -264,8 +258,8 @@ private fun PasswordChange(viewModel: SettingsScreenViewModel) {
             newPassword = newNew
         }
 
-        PasswordField(stringResource(id = R.string.repeat_new_password), repeatPassword) { NewRep ->
-            repeatPassword = NewRep
+        PasswordField(stringResource(id = R.string.repeat_new_password), repeatPassword) { newRep ->
+            repeatPassword = newRep
         }
 
         Button(
@@ -289,43 +283,37 @@ private fun PasswordChange(viewModel: SettingsScreenViewModel) {
 }
 
 @Composable
-private fun PasswordField(label: String, value: String, onValueChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        visualTransformation = remember { PasswordVisualTransformation() },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        label = {
-            Text(
-                label,
-                style = MaterialTheme.typography.bodySmall,
-            )
-        },
+private fun AccountControl(onLogOut: () -> Unit) {
+    Column(
         modifier =
             Modifier
-                .padding(2.dp)
-                .fillMaxWidth(),
-        textStyle = MaterialTheme.typography.askPassword,
-    )
-}
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.account_control),
+            style = MaterialTheme.typography.hintText,
+        )
 
-@Composable
-private fun NameField(label: String, value: String, onValueChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
+        Button(
+            onClick = {
+                onLogOut()
+            },
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error),
+        ) {
             Text(
-                label,
-                style = MaterialTheme.typography.bodySmall,
+                text = stringResource(id = R.string.logout),
+                style = MaterialTheme.typography.authButton,
+                modifier = Modifier.padding(4.dp),
             )
-        },
-        modifier =
-            Modifier
-                .padding(10.dp)
-                .fillMaxWidth(),
-        textStyle = MaterialTheme.typography.askPassword,
-    )
+        }
+    }
 }
 
 @Composable
@@ -336,10 +324,10 @@ private fun AddVk(onLogin: (accessToken: AccessToken) -> Unit) {
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
                 .padding(horizontal = 20.dp, vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text(
-            text = stringResource(id = R.string.link_vk),
+            text = stringResource(R.string.link_vk),
             style = MaterialTheme.typography.hintText,
         )
 

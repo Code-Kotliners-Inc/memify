@@ -85,9 +85,13 @@ fun ProfileScreen(
             ?.savedStateHandle
             ?.get<Boolean>(AUTH_SUCCESS_EVENT)
 
+    LaunchedEffect(Unit) {
+        viewModel.checkLogin()
+    }
+
     LaunchedEffect(loginResult) {
         if (loginResult == true) {
-            viewModel.login()
+            viewModel.checkLogin()
             currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
         }
     }
