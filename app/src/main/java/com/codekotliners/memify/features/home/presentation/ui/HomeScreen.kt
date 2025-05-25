@@ -57,7 +57,7 @@ fun HomeScreen(
 
     LaunchedEffect(loginResult) {
         if (loginResult == true) {
-            profileViewModel.login()
+            profileViewModel.checkLogin()
             viewModel.refresh()
             currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
         }
