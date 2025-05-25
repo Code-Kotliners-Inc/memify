@@ -62,7 +62,7 @@ fun RegistrationScreen(
                 ?.savedStateHandle
                 ?.set(AUTH_BRANCH_SUCCESS_EVENT, true)
 
-            navController.popBackStack(NavRoutes.Auth.route, inclusive = false)
+            navController.popBackStack(route = NavRoutes.Auth.route, inclusive = false)
         }
     }
 

@@ -9,8 +9,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.core.content.edit
+import com.codekotliners.memify.core.theme.ThemeMode
 import com.codekotliners.memify.features.settings.presentation.usecase.SignOutUseCase
 import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserPasswordUseCase
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,11 +24,11 @@ class SettingsScreenViewModel @Inject constructor(
     private val singOutUseCase: SignOutUseCase,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
-    private val _theme = MutableStateFlow<String?>(null)
-    val theme: StateFlow<String?> = _theme.asStateFlow()
+    private val _theme = MutableStateFlow<ThemeMode>(ThemeMode.FOLLOW_SYSTEM)
+    val theme: StateFlow<ThemeMode> = _theme.asStateFlow()
 
     init {
-        _theme.value = sharedPreferences.getString("theme", null)
+        _theme.value = ThemeMode.fromString(sharedPreferences.getString("theme", null))
     }
 
     fun onLogIn(accessToken: AccessToken) {
@@ -35,8 +37,8 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
-    fun setTheme(theme: String) {
-        sharedPreferences.edit { putString("theme", theme) }
+    fun setTheme(theme: ThemeMode) {
+        sharedPreferences.edit { putString("theme", theme.name) }
         _theme.value = theme
     }
 
@@ -45,6 +47,8 @@ class SettingsScreenViewModel @Inject constructor(
             updateUserNameUseCase.updateUserName(newUserName)
         }
     }
+
+    fun isAuthenticated(): Boolean = FirebaseAuth.getInstance().currentUser != null
 
     fun singOut() {
         viewModelScope.launch {

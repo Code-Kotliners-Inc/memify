@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.codekotliners.memify.core.theme.ThemeMode
 
 @Composable
 fun SetStatusBarBackground(window: Window, isDark: Boolean) {
@@ -88,11 +89,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val themeMode by settingsViewModel.theme.collectAsState()
-
             val themeKind =
                 when (themeMode) {
-                    "dark" -> true
-                    "light" -> false
+                    ThemeMode.DARK_MODE -> true
+                    ThemeMode.LIGHT_MODE -> false
                     else -> isSystemInDarkTheme()
                 }
 

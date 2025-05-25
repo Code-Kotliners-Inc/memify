@@ -91,7 +91,6 @@ class AuthenticationViewModel @Inject constructor(
     }
 
     fun resetSignInState() {
-        _authState.value = AuthState.Loading
         _authState.value = AuthState.Unauthenticated
     }
 }
