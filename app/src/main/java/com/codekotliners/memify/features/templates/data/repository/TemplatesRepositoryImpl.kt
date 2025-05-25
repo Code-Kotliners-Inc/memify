@@ -5,15 +5,16 @@ import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDa
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesFilter
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
-import com.codekotliners.memify.features.templates.exceptions.VKUnauthorizedActionException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.vk.api.sdk.VK
 import com.vk.id.vksdksupport.withVKIDToken
 import com.vk.sdk.api.photos.PhotosService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TemplatesRepositoryImpl @Inject constructor(
@@ -61,35 +62,33 @@ class TemplatesRepositoryImpl @Inject constructor(
         return data
     }
 
-    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> {
-        if (!VK.isLoggedIn()) {
-            return flow { throw VKUnauthorizedActionException("User not logged in") }
-        }
-        val result = mutableListOf<Template>()
-        val response =
-            VK.executeSync(
-                PhotosService()
-                    .photosGet(ownerId = VK.getUserId(), albumId = "saved")
-                    .withVKIDToken(),
-            )
+    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> =
+        withContext(Dispatchers.IO) {
+            val result = mutableListOf<Template>()
+            val response =
+                VK.executeSync(
+                    PhotosService()
+                        .photosGet(ownerId = VK.getUserId(), albumId = "saved")
+                        .withVKIDToken(),
+                )
 
-        response.items.forEach { item ->
-            val image = item.sizes?.findLast { image -> image.url != null }
-            if (image != null) {
-                val template =
-                    Template(
-                        id = "",
-                        name = "photoFromVkSaved",
-                        url = image.url ?: throw IllegalStateException("Url can not be null"),
-                        width = image.width,
-                        height = image.height,
-                        isFavourite = false,
-                    )
-                result.add(template)
+            response.items.forEach { item ->
+                val image = item.sizes?.findLast { image -> image.url != null }
+                if (image != null) {
+                    val template =
+                        Template(
+                            id = "",
+                            name = "photoFromVkSaved",
+                            url = image.url ?: throw IllegalStateException("Url can not be null"),
+                            width = image.width,
+                            height = image.height,
+                            isFavourite = false,
+                        )
+                    result.add(template)
+                }
             }
+            result.asFlow()
         }
-        return result.asFlow()
-    }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {
         if (!refresh && favouritesTemplatesConfig.scrollState == ScrollState.REACHED_END) {
