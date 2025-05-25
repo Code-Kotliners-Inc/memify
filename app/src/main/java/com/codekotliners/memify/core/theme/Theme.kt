@@ -46,19 +46,20 @@ val LocalExtraColors =
         )
     }
 
-enum class ThemeMode(val resId: Int) {
+enum class ThemeMode(
+    val resId: Int,
+) {
     FOLLOW_SYSTEM(resId = R.string.system),
     DARK_MODE(resId = R.string.dark),
     LIGHT_MODE(resId = R.string.light),
     ;
 
     companion object {
-        fun fromString(value: String?): ThemeMode {
-            return value?.let {
+        fun fromString(value: String?): ThemeMode =
+            value?.let {
                 entries.find { it.name.equals(value, ignoreCase = true) }
                     ?: FOLLOW_SYSTEM
             } ?: FOLLOW_SYSTEM
-        }
     }
 };
 

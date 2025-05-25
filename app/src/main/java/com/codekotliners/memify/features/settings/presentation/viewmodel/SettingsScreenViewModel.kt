@@ -12,6 +12,7 @@ import androidx.core.content.edit
 import com.codekotliners.memify.core.theme.ThemeMode
 import com.codekotliners.memify.features.settings.presentation.usecase.SignOutUseCase
 import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserPasswordUseCase
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +47,8 @@ class SettingsScreenViewModel @Inject constructor(
             updateUserNameUseCase.updateUserName(newUserName)
         }
     }
+
+    fun isAuthenticated(): Boolean = FirebaseAuth.getInstance().currentUser != null
 
     fun singOut() {
         viewModelScope.launch {

@@ -8,6 +8,7 @@
     <string name="user_photo">Фото профиля</string>
     <string name="safety">Безопасность</string>
     <string name="link_vk">Аккаунт ВК</string>
+    <string name="account_control">Управление аккаунтом</string>
     <string name="link_account">Не привязан</string>
     <string name="change_photo">Изменить</string>
     <string name="require_current_password">Старый пароль</string>

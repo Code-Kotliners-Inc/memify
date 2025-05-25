@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,11 +43,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.ThemeMode
+import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 
 @Composable
 fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScreenViewModel) {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val loginResult =
+        currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<Boolean>(AUTH_SUCCESS_EVENT)
+
+    LaunchedEffect(loginResult) {
+        if (loginResult == true && navController.currentDestination?.route == NavRoutes.SettingsUnlogged.route) {
+            currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
+            if (viewModel.isAuthenticated()) {
+                navController.navigate(NavRoutes.SettingsLogged.route) {
+                    popUpTo(NavRoutes.SettingsUnlogged.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        }
+    }
+
     AppScaffold(
         topBar = {
             ToolBar(navController)
@@ -64,7 +85,12 @@ fun SettingsUnLoggedScreen(navController: NavController, viewModel: SettingsScre
             ) {
                 ThemeChange(viewModel)
                 Button(
-                    onClick = {},
+                    onClick = {
+                        navController.navigate(NavRoutes.Auth.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     modifier =
                         Modifier
                             .fillMaxWidth(),
@@ -101,7 +127,7 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
     ) {
         Text(
             text = stringResource(R.string.theme_title),
-            style = MaterialTheme.typography.suggestNewAccount
+            style = MaterialTheme.typography.suggestNewAccount,
         )
         Spacer(Modifier.width(100.dp))
         ExposedDropdownMenuBox(
@@ -116,14 +142,15 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                    disabledContainerColor = MaterialTheme.colorScheme.surface,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
+                colors =
+                    TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        disabledContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
                 shape = RoundedCornerShape(20.dp),
                 modifier =
                     Modifier
@@ -134,11 +161,11 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
+                shape = RoundedCornerShape(20.dp),
                 modifier =
                     Modifier
                         .background(
                             color = MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(20.dp),
                         ),
             ) {
                 ThemeMode.entries.forEach { mode ->
@@ -171,7 +198,7 @@ private fun ToolBar(navController: NavController) {
     ) {
         IconButton(
             onClick = {
-                navController.navigate(NavRoutes.Profile.route)
+                navController.popBackStack(route = NavRoutes.Profile.route, inclusive = false)
             },
             modifier = Modifier.align(Alignment.CenterStart),
         ) {

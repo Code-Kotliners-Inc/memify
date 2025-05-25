@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.logger.Logger
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthState
 import com.codekotliners.memify.features.auth.presentation.viewmodel.AuthenticationViewModel
@@ -54,11 +55,11 @@ fun AuthScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                navController.previousBackStackEntry
+                navController.popBackStack(route = NavRoutes.Auth.route, inclusive = true)
+                navController.currentBackStackEntry
                     ?.savedStateHandle
                     ?.set(AUTH_SUCCESS_EVENT, true)
-
-                navController.popBackStack()
+                viewModel.resetSignInState()
             }
             is AuthState.Error -> showError(context, (authState as AuthState.Error).exception)
             is AuthState.Loading -> {}
