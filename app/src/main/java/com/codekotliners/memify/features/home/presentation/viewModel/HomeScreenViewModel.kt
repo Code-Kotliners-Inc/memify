@@ -54,6 +54,8 @@ class HomeScreenViewModel @Inject constructor(
         loadDataForTab(tab)
     }
 
+    fun getCurrentUser() = FirebaseAuth.getInstance().currentUser
+
     fun likeClick(card: Post) {
         viewModelScope.launch {
             likesRepository.likeTap(card.toPostDto())
@@ -94,7 +96,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun updateLocalPost(postId: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userId = getCurrentUser()?.uid ?: return
 
         _screenState.update { currentState ->
             val newState = currentState.copy()
