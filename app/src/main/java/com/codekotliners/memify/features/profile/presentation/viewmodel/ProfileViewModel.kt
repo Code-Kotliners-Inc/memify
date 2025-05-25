@@ -7,20 +7,22 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.repositories.user.UserRepository
+import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import com.google.firebase.auth.FirebaseAuth
 import com.vk.id.VKID
 import com.vk.id.VKIDUser
 import com.vk.id.refreshuser.VKIDGetUserCallback
 import com.vk.id.refreshuser.VKIDGetUserFail
-import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ProfileState(
     val selectedTab: Int = 0,
     val isLoggedIn: Boolean = false,
-    var userName: String = "MemeMaker2011",
+    val userName: String = "MemeMaker2011",
     val userImageUri: Uri? = null,
 )
 
@@ -30,19 +32,21 @@ class ProfileViewModel @Inject constructor(
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
 ) : ViewModel() {
     private val _state = mutableStateOf(ProfileState())
-
     val state: State<ProfileState> = _state
 
     init {
         if (FirebaseAuth.getInstance().currentUser != null) {
             _state.value = _state.value.copy(isLoggedIn = true)
         }
-        viewModelScope.launch {
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val userNameDeffered = CompletableDeferred<String>()
+            val imageUri = updateProfileImageUseCase.getProfileImageUrl()?.toUri()
             VKID.instance.getUserData(
                 callback =
                     object : VKIDGetUserCallback {
                         override fun onSuccess(user: VKIDUser) {
-                            state.value.userName = user.firstName
+                            userNameDeffered.complete(user.firstName)
                         }
 
                         override fun onFail(fail: VKIDGetUserFail) {
@@ -54,11 +58,12 @@ class ProfileViewModel @Inject constructor(
                         }
                     },
             )
-        }
-        viewModelScope.launch {
+            // deffed, потому что copy конкурировали и часть данных могла пропадать
+            val userName = userNameDeffered.await()
             _state.value =
                 _state.value.copy(
-                    userImageUri = updateProfileImageUseCase.getProfileImageUrl()?.toUri(),
+                    userImageUri = imageUri,
+                    userName = userName,
                 )
         }
     }
