@@ -1,10 +1,5 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -14,19 +9,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.ViewModel
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Stable
@@ -147,28 +137,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    suspend fun createBitMap(context: Context): Bitmap =
-        withContext(Dispatchers.IO) {
-            val bitmap = Bitmap.createBitmap(1000, 1000, Bitmap.Config.ARGB_8888)
-            imageUrl?.let { url ->
-                val request =
-                    ImageRequest
-                        .Builder(context)
-                        .data(url)
-                        .allowHardware(false)
-                        .build()
-                val result = context.imageLoader.execute(request)
-                if (result is SuccessResult) {
-                    val drawable = result.drawable
-                    val bgBitmap =
-                        (drawable as? BitmapDrawable)?.bitmap?.copy(Bitmap.Config.ARGB_8888, true)
-                            ?: drawable.toBitmap()
-                    val canvas = Canvas(bgBitmap)
-                    canvas.drawBitmap(bgBitmap, null, Rect(0, 0, bgBitmap.width, bgBitmap.height), null)
-                    drawingCanvas.drawCanvasElements(canvas)
-                    return@withContext bgBitmap
-                }
-            }
-            bitmap
-        }
+    suspend fun saveBitmap(bitmapImage: ImageBitmap) {
+    }
 }
