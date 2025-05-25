@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.ViewModel
@@ -135,8 +134,5 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         if (index >= 0) {
             canvasElements[index] = element.copy(position = newPosition)
         }
-    }
-
-    suspend fun saveBitmap(bitmapImage: ImageBitmap) {
     }
 }

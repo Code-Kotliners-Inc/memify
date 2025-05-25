@@ -62,8 +62,8 @@ class TemplatesRepositoryImpl @Inject constructor(
         return data
     }
 
-    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> {
-        return withContext(Dispatchers.IO) {
+    override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> =
+        withContext(Dispatchers.IO) {
             val result = mutableListOf<Template>()
             val response =
                 VK.executeSync(
@@ -89,7 +89,6 @@ class TemplatesRepositoryImpl @Inject constructor(
             }
             result.asFlow()
         }
-    }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {
         if (!refresh && favouritesTemplatesConfig.scrollState == ScrollState.REACHED_END) {
