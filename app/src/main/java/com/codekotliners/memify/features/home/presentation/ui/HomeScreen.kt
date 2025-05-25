@@ -18,6 +18,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,10 +26,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
 import com.codekotliners.memify.features.home.presentation.ui.components.EmptyFeed
 import com.codekotliners.memify.features.home.presentation.ui.components.ErrorScreen
@@ -36,6 +39,7 @@ import com.codekotliners.memify.features.home.presentation.ui.components.PostCar
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardHeader
 import com.codekotliners.memify.features.home.presentation.ui.components.PostCardImage
 import com.codekotliners.memify.features.home.presentation.viewModel.HomeScreenViewModel
+import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,17 +47,32 @@ import com.codekotliners.memify.features.viewer.domain.model.ImageType
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel = hiltViewModel(),
+    profileViewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val loginResult =
+        currentBackStackEntry
+            ?.savedStateHandle
+            ?.get<Boolean>(AUTH_SUCCESS_EVENT)
+
+    LaunchedEffect(loginResult) {
+        if (loginResult == true) {
+            profileViewModel.login()
+            viewModel.refresh()
+            currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
+        }
+    }
+
     val screenState by viewModel.screenState.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     AppScaffold(navController) { innerPadding ->
         Column(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(MaterialTheme.colorScheme.background),
+            Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(MaterialTheme.colorScheme.background),
         ) {
             TabRow(selectedTabIndex = screenState.selectedTab.ordinal) {
                 screenState.getTabs().forEach { tab ->
@@ -86,7 +105,11 @@ fun HomeScreen(
 
                     is PostsFeedTabState.Content ->
                         PostsFeed(currentState.posts, navController) { post ->
-                            viewModel.likeClick(post)
+                            if (viewModel.getCurrentUser() == null) {
+                                navController.navigate(NavRoutes.Auth.route)
+                            } else {
+                                viewModel.likeClick(post)
+                            }
                         }
                 }
             }
