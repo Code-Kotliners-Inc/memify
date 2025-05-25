@@ -63,31 +63,35 @@ class TemplatesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getVkTemplates(limit: Long, refresh: Boolean): Flow<Template> =
-        withContext(Dispatchers.IO) {
-            val result = mutableListOf<Template>()
-            val response =
-                VK.executeSync(
-                    PhotosService()
-                        .photosGet(ownerId = VK.getUserId(), albumId = "saved")
-                        .withVKIDToken(),
-                )
+        try {
+            withContext(Dispatchers.IO) {
+                val result = mutableListOf<Template>()
+                val response =
+                    VK.executeSync(
+                        PhotosService()
+                            .photosGet(ownerId = VK.getUserId(), albumId = "saved")
+                            .withVKIDToken(),
+                    )
 
-            response.items.forEach { item ->
-                val image = item.sizes?.findLast { image -> image.url != null }
-                if (image != null) {
-                    val template =
-                        Template(
-                            id = "",
-                            name = "photoFromVkSaved",
-                            url = image.url ?: throw IllegalStateException("Url can not be null"),
-                            width = image.width,
-                            height = image.height,
-                            isFavourite = false,
-                        )
-                    result.add(template)
+                response.items.forEach { item ->
+                    val image = item.sizes?.findLast { image -> image.url != null }
+                    if (image != null) {
+                        val template =
+                            Template(
+                                id = "",
+                                name = "photoFromVkSaved",
+                                url = image.url ?: throw IllegalStateException("Url can not be null"),
+                                width = image.width,
+                                height = image.height,
+                                isFavourite = false,
+                            )
+                        result.add(template)
+                    }
                 }
+                result.asFlow()
             }
-            result.asFlow()
+        } catch (e: Exception) {
+            emptyList<Template>().asFlow()
         }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {
