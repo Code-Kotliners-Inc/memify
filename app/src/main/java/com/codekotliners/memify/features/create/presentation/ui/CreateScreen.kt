@@ -1,7 +1,6 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
-import android.graphics.Bitmap
-import android.util.Log
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,8 +53,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -74,7 +79,6 @@ import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
-import com.codekotliners.memify.features.create.presentation.ui.components.BitmapViewer
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
@@ -82,6 +86,7 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
+import com.codekotliners.memify.features.viewer.presentation.ui.components.ImageViewerTopBar
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 import kotlinx.coroutines.launch
 
@@ -134,9 +139,9 @@ private fun CreateScreenBottomSheet(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
-
+    val graphicsLayer = rememberGraphicsLayer()
     val showImageViewer = remember { mutableStateOf(false) }
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
     val context = LocalContext.current
 
     BottomSheetScaffold(
@@ -145,10 +150,11 @@ private fun CreateScreenBottomSheet(
                 scrollBehavior,
                 onMenuClick = {
                     coroutineScope.launch {
-                        val bitmap = viewModel.createBitMap(context)
-                        bitmapState.value = bitmap
-                        Log.i("bib", "${bitmap.height}, ${bitmap.width}")
+                        // val bitmap = viewModel.createBitMap(context)
+                        // bitmapState.value = bitmap
                         showImageViewer.value = true
+                        val bitmapCompose = graphicsLayer.toImageBitmap()
+                        bitmapState.value = bitmapCompose
                     }
                 },
             )
@@ -171,7 +177,7 @@ private fun CreateScreenBottomSheet(
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
-        CreateScreenContent(innerPadding, viewModel)
+        CreateScreenContent(innerPadding, viewModel, graphicsLayer)
 
         if (showImageViewer.value && bitmapState.value != null) {
             Dialog(onDismissRequest = { showImageViewer.value = false }) {
@@ -179,11 +185,33 @@ private fun CreateScreenBottomSheet(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 4.dp,
                 ) {
-                    BitmapViewer(
-                        bitmap = bitmapState.value!!,
-                        navController = navController,
-                        viewModel = viewModelViewer,
+                    ImageViewerTopBar(
+                        onBack = { navController.popBackStack() },
+                        onShareClick = { viewModelViewer.onShareClick() },
+                        onDownloadClick = { viewModelViewer.onDownloadClick() },
+                        onPublishClick = { viewModelViewer.onPublishClick() },
+                        onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
+                        title = stringResource(R.string.preview_screen_title),
                     )
+                    Image(
+                        bitmap = bitmapState.value!!,
+                        contentDescription = null,
+                    )
+                    LaunchedEffect(Unit) {
+                        viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
+                    }
+                    LaunchedEffect(Unit) {
+                        viewModelViewer.shareImageEvent.collect { imageUri ->
+                            val sendIntent =
+                                Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_STREAM, imageUri)
+                                    type = "image/*"
+                                }
+                            val shareIntent = Intent.createChooser(sendIntent, null)
+                            context.startActivity(shareIntent)
+                        }
+                    }
                     // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
@@ -222,7 +250,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
+private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     LazyColumn(
         modifier =
             Modifier
@@ -234,7 +262,7 @@ private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasVi
     ) {
         item { ActionsRow(viewModel) }
         item {
-            InteractiveCanvas(viewModel)
+            InteractiveCanvas(viewModel, graphicsLayer)
         }
     }
 }
@@ -265,7 +293,7 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 }
 
 @Composable
-private fun InteractiveCanvas(viewModel: CanvasViewModel) {
+private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
 
     LaunchedEffect(R.drawable.meme) {
@@ -289,7 +317,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
             }) { Text("write") }
         }
 
-        ImageBox(viewModel)
+        ImageBox(viewModel, graphicsLayer)
 
         if (viewModel.isWritingEnabled) {
             TextInputDialog(viewModel)
@@ -312,7 +340,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 }
 
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel) {
+private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     var scale by remember { mutableFloatStateOf(1f) }
     var angle by remember { mutableFloatStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -329,7 +357,15 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                 .fillMaxWidth()
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
-                .then(
+                .drawWithContent {
+                    // call record to capture the content in the graphics layer
+                    graphicsLayer.record {
+                        // draw the contents of the composable into the graphics layer
+                        this@drawWithContent.drawContent()
+                    }
+                    // draw the graphics layer on the visible canvas
+                    drawLayer(graphicsLayer)
+                }.then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
