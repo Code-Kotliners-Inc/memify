@@ -63,14 +63,15 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun selectTab(index: Int) {
-        _state.value = _state.value.copy(selectedTab = index)
+    fun checkLogin() {
+        val isLoggedInActually = (FirebaseAuth.getInstance().currentUser != null)
+        if (_state.value.isLoggedIn != isLoggedInActually) {
+            _state.value = _state.value.copy(isLoggedIn = isLoggedInActually)
+        }
     }
 
-    fun login() {
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            _state.value = _state.value.copy(isLoggedIn = true)
-        }
+    fun selectTab(index: Int) {
+        _state.value = _state.value.copy(selectedTab = index)
     }
 
     fun updateAvatar(uri: Uri) {

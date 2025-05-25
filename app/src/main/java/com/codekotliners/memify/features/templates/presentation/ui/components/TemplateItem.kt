@@ -69,16 +69,7 @@ fun TemplateItem(
             )
             when (state) {
                 is AsyncImagePainter.State.Error -> {
-                    CenteredWidget {
-                        Icon(
-                            painter = painterResource(id = R.drawable.round_error_outline_24),
-                            modifier =
-                                Modifier
-                                    .width(30.dp)
-                                    .height(30.dp),
-                            contentDescription = null,
-                        )
-                    }
+                    ErrorLoadingItem()
                 }
 
                 is AsyncImagePainter.State.Loading -> {
@@ -124,5 +115,19 @@ fun TemplateItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ErrorLoadingItem() {
+    CenteredWidget {
+        Icon(
+            painter = painterResource(id = R.drawable.round_error_outline_24),
+            modifier =
+                Modifier
+                    .width(30.dp)
+                    .height(30.dp),
+            contentDescription = null,
+        )
     }
 }

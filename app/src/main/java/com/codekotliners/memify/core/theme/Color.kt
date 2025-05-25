@@ -34,6 +34,8 @@ data class ExtraColors(
         val mail: ButtonColors,
         val google: ButtonColors,
         val vk: ButtonColors,
+        val gradientUp: Color,
+        val gradientDown: Color,
     )
 }
 
@@ -44,21 +46,23 @@ val LightExtraColors =
             ExtraColors.AuthButtons(
                 google =
                     ButtonColors(
-                        containerColor = Color(0xFF000000),
+                        containerColor = Color(0x51606C5F),
                         contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContainerColor = Color(0x81243748),
                         disabledContentColor = Color.Black,
                     ),
                 vk =
                     ButtonColors(
-                        containerColor = Color(0xFF0066FF),
+                        containerColor = Color(0x51606C5F),
                         contentColor = Color.White,
                         disabledContainerColor = Color(0xFF438EFF),
                         disabledContentColor = Color.Black,
                     ),
+                gradientUp = Color(0xFFC8F1C8),
+                gradientDown = Color(0xFFC8F1C8),
                 mail =
                     ButtonColors(
-                        containerColor = Color(0xFFD30808),
+                        containerColor = Color(0x51606C5F),
                         contentColor = Color.White,
                         disabledContainerColor = Color(0xFFE84F4F),
                         disabledContentColor = Color.White,
@@ -73,21 +77,23 @@ val DarkExtraColors =
             ExtraColors.AuthButtons(
                 google =
                     ButtonColors(
-                        containerColor = Color(0xFF000000),
+                        containerColor = Color(0x513F603C),
                         contentColor = Color.White,
-                        disabledContainerColor = Color(0xFF4E4E4E),
+                        disabledContainerColor = Color(0x81243748),
                         disabledContentColor = Color.Black,
                     ),
                 vk =
                     ButtonColors(
-                        containerColor = Color(0xFF0066FF),
+                        containerColor = Color(0x513F603C),
                         contentColor = Color.White,
                         disabledContainerColor = Color(0xFF438EFF),
                         disabledContentColor = Color.Black,
                     ),
+                gradientUp = Color(0xFF265926),
+                gradientDown = Color(0xFF799679),
                 mail =
                     ButtonColors(
-                        containerColor = Color(0xFFD30808),
+                        containerColor = Color(0x513F603C),
                         contentColor = Color.White,
                         disabledContainerColor = Color(0xFFE84F4F),
                         disabledContentColor = Color.White,

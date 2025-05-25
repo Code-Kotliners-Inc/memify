@@ -13,7 +13,6 @@ import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabSta
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -41,7 +40,6 @@ class HomeScreenViewModel @Inject constructor(
 
     private fun stopRefreshing() {
         viewModelScope.launch {
-            delay(300)
             _isRefreshing.value = false
         }
     }
@@ -55,6 +53,8 @@ class HomeScreenViewModel @Inject constructor(
         _screenState.update { it.copy(selectedTab = tab) }
         loadDataForTab(tab)
     }
+
+    fun getCurrentUser() = FirebaseAuth.getInstance().currentUser
 
     fun likeClick(card: Post) {
         viewModelScope.launch {
@@ -96,7 +96,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun updateLocalPost(postId: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val userId = getCurrentUser()?.uid ?: return
 
         _screenState.update { currentState ->
             val newState = currentState.copy()

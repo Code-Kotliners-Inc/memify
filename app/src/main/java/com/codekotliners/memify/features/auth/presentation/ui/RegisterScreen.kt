@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +41,7 @@ import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.authButton
 import com.codekotliners.memify.features.auth.presentation.state.RegistrationEvent
-import com.codekotliners.memify.features.auth.presentation.state.UiState
+import com.codekotliners.memify.features.auth.presentation.state.RegistrationUiState
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.ConfirmPasswordErrors
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.EmailErrors
 import com.codekotliners.memify.features.auth.presentation.ui.errorcodes.NameErrors
@@ -63,13 +62,14 @@ fun RegistrationScreen(
                 ?.savedStateHandle
                 ?.set(AUTH_BRANCH_SUCCESS_EVENT, true)
 
-            navController.popBackStack(NavRoutes.Auth.route, inclusive = false)
+            navController.popBackStack(route = NavRoutes.Auth.route, inclusive = false)
         }
     }
 
     val errorCode = uiState.registrationErrorCode
     if (errorCode != null) {
-        RegistrationErrorDialog(
+        AuthErrorDialog(
+            titleMessage = stringResource(R.string.registration_failed),
             errorMessage = stringResource(errorCode),
             onDismiss = viewModel::dismissErrorDialog,
         )
@@ -122,7 +122,7 @@ fun RegistrationScreen(
 
 @Composable
 fun RegistrationForm(
-    uiState: UiState,
+    uiState: RegistrationUiState,
     onEvent: (RegistrationEvent) -> Unit,
 ) {
     Column(

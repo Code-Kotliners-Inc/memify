@@ -8,6 +8,7 @@
     <string name="user_photo">Фото профиля</string>
     <string name="safety">Безопасность</string>
     <string name="link_vk">Аккаунт ВК</string>
+    <string name="account_control">Управление аккаунтом</string>
     <string name="link_account">Не привязан</string>
     <string name="change_photo">Изменить</string>
     <string name="require_current_password">Старый пароль</string>
@@ -19,7 +20,6 @@
     <string name="take_template_action">Взять шаблон</string>
     <string name="error_while_image_loading">Ошибка загрузки изображения</string>
     <string name="login_google_button">Войти с помощью Google</string>
-    <string name="login_vk_button">Войти с помощью VK</string>
     <string name="login_mail_button">Войти с помощью почты</string>
     <string name="no_account_question">Нет аккаунта?</string>
     <string name="register_button">Зарегистрироваться</string>
@@ -101,7 +101,7 @@
     <string name="require_uppercase_character">хотя бы одну заглавную букву</string>
     <string name="password_requirements_header">Требования к паролю:</string>
     <string name="email_cannot_be_empty">Это поле не может быть пустым</string>
-    <string name="invalid_email_format">Неверный формат email</string>
+    <string name="invalid_email_format">Неверный формат электронной почты</string>
 
     <string name="name_cannot_be_empty">Имя не может быть пустым</string>
     <string name="name_too_short">Имя слишком короткое</string>
@@ -111,8 +111,10 @@
     <integer name="com_vk_sdk_AppId">53583099</integer>
 
     <string name="registration_failed">Ошибка регистрации</string>
-    <string name="registration_error_network">Проблемы с интернет-соединением. Проверьте подключение и попробуйте снова.</string>
+    <string name="login_failed">Ошибка входа</string>
+    <string name="auth_error_network">Проблемы с интернет-соединением. Проверьте подключение и попробуйте снова.</string>
     <string name="registration_error_general">Не удалось завершить регистрацию. Пожалуйста, попробуйте позже.</string>
+    <string name="login_error_general">Не удалось войти в аккаунт. Пожалуйста, проверьте введенные данные.</string>
     <string name="registration_error_unknown">Произошла неизвестная ошибка</string>
     <string name="error_details">Подробности: %s</string>
     <string name="try_again">Попробовать снова</string>
@@ -124,4 +126,9 @@
 
     <string name="registration_error_email_already_used">Этот адресс электронной почты уже кем-то используется.</string>
     <string name="link_vk_account_message">Привяжите Ваш аккаунт ВК в настройках, чтобы воспользоваться этой функцией</string>
+
+    <string name="shortcut_short_label">Создать</string>
+    <string name="shortcut_long_label">Создать новый мем</string>
+    <string name="shortcut_disabled_message">Функция создания мема отсюда недоступна</string>
+    <string name="theme_title">Тема</string>
 </resources>

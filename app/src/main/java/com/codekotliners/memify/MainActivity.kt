@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import com.codekotliners.memify.core.theme.ThemeMode
 
 @Composable
 fun SetStatusBarBackground(window: Window, isDark: Boolean) {
@@ -82,15 +83,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val destination = intent?.extras?.getString("shortcut_destination")
+
         enableEdgeToEdge()
 
         setContent {
             val themeMode by settingsViewModel.theme.collectAsState()
-
             val themeKind =
                 when (themeMode) {
-                    "dark" -> true
-                    "light" -> false
+                    ThemeMode.DARK_MODE -> true
+                    ThemeMode.LIGHT_MODE -> false
                     else -> isSystemInDarkTheme()
                 }
 
@@ -100,7 +102,7 @@ class MainActivity : ComponentActivity() {
                 dynamicColor = false,
                 darkTheme = themeKind,
             ) {
-                App()
+                App(destination)
             }
         }
     }
