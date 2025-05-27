@@ -2,24 +2,27 @@ package com.codekotliners.memify.core.repositories.user
 
 import com.codekotliners.memify.core.models.UserData
 import com.codekotliners.memify.features.auth.domain.entities.Response
+import com.google.firebase.Firebase
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-private const val ZERO_INDEX = 0
 private const val EMPTY_DATA = ""
+private const val USERS_COLLECTION_NAME = "users"
 
 class UserRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val db: FirebaseFirestore,
 ) : UserRepository {
+    private val db: FirebaseFirestore = Firebase.firestore
+
     override suspend fun createUser(userData: UserData): Response<Boolean> {
         return try {
             // подразумевается, что пользователь зарегистрировался только что
             // с помощью FirebaseAuth из репозитория AuthRepository
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
-
             val data =
                 hashMapOf(
                     "uid" to user.uid,
@@ -27,7 +30,7 @@ class UserRepositoryImpl @Inject constructor(
                     "username" to userData.username,
                     "photoUrl" to (userData.photoUrl ?: EMPTY_DATA),
                     "phone" to (userData.phone ?: EMPTY_DATA),
-                    "tsi" to (userData.newTSI ?: ZERO_INDEX),
+                    "tsi" to userData.newTSI,
                 )
 
             db
@@ -49,7 +52,6 @@ class UserRepositoryImpl @Inject constructor(
             if (userData.password.isNotEmpty()) {
                 user.updatePassword(userData.password).await()
             }
-
             val updates = mutableMapOf<String, Any>()
             if (userData.username.isNotEmpty()) updates["username"] = userData.username
             userData.photoUrl?.let { updates["photoUrl"] = it }
@@ -112,11 +114,41 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updatePassword(password: String): Response<Boolean> {
+    override suspend fun updatePassword(currentPassword: String, newPassword: String): Response<Boolean> {
         return try {
             val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
-            user.updatePassword(password).await()
+            val email = user.email ?: return Response.Failure(IllegalStateException("User email missing"))
+            val credential = EmailAuthProvider.getCredential(email, currentPassword)
+            user.reauthenticate(credential).await()
+            user.updatePassword(newPassword).await()
+            db
+                .collection("users")
+                .document(user.uid)
+                .update("password", newPassword)
+                .await()
             Response.Success(true)
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
+    }
+
+    override suspend fun getUserPhotoUrl(): Response<String?> {
+        return try {
+            val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
+            val documentSnapshot =
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(USERS_COLLECTION_NAME)
+                    .document(user.uid)
+                    .get()
+                    .await()
+
+            if (documentSnapshot.exists()) {
+                val photoUrl = documentSnapshot.getString("photoUrl")
+                return Response.Success(photoUrl)
+            } else {
+                Response.Failure(NoSuchElementException("User document not found"))
+            }
         } catch (e: Exception) {
             Response.Failure(e)
         }

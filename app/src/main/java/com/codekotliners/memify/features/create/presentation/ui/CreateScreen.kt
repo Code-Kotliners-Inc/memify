@@ -1,7 +1,6 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
-import android.content.res.Configuration
-import android.graphics.Bitmap
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,8 +53,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -64,7 +69,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -73,10 +77,8 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.R
-import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
-import com.codekotliners.memify.features.create.presentation.ui.components.BitmapViewer
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
@@ -84,6 +86,8 @@ import com.codekotliners.memify.features.create.presentation.ui.components.TextE
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
+import com.codekotliners.memify.features.viewer.presentation.ui.components.ImageViewerTopBar
+import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -93,11 +97,11 @@ fun CreateScreen(
     imageUrl: String,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel = hiltViewModel(),
+    viewModelViewer: ImageViewerViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
     }
-
     val bottomSheetState =
         rememberStandardBottomSheetState(
             initialValue = SheetValue.Expanded,
@@ -117,7 +121,7 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(scaffoldState, bottomSheetState, onLogin, viewModel)
+            CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
         }
     }
 }
@@ -125,16 +129,19 @@ fun CreateScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreateScreenBottomSheet(
+    navController: NavController,
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel,
+    viewModelViewer: ImageViewerViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
-
+    val graphicsLayer = rememberGraphicsLayer()
     val showImageViewer = remember { mutableStateOf(false) }
-    val bitmapState = remember { mutableStateOf<Bitmap?>(null) }
+    val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
+    val context = LocalContext.current
 
     BottomSheetScaffold(
         topBar = {
@@ -142,9 +149,11 @@ private fun CreateScreenBottomSheet(
                 scrollBehavior,
                 onMenuClick = {
                     coroutineScope.launch {
-                        val bitmap = viewModel.createBitMap()
-                        bitmapState.value = bitmap
+                        // val bitmap = viewModel.createBitMap(context)
+                        // bitmapState.value = bitmap
                         showImageViewer.value = true
+                        val bitmapCompose = graphicsLayer.toImageBitmap()
+                        bitmapState.value = bitmapCompose
                     }
                 },
             )
@@ -154,6 +163,7 @@ private fun CreateScreenBottomSheet(
         sheetDragHandle = { BottomSheetHandle(bottomSheetState) },
         sheetContent = {
             TemplatesFeedScreen(
+                navController = navController,
                 onLoginClicked = { onLogin() },
                 onTemplateSelected = { url ->
                     viewModel.imageUrl = url
@@ -166,7 +176,7 @@ private fun CreateScreenBottomSheet(
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
-        CreateScreenContent(innerPadding, viewModel)
+        CreateScreenContent(innerPadding, viewModel, graphicsLayer)
 
         if (showImageViewer.value && bitmapState.value != null) {
             Dialog(onDismissRequest = { showImageViewer.value = false }) {
@@ -174,7 +184,34 @@ private fun CreateScreenBottomSheet(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 4.dp,
                 ) {
-                    BitmapViewer(bitmap = bitmapState.value!!)
+                    ImageViewerTopBar(
+                        onBack = { navController.popBackStack() },
+                        onShareClick = { viewModelViewer.onShareClick() },
+                        onDownloadClick = { viewModelViewer.onDownloadClick(context) },
+                        onPublishClick = { viewModelViewer.onPublishClick() },
+                        onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
+                        title = stringResource(R.string.preview_screen_title),
+                    )
+                    Image(
+                        bitmap = bitmapState.value!!,
+                        contentDescription = null,
+                    )
+                    LaunchedEffect(Unit) {
+                        viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
+                    }
+                    LaunchedEffect(Unit) {
+                        viewModelViewer.shareImageEvent.collect { imageUri ->
+                            val sendIntent =
+                                Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_STREAM, imageUri)
+                                    type = "image/*"
+                                }
+                            val shareIntent = Intent.createChooser(sendIntent, null)
+                            context.startActivity(shareIntent)
+                        }
+                    }
+                    // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
         }
@@ -212,7 +249,7 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel) {
+private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     LazyColumn(
         modifier =
             Modifier
@@ -224,7 +261,7 @@ private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasVi
     ) {
         item { ActionsRow(viewModel) }
         item {
-            InteractiveCanvas(viewModel)
+            InteractiveCanvas(viewModel, graphicsLayer)
         }
     }
 }
@@ -255,7 +292,7 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 }
 
 @Composable
-private fun InteractiveCanvas(viewModel: CanvasViewModel) {
+private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
 
     LaunchedEffect(R.drawable.meme) {
@@ -268,20 +305,11 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row {
-            Button(onClick = {
-                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
-                viewModel.isWritingEnabled = false
-            }) { Text("paint") }
-            Button(onClick = {
-                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
-                viewModel.isPaintingEnabled = false
-            }) { Text("write") }
-        }
+        Tools(viewModel)
 
-        ImageBox(viewModel)
+        ImageBox(viewModel, graphicsLayer)
 
-        if (viewModel.isWritingEnabled) {
+        if (viewModel.showTextInput) {
             TextInputDialog(viewModel)
         }
 
@@ -302,7 +330,83 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel) {
 }
 
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel) {
+private fun Tools(viewModel: CanvasViewModel) {
+    Row(
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface, CircleShape)
+                .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // Состояния
+        val isPaintSelected = viewModel.isPaintingEnabled
+        val isWriteSelected = viewModel.isWritingEnabled
+
+        // Кнопка Paint
+        IconButton(
+            onClick = {
+                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
+                viewModel.isWritingEnabled = false
+            },
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
+                        if (isPaintSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                        CircleShape,
+                    ),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_brush_24),
+                contentDescription = "Paint",
+                tint =
+                    if (isPaintSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
+        }
+
+        // Кнопка Write
+        IconButton(
+            onClick = {
+                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
+                viewModel.isPaintingEnabled = false
+            },
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
+                        if (isWriteSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                        CircleShape,
+                    ),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.round_text_fields_24),
+                contentDescription = "Write",
+                tint =
+                    if (isWriteSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     var scale by remember { mutableFloatStateOf(1f) }
     var angle by remember { mutableFloatStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -319,7 +423,15 @@ private fun ImageBox(viewModel: CanvasViewModel) {
                 .fillMaxWidth()
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
-                .then(
+                .drawWithContent {
+                    // call record to capture the content in the graphics layer
+                    graphicsLayer.record {
+                        // draw the contents of the composable into the graphics layer
+                        this@drawWithContent.drawContent()
+                    }
+                    // draw the graphics layer on the visible canvas
+                    drawLayer(graphicsLayer)
+                }.then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
@@ -372,7 +484,7 @@ private fun ImageBox(viewModel: CanvasViewModel) {
         }
     }
 }
-
+/*
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
@@ -382,3 +494,4 @@ fun CreateScreenPreview() {
         CreateScreen(navController, "", {})
     }
 }
+*/

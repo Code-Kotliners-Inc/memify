@@ -7,6 +7,7 @@ data class TemplatesPageState(
     val bestTemplatesState: TabState = TabState.None,
     val favouriteTemplatesState: TabState = TabState.None,
     val newTemplatesState: TabState = TabState.None,
+    val vkTemplatesState: TabState = TabState.None,
 ) {
     fun getTabs(): List<Tab> = Tab.entries.toList()
 
@@ -15,7 +16,32 @@ data class TemplatesPageState(
             Tab.BEST -> bestTemplatesState
             Tab.NEW -> newTemplatesState
             Tab.FAVOURITE -> favouriteTemplatesState
+            Tab.VK_IMAGES -> vkTemplatesState
         }
+
+    fun getIsLoadingMoreByState(state: TabState): Boolean {
+        return when (state) {
+            is TabState.None -> false
+            is TabState.Loading -> false
+            is TabState.Error -> false
+            is TabState.Content -> {
+                return state.isLoadingMore
+            }
+            is TabState.Empty -> false
+        }
+    }
+
+    fun getReachedEndByState(state: TabState): Boolean {
+        return when (state) {
+            is TabState.None -> false
+            is TabState.Loading -> false
+            is TabState.Error -> false
+            is TabState.Content -> {
+                return state.reachedEnd
+            }
+            is TabState.Empty -> false
+        }
+    }
 
     fun getTemplatesByState(state: TabState): List<Template> {
         return when (state) {
@@ -47,16 +73,22 @@ data class TemplatesPageState(
             Tab.BEST -> copy(bestTemplatesState = newState)
             Tab.NEW -> copy(newTemplatesState = newState)
             Tab.FAVOURITE -> copy(favouriteTemplatesState = newState)
+            Tab.VK_IMAGES -> copy(vkTemplatesState = newState)
         }
 
     fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
         val updatedContent = { currentState: TabState ->
-            TabState.Content(getTemplatesByState(currentState) + newTemplate, false)
+            TabState.Content(
+                getTemplatesByState(currentState) + newTemplate,
+                getIsLoadingMoreByState(currentState),
+                false,
+            )
         }
         return when (selectedTab) {
             Tab.BEST -> copy(bestTemplatesState = updatedContent(bestTemplatesState))
             Tab.NEW -> copy(newTemplatesState = updatedContent(newTemplatesState))
             Tab.FAVOURITE -> copy(favouriteTemplatesState = updatedContent(favouriteTemplatesState))
+            Tab.VK_IMAGES -> copy(vkTemplatesState = updatedContent(vkTemplatesState))
         }
     }
 }

@@ -1,36 +1,46 @@
 package com.codekotliners.memify
 
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.toArgb
-import androidx.activity.viewModels
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.theme.surfaceDark
 import com.codekotliners.memify.core.theme.surfaceLight
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
-import com.vk.id.VKID
-
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
+import androidx.compose.runtime.getValue
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import com.codekotliners.memify.core.theme.ThemeMode
 
 @Composable
-fun SetStatusBarBackgroundAndroid15(window: Window) {
-    val darkTheme = isSystemInDarkTheme()
-    val color = (if (darkTheme) surfaceDark else surfaceLight).toArgb()
+fun SetStatusBarBackground(window: Window, isDark: Boolean) {
+    val color = (if (isDark) surfaceDark else surfaceLight).toArgb()
     when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM -> {
             val decor = window.decorView
-            val origTop = decor.paddingTop
+
+            val insetsController = WindowCompat.getInsetsController(window, decor)
+
+            SideEffect {
+                insetsController.isAppearanceLightStatusBars = !isDark
+            }
             decor.setOnApplyWindowInsetsListener { view, insets ->
                 val inset = insets.getInsets(WindowInsets.Type.statusBars()).top
-                view.setPadding(view.paddingLeft, origTop + inset, view.paddingRight, view.paddingBottom)
+                view.setPadding(view.paddingLeft, inset, view.paddingRight, view.paddingBottom)
                 view.setBackgroundColor(color)
                 view.setOnApplyWindowInsetsListener(null)
                 insets
@@ -38,6 +48,28 @@ fun SetStatusBarBackgroundAndroid15(window: Window) {
             decor.requestApplyInsets()
         }
         else -> {
+            val decorView = window.decorView
+            val contentView = decorView.findViewById<View>(android.R.id.content)
+
+            val originalPadding =
+                Rect(
+                    contentView.paddingLeft,
+                    contentView.paddingTop,
+                    contentView.paddingRight,
+                    contentView.paddingBottom,
+                )
+            ViewCompat.setOnApplyWindowInsetsListener(contentView) { view, insets ->
+                val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+                view.setPadding(
+                    originalPadding.left,
+                    statusBarInset,
+                    originalPadding.right,
+                    originalPadding.bottom,
+                )
+                insets
+            }
+            ViewCompat.requestApplyInsets(decorView)
+
             @Suppress("DEPRECATION")
             window.statusBarColor = color
         }
@@ -46,23 +78,31 @@ fun SetStatusBarBackgroundAndroid15(window: Window) {
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: SettingsScreenViewModel by viewModels()
+    private val settingsViewModel: SettingsScreenViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        VKID.init(this)
-        VKID.instance.setLocale(Locale("ru"))
+
+        val destination = intent?.extras?.getString("shortcut_destination")
 
         enableEdgeToEdge()
 
         setContent {
-            SetStatusBarBackgroundAndroid15(window)
-            val currentTheme = viewModel.theme.value == "dark"
+            val themeMode by settingsViewModel.theme.collectAsState()
+            val themeKind =
+                when (themeMode) {
+                    ThemeMode.DARK_MODE -> true
+                    ThemeMode.LIGHT_MODE -> false
+                    else -> isSystemInDarkTheme()
+                }
+
+            SetStatusBarBackground(window, themeKind)
+
             MemifyTheme(
                 dynamicColor = false,
-                darkTheme = currentTheme,
+                darkTheme = themeKind,
             ) {
-                App()
+                App(destination)
             }
         }
     }

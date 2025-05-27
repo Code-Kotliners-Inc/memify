@@ -1,32 +1,69 @@
 package com.codekotliners.memify.features.settings.presentation.viewmodel
 
 import android.content.SharedPreferences
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserNameUseCase
+import com.vk.id.AccessToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import androidx.core.content.edit
+import com.codekotliners.memify.core.theme.ThemeMode
+import com.codekotliners.memify.features.settings.presentation.usecase.SignOutUseCase
+import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserPasswordUseCase
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
+    private val updateUserNameUseCase: UpdateUserNameUseCase,
+    private val updateUserPasswordUseCase: UpdateUserPasswordUseCase,
+    private val singOutUseCase: SignOutUseCase,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {
-    private val _theme = mutableStateOf("")
-    val theme: State<String> = _theme
+    private val _theme = MutableStateFlow<ThemeMode>(ThemeMode.FOLLOW_SYSTEM)
+    val theme: StateFlow<ThemeMode> = _theme.asStateFlow()
 
-    fun changeTheme() {
-        if (sharedPreferences.contains("theme") &&
-            sharedPreferences.getString(
-                "theme",
-                "",
-            ) == "dark" ||
-            !sharedPreferences.contains("theme")
-        ) {
-            sharedPreferences.edit().putString("theme", "light").apply()
-            _theme.value = "light"
-        } else {
-            sharedPreferences.edit().putString("theme", "dark").apply()
-            _theme.value = "dark"
+    init {
+        _theme.value = ThemeMode.fromString(sharedPreferences.getString("theme", null))
+    }
+
+    fun onLogIn(accessToken: AccessToken) {
+        viewModelScope.launch {
+            updateUserNameUseCase.updateUserName(accessToken.userData.firstName)
+        }
+    }
+
+    fun setTheme(theme: ThemeMode) {
+        sharedPreferences.edit { putString("theme", theme.name) }
+        _theme.value = theme
+    }
+
+    fun updateUserName(newUserName: String) {
+        viewModelScope.launch {
+            updateUserNameUseCase.updateUserName(newUserName)
+        }
+    }
+
+    fun isAuthenticated(): Boolean = FirebaseAuth.getInstance().currentUser != null
+
+    fun singOut() {
+        viewModelScope.launch {
+            singOutUseCase.singOut()
+        }
+    }
+
+    fun onSaveBut(currentPassword: String, newPassword: String, repeatPassword: String, onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            val success = updateUserPasswordUseCase.updatePassword(currentPassword, newPassword, repeatPassword)
+            if (success) {
+                onResult("Пароль успешно изменён")
+            } else {
+                onResult("Текущий пароль неверный")
+            }
         }
     }
 }

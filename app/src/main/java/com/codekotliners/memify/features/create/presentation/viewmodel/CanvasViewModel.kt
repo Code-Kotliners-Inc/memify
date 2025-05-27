@@ -1,6 +1,5 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -17,8 +16,6 @@ import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @Stable
@@ -37,6 +34,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     val currentFontFamily: MutableState<FontFamily> = mutableStateOf(FontFamily.Default)
     val currentFontWeight = mutableStateOf(FontWeight.Normal)
 
+    var showTextInput by mutableStateOf(false)
     var showTextPreview by mutableStateOf(false)
     var showColors by mutableStateOf(false)
     var showFonts by mutableStateOf(false)
@@ -77,7 +75,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     fun startWriting() {
         clearModes()
         isWritingEnabled = true
-        showTextPreview = true
+        showTextInput = true
         currentText = ""
     }
 
@@ -128,7 +126,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                 ),
             )
         }
-        isWritingEnabled = false
+        showTextInput = false
         currentText = ""
     }
 
@@ -138,14 +136,4 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
             canvasElements[index] = element.copy(position = newPosition)
         }
     }
-
-    suspend fun createBitMap(): Bitmap =
-        withContext(Dispatchers.Default) {
-            val width = imageWidth.toInt()
-            val height = imageHeight.toInt()
-            val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val canvas = android.graphics.Canvas(bitmap)
-            drawingCanvas.drawCanvasElements(canvas)
-            bitmap
-        }
 }

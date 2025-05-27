@@ -3,13 +3,14 @@ package com.codekotliners.memify.features.templates.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
+import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
+import com.codekotliners.memify.features.templates.exceptions.VKUnauthorizedActionException
 import com.codekotliners.memify.features.templates.presentation.state.ErrorType
 import com.codekotliners.memify.features.templates.presentation.state.Tab
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.state.TemplatesPageState
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -30,8 +31,45 @@ class TemplatesFeedViewModel @Inject constructor(
 
     val limitPerRequest: Long = 30
 
+    private val _toastMessage = MutableStateFlow<String?>(null)
+    val toastMessage: StateFlow<String?> = _toastMessage
+
     init {
         loadDataForTab(_pageState.value.selectedTab)
+    }
+
+    fun clearToast() {
+        _toastMessage.value = null
+    }
+
+    fun onLikeToggle(id: String) {
+        viewModelScope.launch {
+            var res =
+                try {
+                    repository.toggleLike(id)
+                } catch (e: UnauthorizedActionException) {
+                    _toastMessage.value = e.message
+                    return@launch
+                }
+
+            _pageState.update {
+                it.updatedCurrentTabState(
+                    TabState.Content(
+                        it.getTemplatesOfSelectedState().map {
+                            if (it.id == id) {
+                                it.copy(
+                                    isFavourite = res,
+                                )
+                            } else {
+                                it
+                            }
+                        },
+                        it.getIsLoadingMoreByState(it.getCurrentState()),
+                        it.getReachedEndByState(it.getCurrentState()),
+                    ),
+                )
+            }
+        }
     }
 
     fun startRefresh() {
@@ -40,7 +78,6 @@ class TemplatesFeedViewModel @Inject constructor(
 
     fun finishRefresh() {
         viewModelScope.launch {
-            delay(300)
             _isRefreshing.value = false
         }
     }
@@ -52,15 +89,21 @@ class TemplatesFeedViewModel @Inject constructor(
 
     fun selectTab(tab: Tab) {
         _pageState.update { it.copy(selectedTab = tab) }
+        if (tab == Tab.FAVOURITE) {
+            refresh()
+        }
         loadDataForTab(tab)
     }
 
+    @Suppress("detekt.LongMethod")
     fun loadDataForTab(tab: Tab) {
-        if (_pageState.value.getCurrentState() is TabState.Loading) return
+        if (_pageState.value.getCurrentState() is TabState.Loading) {
+            return
+        }
         val currentState = _pageState.value.getCurrentState()
         if (!isRefreshing.value &&
             currentState is TabState.Content &&
-            currentState.isLoadingMore
+            (currentState.isLoadingMore || currentState.reachedEnd)
         ) {
             return
         }
@@ -73,6 +116,7 @@ class TemplatesFeedViewModel @Inject constructor(
                     TabState.Content(
                         it.getTemplatesByState(it.getCurrentState()),
                         true,
+                        false,
                     ),
                 )
             }
@@ -87,23 +131,36 @@ class TemplatesFeedViewModel @Inject constructor(
                         repository.getNewTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                     Tab.FAVOURITE ->
                         repository.getFavouriteTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
+                    Tab.VK_IMAGES ->
+                        repository.getVkTemplates(limit = limitPerRequest, refresh = isRefreshing.value)
                 }
 
             dataFlow
                 .onEmpty {
-                    delay(1000) // to show loading in UI
-                    _pageState.update {
-                        it.updatedCurrentTabState(
-                            TabState.Content(
-                                it.getTemplatesOfSelectedState(),
-                                false,
-                            ),
-                        )
+                    if (currentState is TabState.Content &&
+                        currentState.templates.isEmpty()
+                    ) {
+                        _pageState.update {
+                            it.updatedCurrentTabState(
+                                TabState.Empty,
+                            )
+                        }
+                    } else {
+                        _pageState.update {
+                            it.updatedCurrentTabState(
+                                TabState.Content(
+                                    it.getTemplatesOfSelectedState(),
+                                    false,
+                                    true,
+                                ),
+                            )
+                        }
                     }
                 }.catch { e ->
                     var errorType =
                         when (e) {
-                            is IllegalStateException -> ErrorType.NEED_LOGIN
+                            is UnauthorizedActionException -> ErrorType.NEED_LOGIN
+                            is VKUnauthorizedActionException -> ErrorType.NEED_LINK_VK
                             is FirebaseFirestoreException -> ErrorType.NETWORK
                             else -> ErrorType.UNKNOWN
                         }
@@ -115,6 +172,17 @@ class TemplatesFeedViewModel @Inject constructor(
                     _pageState.update { it.updatedCurrentContent(template) }
                 }
 
+            if (_pageState.value.getCurrentState() is TabState.Content) {
+                _pageState.update {
+                    it.updatedCurrentTabState(
+                        TabState.Content(
+                            it.getTemplatesByState(it.getCurrentState()),
+                            false,
+                            it.getReachedEndByState(it.getCurrentState()),
+                        ),
+                    )
+                }
+            }
             finishRefresh()
         }
     }

@@ -10,4 +10,6 @@ data class DatasourceResult<T>(
 
 interface TemplatesDatasource<T> {
     suspend fun getFilteredTemplates(type: TemplatesFilter, limit: Long, startWith: T?): DatasourceResult<T>
+
+    suspend fun toggleLikeById(id: String): Boolean
 }
