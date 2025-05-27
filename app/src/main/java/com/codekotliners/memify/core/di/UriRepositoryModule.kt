@@ -13,7 +13,5 @@ import javax.inject.Singleton
 object UriRepositoryModule {
     @Provides
     @Singleton
-    fun provideUriRepository(uriDao: UriDao): UriRepository {
-        return UriRepository(uriDao)
-    }
+    fun provideUriRepository(uriDao: UriDao): UriRepository = UriRepository(uriDao)
 }

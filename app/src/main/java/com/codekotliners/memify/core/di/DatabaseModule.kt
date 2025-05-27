@@ -26,19 +26,14 @@ object DatabaseModule {
                 context,
                 MemifyDatabase::class.java,
                 DatabaseConstants.DRAFTS_DATABASE_NAME,
-            )
-            .fallbackToDestructiveMigration()
+            ).fallbackToDestructiveMigration()
             .build()
 
     @Provides
     @Singleton
-    fun provideMemeDao(db: MemifyDatabase): MemeDao {
-        return db.memeDao()
-    }
+    fun provideMemeDao(db: MemifyDatabase): MemeDao = db.memeDao()
 
     @Provides
     @Singleton
-    fun provideUriDao(db: MemifyDatabase): UriDao {
-        return db.uriDao()
-    }
+    fun provideUriDao(db: MemifyDatabase): UriDao = db.uriDao()
 }

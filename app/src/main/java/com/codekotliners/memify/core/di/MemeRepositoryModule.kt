@@ -13,7 +13,5 @@ import javax.inject.Singleton
 object MemeRepositoryModule {
     @Provides
     @Singleton
-    fun provideMemeRepository(memeDao: MemeDao): MemeRepository {
-        return MemeRepository(memeDao)
-    }
+    fun provideMemeRepository(memeDao: MemeDao): MemeRepository = MemeRepository(memeDao)
 }
