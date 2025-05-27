@@ -47,6 +47,7 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -177,7 +178,6 @@ private fun CreateScreenBottomSheet(
     val graphicsLayer = rememberGraphicsLayer()
     val showImageViewer = remember { mutableStateOf(false) }
     val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
-    val context = LocalContext.current
     val isPublishing by viewModelViewer.isPublishing.collectAsState()
 
     BottomSheetScaffold(
@@ -186,8 +186,6 @@ private fun CreateScreenBottomSheet(
                 scrollBehavior,
                 onMenuClick = {
                     coroutineScope.launch {
-                        // val bitmap = viewModel.createBitMap(context)
-                        // bitmapState.value = bitmap
                         showImageViewer.value = true
                         val bitmapCompose = graphicsLayer.toImageBitmap()
                         bitmapState.value = bitmapCompose
@@ -216,82 +214,103 @@ private fun CreateScreenBottomSheet(
         CreateScreenContent(innerPadding, viewModel, graphicsLayer)
 
         if (showImageViewer.value && bitmapState.value != null) {
-            Dialog(onDismissRequest = { showImageViewer.value = false }) {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    tonalElevation = 4.dp,
-                    modifier = Modifier.wrapContentSize(),
+            ImagePreviewDialog(
+                bitmapState = bitmapState,
+                isPublishing = isPublishing,
+                viewModelViewer = viewModelViewer,
+                onDismiss = { showImageViewer.value = false },
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImagePreviewDialog(
+    bitmapState: MutableState<ImageBitmap?>,
+    isPublishing: Boolean,
+    viewModelViewer: ImageViewerViewModel,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            tonalElevation = 4.dp,
+            modifier = Modifier.wrapContentSize(),
+        ) {
+            Column {
+                ImageViewerTopBar(
+                    onBack = onDismiss,
+                    onShareClick = { viewModelViewer.onShareClick() },
+                    onDownloadClick = { viewModelViewer.onDownloadClick(context) },
+                    onPublishClick = { viewModelViewer.onPublishClick() },
+                    onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
+                    isPublising = isPublishing,
+                    title = stringResource(R.string.preview_screen_title),
+                )
+
+                Box(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(
+                                bitmapState.value!!.width.toFloat() / bitmapState.value!!.height.toFloat(),
+                            ),
                 ) {
-                    Column {
-                        ImageViewerTopBar(
-                            onBack = { showImageViewer.value = false },
-                            onShareClick = { viewModelViewer.onShareClick() },
-                            onDownloadClick = { viewModelViewer.onDownloadClick(context) },
-                            onPublishClick = { viewModelViewer.onPublishClick() },
-                            onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
-                            isPublising = isPublishing,
-                            title = stringResource(R.string.preview_screen_title),
-                        )
+                    Image(
+                        bitmap = bitmapState.value!!,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                    )
 
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .aspectRatio(
-                                        bitmapState.value!!.width.toFloat() / bitmapState.value!!.height.toFloat(),
-                                    ),
-                        ) {
-                            Image(
-                                bitmap = bitmapState.value!!,
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-
-                            if (isPublishing) {
-                                Box(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxSize()
-                                            .background(Color.Black.copy(alpha = 0.4f)),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        CircularProgressIndicator(
-                                            modifier = Modifier.size(64.dp),
-                                            color = MaterialTheme.colorScheme.primary,
-                                            strokeWidth = 4.dp,
-                                        )
-                                        Spacer(Modifier.height(16.dp))
-                                        Text(
-                                            "Публикация...",
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                            fontSize = 18.sp,
-                                        )
-                                    }
-                                }
-                            }
-                        }
+                    if (isPublishing) {
+                        PublishingOverlay()
                     }
-
-                    LaunchedEffect(Unit) {
-                        viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
-                    }
-
-                    LaunchedEffect(Unit) {
-                        viewModelViewer.shareImageEvent.collect { imageUri ->
-                            val sendIntent =
-                                Intent().apply {
-                                    action = Intent.ACTION_SEND
-                                    putExtra(Intent.EXTRA_STREAM, imageUri)
-                                    type = "image/*"
-                                }
-                            val shareIntent = Intent.createChooser(sendIntent, null)
-                            context.startActivity(shareIntent)
-                        }
-                    }
-                    // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
+
+            LaunchedEffect(Unit) {
+                viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
+            }
+
+            LaunchedEffect(Unit) {
+                viewModelViewer.shareImageEvent.collect { imageUri ->
+                    val sendIntent =
+                        Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, imageUri)
+                            type = "image/*"
+                        }
+                    val shareIntent = Intent.createChooser(sendIntent, null)
+                    context.startActivity(shareIntent)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PublishingOverlay() {
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(64.dp),
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 4.dp,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "Публикация...",
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 18.sp,
+            )
         }
     }
 }
