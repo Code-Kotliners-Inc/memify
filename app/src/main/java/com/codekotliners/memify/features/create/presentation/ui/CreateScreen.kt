@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +47,7 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -99,15 +103,16 @@ fun CreateScreen(
     viewModel: CanvasViewModel = hiltViewModel(),
     viewModelViewer: ImageViewerViewModel = hiltViewModel(),
 ) {
+    val isPublishing by viewModelViewer.isPublishing.collectAsState()
+
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
     }
-
     val bottomSheetState =
         rememberStandardBottomSheetState(
             initialValue = SheetValue.Expanded,
             confirmValueChange = { newValue ->
-                newValue != SheetValue.Hidden
+                newValue != SheetValue.Hidden && !isPublishing
             },
             skipHiddenState = false,
         )
@@ -123,6 +128,35 @@ fun CreateScreen(
                     .padding(padding),
         ) {
             CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
+            PublishingLoadCircle(isPublishing)
+        }
+    }
+}
+
+@Composable
+private fun PublishingLoadCircle(isPublishing: Boolean) {
+    if (isPublishing) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .clickable { /* Блокирует клики */ },
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(64.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    strokeWidth = 4.dp,
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Публикация...",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 18.sp,
+                )
+            }
         }
     }
 }
@@ -143,6 +177,7 @@ private fun CreateScreenBottomSheet(
     val showImageViewer = remember { mutableStateOf(false) }
     val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
     val context = LocalContext.current
+    val isPublishing by viewModelViewer.isPublishing.collectAsState()
 
     BottomSheetScaffold(
         topBar = {
@@ -184,22 +219,63 @@ private fun CreateScreenBottomSheet(
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 4.dp,
+                    modifier = Modifier.wrapContentSize(),
                 ) {
-                    ImageViewerTopBar(
-                        onBack = { navController.popBackStack() },
-                        onShareClick = { viewModelViewer.onShareClick() },
-                        onDownloadClick = { viewModelViewer.onDownloadClick() },
-                        onPublishClick = { viewModelViewer.onPublishClick() },
-                        onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
-                        title = stringResource(R.string.preview_screen_title),
-                    )
-                    Image(
-                        bitmap = bitmapState.value!!,
-                        contentDescription = null,
-                    )
+                    Column {
+                        ImageViewerTopBar(
+                            onBack = { showImageViewer.value = false },
+                            onShareClick = { viewModelViewer.onShareClick() },
+                            onDownloadClick = { viewModelViewer.onDownloadClick() },
+                            onPublishClick = { viewModelViewer.onPublishClick() },
+                            onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
+                            isPublising = isPublishing,
+                            title = stringResource(R.string.preview_screen_title),
+                        )
+
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(
+                                        bitmapState.value!!.width.toFloat() / bitmapState.value!!.height.toFloat(),
+                                    ),
+                        ) {
+                            Image(
+                                bitmap = bitmapState.value!!,
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+
+                            if (isPublishing) {
+                                Box(
+                                    modifier =
+                                        Modifier
+                                            .fillMaxSize()
+                                            .background(Color.Black.copy(alpha = 0.4f)),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(64.dp),
+                                            color = MaterialTheme.colorScheme.primary,
+                                            strokeWidth = 4.dp,
+                                        )
+                                        Spacer(Modifier.height(16.dp))
+                                        Text(
+                                            "Публикация...",
+                                            color = MaterialTheme.colorScheme.onPrimary,
+                                            fontSize = 18.sp,
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     LaunchedEffect(Unit) {
                         viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
                     }
+
                     LaunchedEffect(Unit) {
                         viewModelViewer.shareImageEvent.collect { imageUri ->
                             val sendIntent =
@@ -212,7 +288,6 @@ private fun CreateScreenBottomSheet(
                             context.startActivity(shareIntent)
                         }
                     }
-                    // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
         }

@@ -34,6 +34,7 @@ fun ImageViewerTopBar(
     onDownloadClick: () -> Unit,
     onPublishClick: () -> Unit,
     onTakeTemplateClick: () -> Unit,
+    isPublising: Boolean = false,
     title: String = "",
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -41,7 +42,10 @@ fun ImageViewerTopBar(
     CenterAlignedTopAppBar(
         windowInsets = WindowInsets(0),
         navigationIcon = {
-            IconButton(onClick = { onBack() }) {
+            IconButton(
+                onClick = { onBack() },
+                enabled = !isPublising,
+            ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null,

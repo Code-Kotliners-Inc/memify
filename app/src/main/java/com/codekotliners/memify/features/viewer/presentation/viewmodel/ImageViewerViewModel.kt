@@ -25,13 +25,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -48,6 +46,9 @@ class ImageViewerViewModel @Inject constructor(
     val downloadImageEvent = _downloadImageEvent.asSharedFlow()
     private val _imageState = MutableStateFlow<ImageState>(ImageState.None)
     val imageState: StateFlow<ImageState> = _imageState
+
+    private val _isPublishing = MutableStateFlow(false)
+    val isPublishing: StateFlow<Boolean> = _isPublishing
 
     fun onShareClick() {
         val curState = _imageState.value
@@ -77,18 +78,20 @@ class ImageViewerViewModel @Inject constructor(
             return
         }
         viewModelScope.launch {
+            _isPublishing.value = true
             try {
                 val uri = saveBitmapAsFile(curState.bitmap, "saved_images")
                 val height = curState.bitmap.height
                 val width = curState.bitmap.width
                 Log.d("test", "publishing image $uri")
-                withContext(NonCancellable) {
-                    publishImageUseCase(uri, height, width)
-                }
+
+                publishImageUseCase(uri, height, width)
             } catch (e: CancellationException) {
                 Log.d("test", "publishing process canceled when quiting viewModel ")
             } catch (e: Exception) {
                 Log.e("test", "${e.message}")
+            } finally {
+                _isPublishing.value = false
             }
         }
     }
