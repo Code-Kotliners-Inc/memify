@@ -75,9 +75,7 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             auth.signInWithEmailAndPassword(email, password).await()
             Response.Success(true)
-            // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
         } catch (e: Exception) {
-            throw e
             Response.Failure(e)
         }
 
@@ -85,7 +83,6 @@ class AuthRepositoryImpl @Inject constructor(
         try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             auth.signInWithCredential(credential).await()
-            // TODO("ЛОГИ ТУТ ТОЖЕ БУДУТ, НО ПОПОЗЖЕ")
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
