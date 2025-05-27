@@ -265,7 +265,27 @@ private fun ImagePreviewDialog(
                     )
 
                     if (isPublishing) {
-                        PublishingOverlay()
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.4f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(64.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    strokeWidth = 4.dp,
+                                )
+                                Spacer(Modifier.height(16.dp))
+                                Text(
+                                    "Публикация...",
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontSize = 18.sp,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -286,31 +306,6 @@ private fun ImagePreviewDialog(
                     context.startActivity(shareIntent)
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun PublishingOverlay() {
-    Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(64.dp),
-                color = MaterialTheme.colorScheme.primary,
-                strokeWidth = 4.dp,
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                "Публикация...",
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 18.sp,
-            )
         }
     }
 }
@@ -581,14 +576,3 @@ private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
         }
     }
 }
-/*
-@Preview(name = "Light Mode", showSystemUi = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
-@Composable
-fun CreateScreenPreview() {
-    MemifyTheme {
-        val navController = NavController(LocalContext.current)
-        CreateScreen(navController, "", {})
-    }
-}
-*/
