@@ -1,5 +1,6 @@
 package com.codekotliners.memify.core.repositories.user
 
+import android.util.Log
 import com.codekotliners.memify.core.models.UserData
 import com.codekotliners.memify.features.auth.domain.entities.Response
 import com.google.firebase.Firebase
@@ -145,7 +146,31 @@ class UserRepositoryImpl @Inject constructor(
 
             if (documentSnapshot.exists()) {
                 val photoUrl = documentSnapshot.getString("photoUrl")
+                Log.d("test", "photoUrl = $photoUrl")
                 return Response.Success(photoUrl)
+            } else {
+                Response.Failure(NoSuchElementException("User document not found"))
+            }
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
+    }
+
+    override suspend fun getUserName(): Response<String?> {
+        return try {
+            val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
+            val documentSnapshot =
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(USERS_COLLECTION_NAME)
+                    .document(user.uid)
+                    .get()
+                    .await()
+
+            if (documentSnapshot.exists()) {
+                val username = documentSnapshot.getString("username")
+                Log.d("test", "username = $username")
+                return Response.Success(username)
             } else {
                 Response.Failure(NoSuchElementException("User document not found"))
             }

@@ -7,6 +7,9 @@ import javax.inject.Inject
 class UpdateUserPhotoUseCase @Inject constructor(
     private val userRepository: UserRepository,
 ) {
+    // TODO удалить?
+    // обновление фото уже есть в core/usecases/UpdateProfileImageUseCase
+    // или перенести его сюда
     suspend fun updatePhoto(imageUri: Uri) {
         //
     }

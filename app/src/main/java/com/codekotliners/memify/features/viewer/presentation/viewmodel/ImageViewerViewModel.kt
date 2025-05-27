@@ -9,11 +9,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.ImageRequest
+import com.codekotliners.memify.core.usecases.PublishImageUseCase
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
@@ -22,11 +24,14 @@ import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -35,13 +40,12 @@ import javax.inject.Inject
 class ImageViewerViewModel @Inject constructor(
     private val repository: ImageRepository,
     @ApplicationContext private val context: Context,
+    private val publishImageUseCase: PublishImageUseCase,
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<Uri>()
     val shareImageEvent = _shareImageEvent.asSharedFlow()
-
     private val _downloadImageEvent = MutableSharedFlow<Uri>()
     val downloadImageEvent = _downloadImageEvent.asSharedFlow()
-
     private val _imageState = MutableStateFlow<ImageState>(ImageState.None)
     val imageState: StateFlow<ImageState> = _imageState
 
@@ -68,7 +72,25 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     fun onPublishClick() {
-        // add some logic here
+        val curState = _imageState.value
+        if (curState !is ImageState.Content) {
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val uri = saveBitmapAsFile(curState.bitmap, "saved_images")
+                val height = curState.bitmap.height
+                val width = curState.bitmap.width
+                Log.d("test", "publishing image $uri")
+                withContext(NonCancellable) {
+                    publishImageUseCase(uri, height, width)
+                }
+            } catch (e: CancellationException) {
+                Log.d("test", "publishing process canceled when quiting viewModel ")
+            } catch (e: Exception) {
+                Log.e("test", "${e.message}")
+            }
+        }
     }
 
     fun onTakeTemplateClick() {
@@ -110,7 +132,6 @@ class ImageViewerViewModel @Inject constructor(
                 .data(imageUrl)
                 .allowHardware(false)
                 .build()
-
         val result = Coil.imageLoader(context).execute(request)
         return (result.drawable as? BitmapDrawable)?.bitmap
     }
