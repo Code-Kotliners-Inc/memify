@@ -2,8 +2,6 @@ package com.codekotliners.memify.features.create.presentation.ui
 
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +12,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,19 +19,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -341,73 +335,72 @@ private fun Tools(viewModel: CanvasViewModel) {
         modifier =
             Modifier
                 .padding(16.dp)
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(50.dp))
+                .background(MaterialTheme.colorScheme.surface, CircleShape)
                 .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        // Получаем текущие значения из ViewModel
+        // Состояния
         val isPaintSelected = viewModel.isPaintingEnabled
         val isWriteSelected = viewModel.isWritingEnabled
-        // Анимированные цвета
-        val paintContainerColor by animateColorAsState(
-            if (isPaintSelected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.background
-            },
-            animationSpec = tween(300),
-        )
-        val writeContainerColor by animateColorAsState(
-            if (isWriteSelected) {
-                MaterialTheme.colorScheme.primary
-            } else {
-                MaterialTheme.colorScheme.background
-            },
-            animationSpec = tween(300),
-        )
+
         // Кнопка Paint
-        Button(
+        IconButton(
             onClick = {
                 viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
                 viewModel.isWritingEnabled = false
             },
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = paintContainerColor,
-                    contentColor =
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
                         if (isPaintSelected) {
-                            MaterialTheme.colorScheme.onPrimary
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.background
                         },
-                ),
-            modifier = Modifier.weight(1f),
+                        CircleShape,
+                    ),
         ) {
-            Icon(painterResource(R.drawable.baseline_brush_24), contentDescription = "Paint")
-            Spacer(Modifier.width(8.dp))
-            Text("Paint")
+            Icon(
+                painter = painterResource(R.drawable.baseline_brush_24),
+                contentDescription = "Paint",
+                tint =
+                    if (isPaintSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
         }
+
         // Кнопка Write
-        Button(
+        IconButton(
             onClick = {
                 viewModel.isWritingEnabled = !viewModel.isWritingEnabled
                 viewModel.isPaintingEnabled = false
             },
-            colors =
-                ButtonDefaults.buttonColors(
-                    containerColor = writeContainerColor,
-                    contentColor =
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
                         if (isWriteSelected) {
-                            MaterialTheme.colorScheme.onPrimary
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.background
                         },
-                ),
-            modifier = Modifier.weight(1f),
+                        CircleShape,
+                    ),
         ) {
-            Icon(Icons.Default.Edit, contentDescription = "Write")
-            Spacer(Modifier.width(8.dp))
-            Text("Write")
+            Icon(
+                painter = painterResource(R.drawable.round_text_fields_24),
+                contentDescription = "Write",
+                tint =
+                    if (isWriteSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
         }
     }
 }
