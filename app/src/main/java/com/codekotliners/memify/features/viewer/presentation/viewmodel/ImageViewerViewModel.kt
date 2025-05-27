@@ -96,6 +96,7 @@ class ImageViewerViewModel @Inject constructor(
             _isPublishing.value = true
             try {
                 val uri = saveBitmapAsFile(curState.bitmap, "saved_images")
+                // TODO попробовать передавать параметры шаблона, а не битмапы
                 val height = curState.bitmap.height
                 val width = curState.bitmap.width
                 Log.d("test", "publishing image $uri")
