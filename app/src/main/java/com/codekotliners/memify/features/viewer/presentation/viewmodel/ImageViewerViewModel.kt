@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.ImageRequest
 import com.codekotliners.memify.core.repositories.MemeRepository
+import com.codekotliners.memify.core.usecases.PublishImageUseCase
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.repositories.UriRepository
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
@@ -27,6 +28,7 @@ import com.codekotliners.memify.features.viewer.presentation.state.ImageState
 import com.google.firebase.firestore.FirebaseFirestoreException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +44,7 @@ class ImageViewerViewModel @Inject constructor(
     private val memeRepository: MemeRepository,
     private val uriRepository: UriRepository,
     @ApplicationContext private val context: Context,
+    private val publishImageUseCase: PublishImageUseCase,
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<Uri>()
     val shareImageEvent = _shareImageEvent.asSharedFlow()
@@ -51,6 +54,9 @@ class ImageViewerViewModel @Inject constructor(
 
     private val _imageState = MutableStateFlow<ImageState>(ImageState.None)
     val imageState: StateFlow<ImageState> = _imageState
+
+    private val _isPublishing = MutableStateFlow(false)
+    val isPublishing: StateFlow<Boolean> = _isPublishing
 
     fun onShareClick() {
         val curState = _imageState.value
@@ -82,7 +88,27 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     fun onPublishClick() {
-        // add some logic here
+        val curState = _imageState.value
+        if (curState !is ImageState.Content) {
+            return
+        }
+        viewModelScope.launch {
+            _isPublishing.value = true
+            try {
+                val uri = saveBitmapAsFile(curState.bitmap, "saved_images")
+                val height = curState.bitmap.height
+                val width = curState.bitmap.width
+                Log.d("test", "publishing image $uri")
+
+                publishImageUseCase(uri, height, width)
+            } catch (e: CancellationException) {
+                Log.d("test", "publishing process canceled when quiting viewModel ")
+            } catch (e: Exception) {
+                Log.e("test", "${e.message}")
+            } finally {
+                _isPublishing.value = false
+            }
+        }
     }
 
     fun onTakeTemplateClick() {

@@ -1,6 +1,7 @@
 package com.codekotliners.memify.features.profile.presentation.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +55,8 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val userNameDeffered = CompletableDeferred<String>()
             val imageUri = updateProfileImageUseCase.getProfileImageUrl()?.toUri()
+            Log.d("test", "getting profile pic URL - $imageUri")
+
             VKID.instance.getUserData(
                 callback =
                     object : VKIDGetUserCallback {

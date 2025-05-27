@@ -31,7 +31,10 @@ class UpdateProfileImageUseCase @Inject constructor(
     suspend fun getProfileImageUrl(): String? {
         val photoUrl =
             when (val response = userRepository.getUserPhotoUrl()) {
-                is Response.Failure -> null
+                is Response.Failure -> {
+                    Log.d("test", " error gering url {${response.error.message}}")
+                    return null
+                }
                 is Response.Success -> response.data
                 Response.Loading -> throw IllegalStateException("Unexpected loading state")
             }
