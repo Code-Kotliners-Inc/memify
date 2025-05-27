@@ -178,4 +178,32 @@ class UserRepositoryImpl @Inject constructor(
             Response.Failure(e)
         }
     }
+
+    override suspend fun getUid(): Response<String?> {
+        return try {
+            val user = auth.currentUser ?: return Response.Failure(IllegalStateException("User not authenticated"))
+            Response.Success(user.uid)
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
+    }
+
+    override suspend fun getUserDataByUid(uid: String): Response<Map<String, Any>> =
+        try {
+            val snapshot =
+                FirebaseFirestore
+                    .getInstance()
+                    .collection(USERS_COLLECTION_NAME)
+                    .document(uid)
+                    .get()
+                    .await()
+
+            if (snapshot.exists()) {
+                Response.Success(snapshot.data ?: emptyMap())
+            } else {
+                Response.Failure(NoSuchElementException("User not found"))
+            }
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
 }
