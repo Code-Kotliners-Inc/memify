@@ -80,7 +80,7 @@ fun ImageViewerScreen(
             ImageViewerTopBar(
                 onBack = { navController.popBackStack() },
                 onShareClick = { viewModel.onShareClick() },
-                onDownloadClick = { viewModel.onDownloadClick() },
+                onDownloadClick = { viewModel.onDownloadClick(context) },
                 onPublishClick = { viewModel.onPublishClick() },
                 onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
                 title = stringResource(R.string.preview_screen_title),
