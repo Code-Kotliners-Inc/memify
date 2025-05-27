@@ -7,7 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.codekotliners.memify.core.database.entities.UriEntity
 import com.codekotliners.memify.core.repositories.user.UserRepository
+import com.codekotliners.memify.core.repositories.UriRepository
 import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import com.google.firebase.auth.FirebaseAuth
 import com.vk.id.VKID
@@ -31,13 +33,23 @@ data class ProfileState(
 class ProfileViewModel @Inject constructor(
     user: UserRepository,
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
+    private val uriRepository: UriRepository,
 ) : ViewModel() {
     private val _state = mutableStateOf(ProfileState())
     val state: State<ProfileState> = _state
 
+    private val _savedUris = mutableStateOf<List<UriEntity>>(emptyList())
+    val savedUris: State<List<UriEntity>> = _savedUris
+
     init {
         if (FirebaseAuth.getInstance().currentUser != null) {
             _state.value = _state.value.copy(isLoggedIn = true)
+        }
+
+        viewModelScope.launch {
+            uriRepository.getAllUris().collect {
+                _savedUris.value = it
+            }
         }
 
         viewModelScope.launch(Dispatchers.IO) {

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.codekotliners.memify.core.data.DatabaseConstants
 import com.codekotliners.memify.core.database.MemifyDatabase
+import com.codekotliners.memify.core.database.dao.MemeDao
+import com.codekotliners.memify.core.database.dao.UriDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,5 +26,14 @@ object DatabaseModule {
                 context,
                 MemifyDatabase::class.java,
                 DatabaseConstants.DRAFTS_DATABASE_NAME,
-            ).build()
+            ).fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideMemeDao(db: MemifyDatabase): MemeDao = db.memeDao()
+
+    @Provides
+    @Singleton
+    fun provideUriDao(db: MemifyDatabase): UriDao = db.uriDao()
 }
