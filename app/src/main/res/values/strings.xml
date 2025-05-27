@@ -131,4 +131,5 @@
     <string name="shortcut_long_label">Создать новый мем</string>
     <string name="shortcut_disabled_message">Функция создания мема отсюда недоступна</string>
     <string name="theme_title">Тема</string>
+    <string name="meme_downloaded">Мем успешно загружен</string>
 </resources>

@@ -10,12 +10,14 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.ImageRequest
 import com.codekotliners.memify.core.usecases.PublishImageUseCase
+import com.codekotliners.memify.R
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
@@ -42,8 +44,10 @@ class ImageViewerViewModel @Inject constructor(
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<Uri>()
     val shareImageEvent = _shareImageEvent.asSharedFlow()
+
     private val _downloadImageEvent = MutableSharedFlow<Uri>()
     val downloadImageEvent = _downloadImageEvent.asSharedFlow()
+
     private val _imageState = MutableStateFlow<ImageState>(ImageState.None)
     val imageState: StateFlow<ImageState> = _imageState
 
@@ -61,7 +65,7 @@ class ImageViewerViewModel @Inject constructor(
         }
     }
 
-    fun onDownloadClick() {
+    fun onDownloadClick(context: Context) {
         val curState = _imageState.value
         if (curState !is ImageState.Content) {
             return
@@ -69,6 +73,7 @@ class ImageViewerViewModel @Inject constructor(
         viewModelScope.launch {
             val uri = saveBitmapToStorage(curState.bitmap)
             _downloadImageEvent.emit(uri)
+            Toast.makeText(context, context.getString(R.string.meme_downloaded), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -135,6 +140,7 @@ class ImageViewerViewModel @Inject constructor(
                 .data(imageUrl)
                 .allowHardware(false)
                 .build()
+
         val result = Coil.imageLoader(context).execute(request)
         return (result.drawable as? BitmapDrawable)?.bitmap
     }

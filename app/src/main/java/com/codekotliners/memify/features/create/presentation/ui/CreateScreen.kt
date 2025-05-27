@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -29,7 +30,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -108,6 +108,7 @@ fun CreateScreen(
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
     }
+
     val bottomSheetState =
         rememberStandardBottomSheetState(
             initialValue = SheetValue.Expanded,
@@ -225,7 +226,7 @@ private fun CreateScreenBottomSheet(
                         ImageViewerTopBar(
                             onBack = { showImageViewer.value = false },
                             onShareClick = { viewModelViewer.onShareClick() },
-                            onDownloadClick = { viewModelViewer.onDownloadClick() },
+                            onDownloadClick = { viewModelViewer.onDownloadClick(context) },
                             onPublishClick = { viewModelViewer.onPublishClick() },
                             onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
                             isPublising = isPublishing,
@@ -288,6 +289,7 @@ private fun CreateScreenBottomSheet(
                             context.startActivity(shareIntent)
                         }
                     }
+                    // ImageViewerScreen(bitmap = bitmapState.value!!)
                 }
             }
         }
@@ -381,20 +383,11 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row {
-            Button(onClick = {
-                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
-                viewModel.isWritingEnabled = false
-            }) { Text("paint") }
-            Button(onClick = {
-                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
-                viewModel.isPaintingEnabled = false
-            }) { Text("write") }
-        }
+        Tools(viewModel)
 
         ImageBox(viewModel, graphicsLayer)
 
-        if (viewModel.isWritingEnabled) {
+        if (viewModel.showTextInput) {
             TextInputDialog(viewModel)
         }
 
@@ -410,6 +403,82 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
 
         AnimatedVisibility(visible = viewModel.isWritingEnabled) {
             TextEditingRow(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun Tools(viewModel: CanvasViewModel) {
+    Row(
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface, CircleShape)
+                .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // Состояния
+        val isPaintSelected = viewModel.isPaintingEnabled
+        val isWriteSelected = viewModel.isWritingEnabled
+
+        // Кнопка Paint
+        IconButton(
+            onClick = {
+                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
+                viewModel.isWritingEnabled = false
+            },
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
+                        if (isPaintSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                        CircleShape,
+                    ),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.baseline_brush_24),
+                contentDescription = "Paint",
+                tint =
+                    if (isPaintSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
+        }
+
+        // Кнопка Write
+        IconButton(
+            onClick = {
+                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
+                viewModel.isPaintingEnabled = false
+            },
+            modifier =
+                Modifier
+                    .size(48.dp)
+                    .background(
+                        if (isWriteSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.background
+                        },
+                        CircleShape,
+                    ),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.round_text_fields_24),
+                contentDescription = "Write",
+                tint =
+                    if (isWriteSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
         }
     }
 }
