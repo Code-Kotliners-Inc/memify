@@ -193,7 +193,7 @@ private fun CreateScreenBottomSheet(
                     ImageViewerTopBar(
                         onBack = { navController.popBackStack() },
                         onShareClick = { viewModelViewer.onShareClick() },
-                        onDownloadClick = { viewModelViewer.onDownloadClick() },
+                        onDownloadClick = { viewModelViewer.onDownloadClick(context) },
                         onPublishClick = { viewModelViewer.onPublishClick() },
                         onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
                         title = stringResource(R.string.preview_screen_title),
@@ -315,7 +315,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
 
         ImageBox(viewModel, graphicsLayer)
 
-        if (viewModel.isWritingEnabled) {
+        if (viewModel.showTextInput) {
             TextInputDialog(viewModel)
         }
 

@@ -34,6 +34,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     val currentFontFamily: MutableState<FontFamily> = mutableStateOf(FontFamily.Default)
     val currentFontWeight = mutableStateOf(FontWeight.Normal)
 
+    var showTextInput by mutableStateOf(false)
     var showTextPreview by mutableStateOf(false)
     var showColors by mutableStateOf(false)
     var showFonts by mutableStateOf(false)
@@ -74,7 +75,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     fun startWriting() {
         clearModes()
         isWritingEnabled = true
-        showTextPreview = true
+        showTextInput = true
         currentText = ""
     }
 
@@ -125,7 +126,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
                 ),
             )
         }
-        isWritingEnabled = false
+        showTextInput = false
         currentText = ""
     }
 
