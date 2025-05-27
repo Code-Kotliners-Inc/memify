@@ -79,6 +79,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.R
@@ -385,11 +386,23 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 
 @Composable
 private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
-    val (imageWidth, imageHeight) = painterResource(id = R.drawable.meme).intrinsicSize
+    val context = LocalContext.current
+    val painter =
+        rememberAsyncImagePainter(
+            model =
+                ImageRequest
+                    .Builder(context)
+                    .data(viewModel.imageUrl)
+                    .build(),
+        )
 
-    LaunchedEffect(R.drawable.meme) {
-        viewModel.imageWidth = imageWidth
-        viewModel.imageHeight = imageHeight
+    // Получаем размеры изображения после загрузки
+    LaunchedEffect(painter.state) {
+        if (painter.state is AsyncImagePainter.State.Success) {
+            val size = painter.intrinsicSize
+            viewModel.imageWidth = size.width
+            viewModel.imageHeight = size.height
+        }
     }
 
     Column(
@@ -399,7 +412,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
     ) {
         Tools(viewModel)
 
-        ImageBox(viewModel, graphicsLayer)
+        ImageBox(viewModel, graphicsLayer, painter)
 
         if (viewModel.showTextInput) {
             TextInputDialog(viewModel)
@@ -498,7 +511,11 @@ private fun Tools(viewModel: CanvasViewModel) {
 }
 
 @Composable
-private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
+private fun ImageBox(
+    viewModel: CanvasViewModel,
+    graphicsLayer: GraphicsLayer,
+    painter: AsyncImagePainter,
+) {
     var scale by remember { mutableFloatStateOf(1f) }
     var angle by remember { mutableFloatStateOf(0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -513,15 +530,18 @@ private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
-                .padding(4.dp)
+                .aspectRatio(
+                    if (viewModel.imageWidth > 0 && viewModel.imageHeight > 0) {
+                        viewModel.imageWidth / viewModel.imageHeight
+                    } else {
+                        // Дефолтное соотношение, пока не загрузилось
+                        1f
+                    },
+                ).padding(4.dp)
                 .drawWithContent {
-                    // call record to capture the content in the graphics layer
                     graphicsLayer.record {
-                        // draw the contents of the composable into the graphics layer
                         this@drawWithContent.drawContent()
                     }
-                    // draw the graphics layer on the visible canvas
                     drawLayer(graphicsLayer)
                 }.then(
                     if (viewModel.isWritingEnabled) {
@@ -537,16 +557,6 @@ private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
                     translationY = offset.y,
                 ).transformable(state = state),
     ) {
-        val painter =
-            rememberAsyncImagePainter(
-                model =
-                    ImageRequest
-                        .Builder(LocalContext.current)
-                        .data(viewModel.imageUrl)
-                        .crossfade(true)
-                        .build(),
-            )
-
         Image(
             painter = painter,
             contentDescription = null,
