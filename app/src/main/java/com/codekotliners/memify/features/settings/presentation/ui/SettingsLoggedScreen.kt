@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -81,7 +79,6 @@ fun SettingsLoggedScreen(navController: NavController, viewModel: SettingsScreen
             ) {
                 ThemeChange(viewModel)
                 ChangeName(viewModel)
-                ChangePhoto()
                 PasswordChange(viewModel)
                 AddVk { token ->
                     viewModel.onLogIn(token)
@@ -129,6 +126,8 @@ private fun ToolBar(navController: NavController) {
 @Composable
 private fun ChangeName(viewModel: SettingsScreenViewModel) {
     var userName by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val error = stringResource(id = R.string.name_changed)
     Column(
         modifier =
             Modifier
@@ -141,10 +140,13 @@ private fun ChangeName(viewModel: SettingsScreenViewModel) {
             text = stringResource(id = R.string.user_name),
             style = MaterialTheme.typography.hintText,
         )
-        NameField(stringResource(id = R.string.name_blank), userName, { currName -> userName = currName })
+        NameField(stringResource(id = R.string.new_name), userName, { currName -> userName = currName })
 
         Button(
-            onClick = { viewModel.updateUserName(userName) },
+            onClick = {
+                viewModel.updateUserName(userName)
+                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.surface),
         ) {
@@ -173,7 +175,7 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
             text = stringResource(R.string.theme_title),
             style = MaterialTheme.typography.suggestNewAccount,
         )
-        Spacer(Modifier.width(100.dp))
+        Spacer(modifier = Modifier.weight(1f))
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
@@ -199,7 +201,7 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
                 modifier =
                     Modifier
                         .menuAnchor()
-                        .fillMaxWidth(),
+                        .widthIn(min = 120.dp, max = 200.dp),
             )
 
             ExposedDropdownMenu(
@@ -264,14 +266,13 @@ private fun PasswordChange(viewModel: SettingsScreenViewModel) {
 
         Button(
             onClick = {
-                if (newPassword != repeatPassword) {
-                    Toast
-                        .makeText(context, "Пароли не совпадают", Toast.LENGTH_SHORT)
-                        .show()
-                } else {
-                    viewModel.onSaveBut(currentPassword, newPassword, repeatPassword) { resultMessage ->
-                        Toast.makeText(context, resultMessage, Toast.LENGTH_SHORT).show()
-                    }
+                viewModel.onSaveBut(
+                    currentPassword = currentPassword,
+                    newPassword = newPassword,
+                    repeatPassword = repeatPassword,
+                    getString = { resId -> context.getString(resId) },
+                ) { resultMessage ->
+                    Toast.makeText(context, resultMessage, Toast.LENGTH_SHORT).show()
                 }
             },
             modifier = Modifier.fillMaxWidth(),
@@ -338,47 +339,6 @@ private fun AddVk(onLogin: (accessToken: AccessToken) -> Unit) {
             scenario = OneTapTitleScenario.SignIn,
             authParams = VKIDAuthUiParams { scopes = setOf("photos") },
         )
-    }
-}
-
-@Composable
-private fun ChangePhoto() {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-    ) {
-        Text(
-            text = stringResource(id = R.string.user_photo),
-            style = MaterialTheme.typography.hintText,
-        )
-        Row(
-            modifier =
-                Modifier
-                    .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconButton(onClick = {}) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_account_circle_24),
-                    contentDescription = stringResource(R.string.change_photo_hint),
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(50.dp),
-                )
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = stringResource(id = R.string.change_photo),
-                style = MaterialTheme.typography.suggestNewAccount,
-                modifier =
-                    Modifier
-                        .padding(8.dp)
-                        .weight(1f),
-            )
-        }
     }
 }
 
