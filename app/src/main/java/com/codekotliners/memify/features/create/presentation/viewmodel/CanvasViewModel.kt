@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.ViewModel
+import com.codekotliners.memify.core.theme.FontFamilyImpact
 import com.codekotliners.memify.features.create.domain.CanvasElement
 import com.codekotliners.memify.features.create.domain.ColoredLine
 import com.codekotliners.memify.features.create.domain.TextElement
@@ -31,7 +32,7 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     var currentText by mutableStateOf("")
     var currentTextColor = mutableStateOf(Color.Black)
     var currentTextSize = mutableFloatStateOf(24f)
-    val currentFontFamily: MutableState<FontFamily> = mutableStateOf(FontFamily.Default)
+    val currentFontFamily: MutableState<FontFamily> = mutableStateOf(FontFamilyImpact)
     val currentFontWeight = mutableStateOf(FontWeight.Normal)
 
     var showTextInput by mutableStateOf(false)
