@@ -108,7 +108,6 @@ fun CreateScreen(
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
     }
-
     val bottomSheetState =
         rememberStandardBottomSheetState(
             initialValue = SheetValue.Expanded,
@@ -312,83 +311,7 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .padding(16.dp)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(50.dp))
-                    .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            // Получаем текущие значения из ViewModel
-            val isPaintSelected = viewModel.isPaintingEnabled
-            val isWriteSelected = viewModel.isWritingEnabled
-
-            // Анимированные цвета
-            val paintContainerColor by animateColorAsState(
-                if (isPaintSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.background
-                },
-                animationSpec = tween(300),
-            )
-
-            val writeContainerColor by animateColorAsState(
-                if (isWriteSelected) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.background
-                },
-                animationSpec = tween(300),
-            )
-
-            // Кнопка Paint
-            Button(
-                onClick = {
-                    viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
-                    viewModel.isWritingEnabled = false
-                },
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = paintContainerColor,
-                        contentColor =
-                            if (isPaintSelected) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                    ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Icon(painterResource(R.drawable.baseline_brush_24), contentDescription = "Paint")
-                Spacer(Modifier.width(8.dp))
-                Text("Paint")
-            }
-
-            // Кнопка Write
-            Button(
-                onClick = {
-                    viewModel.isWritingEnabled = !viewModel.isWritingEnabled
-                    viewModel.isPaintingEnabled = false
-                },
-                colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = writeContainerColor,
-                        contentColor =
-                            if (isWriteSelected) {
-                                MaterialTheme.colorScheme.onPrimary
-                            } else {
-                                MaterialTheme.colorScheme.onSurface
-                            },
-                    ),
-                modifier = Modifier.weight(1f),
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = "Write")
-                Spacer(Modifier.width(8.dp))
-                Text("Write")
-            }
-        }
+        Tools(viewModel)
 
         ImageBox(viewModel, graphicsLayer)
 
@@ -408,6 +331,83 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
 
         AnimatedVisibility(visible = viewModel.isWritingEnabled) {
             TextEditingRow(viewModel)
+        }
+    }
+}
+
+@Composable
+private fun Tools(viewModel: CanvasViewModel) {
+    Row(
+        modifier =
+            Modifier
+                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(50.dp))
+                .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // Получаем текущие значения из ViewModel
+        val isPaintSelected = viewModel.isPaintingEnabled
+        val isWriteSelected = viewModel.isWritingEnabled
+        // Анимированные цвета
+        val paintContainerColor by animateColorAsState(
+            if (isPaintSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.background
+            },
+            animationSpec = tween(300),
+        )
+        val writeContainerColor by animateColorAsState(
+            if (isWriteSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.background
+            },
+            animationSpec = tween(300),
+        )
+        // Кнопка Paint
+        Button(
+            onClick = {
+                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
+                viewModel.isWritingEnabled = false
+            },
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = paintContainerColor,
+                    contentColor =
+                        if (isPaintSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                ),
+            modifier = Modifier.weight(1f),
+        ) {
+            Icon(painterResource(R.drawable.baseline_brush_24), contentDescription = "Paint")
+            Spacer(Modifier.width(8.dp))
+            Text("Paint")
+        }
+        // Кнопка Write
+        Button(
+            onClick = {
+                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
+                viewModel.isPaintingEnabled = false
+            },
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = writeContainerColor,
+                    contentColor =
+                        if (isWriteSelected) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                ),
+            modifier = Modifier.weight(1f),
+        ) {
+            Icon(Icons.Default.Edit, contentDescription = "Write")
+            Spacer(Modifier.width(8.dp))
+            Text("Write")
         }
     }
 }
