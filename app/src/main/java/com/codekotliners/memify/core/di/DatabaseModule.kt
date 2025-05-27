@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.codekotliners.memify.core.data.DatabaseConstants
 import com.codekotliners.memify.core.database.MemifyDatabase
 import com.codekotliners.memify.core.database.dao.MemeDao
+import com.codekotliners.memify.core.database.dao.UriDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,5 +35,11 @@ object DatabaseModule {
     @Singleton
     fun provideMemeDao(db: MemifyDatabase): MemeDao {
         return db.memeDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUriDao(db: MemifyDatabase): UriDao {
+        return db.uriDao()
     }
 }

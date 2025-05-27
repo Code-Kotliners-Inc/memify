@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,7 @@ import coil.Coil
 import coil.request.ImageRequest
 import com.codekotliners.memify.core.repositories.MemeRepository
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.repositories.UriRepository
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
@@ -38,6 +40,7 @@ import javax.inject.Inject
 class ImageViewerViewModel @Inject constructor(
     private val repository: ImageRepository,
     private val memeRepository: MemeRepository,
+    private val uriRepository: UriRepository,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
     private val _shareImageEvent = MutableSharedFlow<Uri>()
@@ -67,7 +70,13 @@ class ImageViewerViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val uri = saveBitmapToStorage(curState.bitmap)
+
+            uriRepository.saveUri(uri.toString())
+
             _downloadImageEvent.emit(uri)
+
+            Log.d("SaveUri", "Saved to DB: ${uri}")
+
             Toast.makeText(context, context.getString(R.string.meme_downloaded), Toast.LENGTH_SHORT).show()
         }
     }
