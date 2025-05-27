@@ -516,12 +516,9 @@ private fun ImageBox(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
                 .aspectRatio(viewModel.imageWidth / viewModel.imageHeight)
                 .padding(4.dp)
                 .drawWithContent {
-                    // call record to capture the content in the graphics layer
                     graphicsLayer.record {
-                        // draw the contents of the composable into the graphics layer
                         this@drawWithContent.drawContent()
                     }
-                    // draw the graphics layer on the visible canvas
                     drawLayer(graphicsLayer)
                 }.then(
                     if (viewModel.isWritingEnabled) {
