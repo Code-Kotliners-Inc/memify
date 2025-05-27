@@ -52,8 +52,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     var showRadialMenu by mutableStateOf(false)
     var radialMenuPosition by mutableStateOf(Offset.Zero)
 
-    private val drawingCanvas = DrawingCanvas(canvasElements)
-
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
     }
