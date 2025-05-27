@@ -83,3 +83,6 @@ val MaterialIcons =
     FontFamily(
         Font(R.font.material_icons_regular),
     )
+
+val FontFamilyImpact: FontFamily
+    get() = FontFamily(Font(R.font.impact))

@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.theme.FontFamilyImpact
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 
 @Composable
@@ -144,6 +145,7 @@ private fun FontWeightSelectionButton(viewModel: CanvasViewModel) {
 private fun FontsDropdownMenu(viewModel: CanvasViewModel) {
     val fonts =
         listOf(
+            FontFamilyImpact to stringResource(R.string.Impact),
             FontFamily.Default to stringResource(R.string.Default),
             FontFamily.SansSerif to stringResource(R.string.Sans),
             FontFamily.Serif to stringResource(R.string.Serif),
