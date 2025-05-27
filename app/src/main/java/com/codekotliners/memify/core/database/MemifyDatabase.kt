@@ -12,6 +12,8 @@ import com.codekotliners.memify.core.database.entities.UriEntity
 @Database(entities = [DraftEntity::class, MemeEntity::class, UriEntity::class], version = 3)
 abstract class MemifyDatabase : RoomDatabase() {
     abstract fun draftsDao(): DraftsDao
+
     abstract fun memeDao(): MemeDao
+
     abstract fun uriDao(): UriDao
 }

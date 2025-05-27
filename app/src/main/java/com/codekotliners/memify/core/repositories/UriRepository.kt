@@ -7,7 +7,7 @@ import javax.inject.Singleton
 
 @Singleton
 class UriRepository @Inject constructor(
-    private val uriDao: UriDao
+    private val uriDao: UriDao,
 ) {
     suspend fun saveUri(uri: String) {
         uriDao.insertUri(UriEntity(uri = uri))

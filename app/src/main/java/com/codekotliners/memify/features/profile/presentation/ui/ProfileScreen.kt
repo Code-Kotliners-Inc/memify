@@ -47,7 +47,6 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -151,28 +150,30 @@ fun ProfileScreen(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 state = scrollState,
-                modifier = Modifier
-                    .padding(
-                        start = 10.dp,
-                        end = 10.dp,
-                        top = 10.dp,
-                        bottom = 0.dp,
-                    ),
+                modifier =
+                    Modifier
+                        .padding(
+                            start = 10.dp,
+                            end = 10.dp,
+                            top = 10.dp,
+                            bottom = 0.dp,
+                        ),
             ) {
                 items(savedUris.size) { index ->
                     val item = savedUris[index]
                     val imageUri = Uri.parse(item.uri)
 
                     Card(
-                        modifier = Modifier
-                            .padding(6.dp)
-                            .aspectRatio(1f)
+                        modifier =
+                            Modifier
+                                .padding(6.dp)
+                                .aspectRatio(1f),
                     ) {
                         Image(
                             painter = rememberAsyncImagePainter(imageUri),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
                         )
                     }
                 }

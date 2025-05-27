@@ -3,7 +3,6 @@ package com.codekotliners.memify.features.profile.presentation.viewmodel
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
@@ -34,13 +33,14 @@ data class ProfileState(
 class ProfileViewModel @Inject constructor(
     user: UserRepository,
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
-    private val uriRepository: UriRepository
+    private val uriRepository: UriRepository,
 ) : ViewModel() {
     private val _state = mutableStateOf(ProfileState())
     val state: State<ProfileState> = _state
 
     private val _savedUris = mutableStateOf<List<UriEntity>>(emptyList())
     val savedUris: State<List<UriEntity>> = _savedUris
+
     init {
         if (FirebaseAuth.getInstance().currentUser != null) {
             _state.value = _state.value.copy(isLoggedIn = true)

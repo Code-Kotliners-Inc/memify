@@ -11,7 +11,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object MemeRepositoryModule {
-
     @Provides
     @Singleton
     fun provideMemeRepository(memeDao: MemeDao): MemeRepository {

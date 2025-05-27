@@ -81,7 +81,7 @@ class ImageViewerViewModel @Inject constructor(
 
             _downloadImageEvent.emit(uri)
 
-            Log.d("SaveUri", "Saved to DB: ${uri}")
+            Log.d("SaveUri", "Saved to DB: $uri")
 
             Toast.makeText(context, context.getString(R.string.meme_downloaded), Toast.LENGTH_SHORT).show()
         }
