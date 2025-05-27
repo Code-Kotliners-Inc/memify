@@ -64,6 +64,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.database.entities.UriEntity
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
@@ -145,9 +146,9 @@ fun ProfileScreen(
 
             FeedTabBar(state = state, onSelectTab = { index -> viewModel.selectTab(index) })
 
-            MemesFeed(
-                scrollState = scrollState,
-            )
+            val savedUris = viewModel.savedUris.value
+
+            SavedMemesGrid(savedUris = savedUris, scrollState = scrollState)
         }
     }
 }
@@ -374,7 +375,8 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
 }
 
 @Composable
-fun MemesFeed(
+fun SavedMemesGrid(
+    savedUris: List<UriEntity>,
     scrollState: LazyGridState,
 ) {
     LazyVerticalGrid(
@@ -388,8 +390,21 @@ fun MemesFeed(
                 bottom = 0.dp,
             ),
     ) {
-        items(100) { index ->
-            MemeItem(index)
+        items(savedUris.size) { index ->
+            val imageUri = Uri.parse(savedUris[index].uri)
+            Card(
+                modifier =
+                    Modifier
+                        .padding(6.dp)
+                        .aspectRatio(1f),
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(imageUri),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
         }
     }
 }

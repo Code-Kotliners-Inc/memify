@@ -19,4 +19,8 @@ interface UserRepository {
     suspend fun getUserPhotoUrl(): Response<String?>
 
     suspend fun getUserName(): Response<String?>
+
+    suspend fun getUid(): Response<String?>
+
+    suspend fun getUserDataByUid(uid: String): Response<Map<String, Any>>
 }

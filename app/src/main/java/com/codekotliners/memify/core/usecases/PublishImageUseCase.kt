@@ -16,8 +16,8 @@ class PublishImageUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(imageUri: Uri, height: Int, width: Int): Response<Boolean> =
         withContext(Dispatchers.IO) {
-            val userName =
-                when (val response = userRepository.getUserName()) {
+            val uid =
+                when (val response = userRepository.getUid()) {
                     is Response.Failure -> ""
                     is Response.Success -> response.data
                     Response.Loading -> throw IllegalStateException("Unexpected Loading State")
@@ -26,7 +26,7 @@ class PublishImageUseCase @Inject constructor(
                 PostDto(
                     id = "id",
                     imageUrl = "",
-                    creatorId = userName ?: "",
+                    creatorId = uid ?: "",
                     liked = emptyList(),
                     // TODO тут научиться передавать templateid, чтобы потом можно было брать шаблон
                     templateId = "templateId",

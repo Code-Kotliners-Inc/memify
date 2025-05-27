@@ -1,29 +1,20 @@
 # <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Memify
-The application provides users with the ability to upload, view, and generate memes. The interface resembles Pinterest but integrates image generation features powered by neural networks.
+Memify — это инновационное мобильное приложение для создания, редактирования и обмена мемами, объединяющее в себе мощный редактор и социальную платформу. Основная цель проекта — предоставить пользователям удобный и современный инструмент для творчества, а также возможность делиться своими работами с комьюнити, вдохновляться чужими мемами и участвовать в формировании интернет-культуры.
 
-## 🚀 Our Team
+## 🚀 Наша команла
 
-- **[Ainur Sultanov](https://github.com/yorickyeng)**
-  A brief description or role of the team member.
+- **[Айнур Султанов](https://github.com/yorickyeng)**
 
-- **[Fetisov Igor](https://github.com/Fetisyony)**
-  A brief description or role of the team member.
+- **[Фетисов Игорь](https://github.com/Fetisyony)**
+  
+- **[Иван Петрищев](https://github.com/IvanCRA)**
 
-- **[Ivan Petritchev](https://github.com/IvanCRA)**
-  A brief description or role of the team member.
+- **[Владислав Фокин](https://github.com/mareliberum)**
 
-- **[Vladislav Fokin](https://github.com/mareliberum)**
-  A brief description or role of the team member.
+- **[Полина Барлова](https://github.com/pulkabarlova)**
 
-- **[Polina Barlova](https://github.com/pulkabarlova)**
-  A brief description or role of the team member.
+- **[Валерий Митиогло](https://github.com/val3rkq)**
 
-- **[Valery Mitioglo](https://github.com/val3rkq)**
-  A brief description or role of the team member.
-
-## 🌟 About Us
-
-**Code Kotliners Inc.** is a dynamic team of developers who specialize in Kotlin and modern software development practices. We are committed to creating high-quality, scalable, and maintainable software solutions. Our expertise spans across various domains, including mobile development, backend systems, and cloud computing.
 
 ## 📜 License
 

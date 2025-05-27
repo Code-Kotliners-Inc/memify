@@ -16,8 +16,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.Coil
 import coil.request.ImageRequest
+import com.codekotliners.memify.core.repositories.MemeRepository
 import com.codekotliners.memify.core.usecases.PublishImageUseCase
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.repositories.UriRepository
 import com.codekotliners.memify.features.viewer.domain.model.GenericImage
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.domain.repository.ImageRepository
@@ -39,6 +41,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ImageViewerViewModel @Inject constructor(
     private val repository: ImageRepository,
+    private val memeRepository: MemeRepository,
+    private val uriRepository: UriRepository,
     @ApplicationContext private val context: Context,
     private val publishImageUseCase: PublishImageUseCase,
 ) : ViewModel() {
@@ -72,7 +76,13 @@ class ImageViewerViewModel @Inject constructor(
         }
         viewModelScope.launch {
             val uri = saveBitmapToStorage(curState.bitmap)
+
+            uriRepository.saveUri(uri.toString())
+
             _downloadImageEvent.emit(uri)
+
+            Log.d("SaveUri", "Saved to DB: $uri")
+
             Toast.makeText(context, context.getString(R.string.meme_downloaded), Toast.LENGTH_SHORT).show()
         }
     }
@@ -86,6 +96,7 @@ class ImageViewerViewModel @Inject constructor(
             _isPublishing.value = true
             try {
                 val uri = saveBitmapAsFile(curState.bitmap, "saved_images")
+                // TODO попробовать передавать параметры шаблона, а не битмапы
                 val height = curState.bitmap.height
                 val width = curState.bitmap.width
                 Log.d("test", "publishing image $uri")
@@ -185,6 +196,11 @@ class ImageViewerViewModel @Inject constructor(
             FileOutputStream(file).use { outputStream ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
             }
+
+            viewModelScope.launch {
+                memeRepository.saveMeme(file.absolutePath)
+            }
+
             MediaScannerConnection.scanFile(
                 context,
                 arrayOf(file.absolutePath),
