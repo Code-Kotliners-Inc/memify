@@ -26,6 +26,11 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -55,15 +60,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.AsyncImagePainter
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.database.entities.UriEntity
@@ -71,9 +81,12 @@ import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.network.models.PostDto
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.core.ui.components.CenteredWidget
+import com.codekotliners.memify.core.ui.components.shimmerEffect
 import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileState
 import com.codekotliners.memify.features.profile.presentation.viewmodel.ProfileViewModel
+import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorLoadingItem
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlin.math.min
@@ -105,7 +118,7 @@ fun ProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollOffset = rememberScrollOffset(scrollState)
     val isExtended = scrollOffset >= 0.1f
-    val likedScrollState = rememberLazyGridState()
+    val likedScrollState = rememberLazyStaggeredGridState()
     val savedScrollState = rememberLazyGridState()
 
     AppScaffold(
@@ -331,7 +344,7 @@ private fun FeedTabBar(
     viewModel: ProfileViewModel,
     state: ProfileState,
     onSelectTab: (Int) -> Unit,
-    likedScrollState: LazyGridState,
+    likedScrollState: LazyStaggeredGridState,
     savedScrollState: LazyGridState,
 ) {
     val savedUris = viewModel.savedUris.value
@@ -348,8 +361,6 @@ private fun FeedTabBar(
         } else {
             listOf(
                 stringResource(R.string.created),
-                stringResource(R.string.liked),
-                stringResource(R.string.published),
                 stringResource(R.string.drafts),
             )
         }
@@ -387,12 +398,18 @@ private fun FeedTabBar(
                 )
             }
         }
-
-        when (state.selectedTab) {
-            0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
-            1 -> LikedMemesGrid(likedPosts = likedPosts, scrollState = likedScrollState)
-            2 -> {}
-            3 -> {}
+        if (state.isLoggedIn) {
+            when (state.selectedTab) {
+                0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
+                1 -> LikedMemesGrid(likedPosts = likedPosts, scrollState = likedScrollState)
+                2 -> {}
+                3 -> {}
+            }
+        } else {
+            when (state.selectedTab) {
+                0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
+                1 -> {}
+            }
         }
     }
 }
@@ -435,30 +452,72 @@ fun SavedMemesGrid(
 @Composable
 fun LikedMemesGrid(
     likedPosts: List<PostDto>,
-    scrollState: LazyGridState,
+    scrollState: LazyStaggeredGridState,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
         state = scrollState,
-        modifier = Modifier.fillMaxSize(),
+        verticalItemSpacing = 10.dp,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxSize(),
         contentPadding = PaddingValues(0.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(likedPosts) { post ->
-            Box(
+            Card(
                 modifier =
                     Modifier
-                        .fillMaxWidth()
                         .aspectRatio(post.width.toFloat() / post.height.toFloat())
-                        .padding(2.dp),
+                        .fillMaxWidth(),
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(post.imageUrl),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
-                )
+                Box {
+                    val painter = rememberAsyncImagePainter(post.imageUrl)
+                    val state = painter.state
+
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+
+                    when (state) {
+                        is AsyncImagePainter.State.Error -> {
+                            ErrorLoadingItem()
+                        }
+
+                        is AsyncImagePainter.State.Loading -> {
+                            CenteredWidget(
+                                modifier = Modifier.shimmerEffect(),
+                            ) {}
+                        }
+
+                        is AsyncImagePainter.State.Success,
+                        AsyncImagePainter.State.Empty,
+                        -> {
+                            Icon(
+                                painter = painterResource(R.drawable.template_like_on),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier =
+                                    Modifier
+                                        .padding(2.dp)
+                                        .background(
+                                            brush =
+                                                Brush.radialGradient(
+                                                    colors = listOf(Color.Black.copy(alpha = 0.22f), Color.Transparent),
+                                                    center = Offset.Unspecified,
+                                                    radius = 46f,
+                                                ),
+                                            shape = CircleShape,
+                                        ).padding(4.dp)
+                                        .align(Alignment.TopEnd),
+                            )
+                        }
+                    }
+                }
             }
         }
     }

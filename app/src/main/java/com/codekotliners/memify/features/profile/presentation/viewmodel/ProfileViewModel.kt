@@ -49,7 +49,9 @@ class ProfileViewModel @Inject constructor(
     init {
         if (FirebaseAuth.getInstance().currentUser != null) {
             _state.value = _state.value.copy(isLoggedIn = true)
-            getLikedPosts()
+            viewModelScope.launch {
+                _likedPosts.value = likesRepository.getLikedPosts()
+            }
         }
 
         viewModelScope.launch {
@@ -103,12 +105,6 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(userImageUri = uri)
             updateProfileImageUseCase(uri)
-        }
-    }
-
-    private fun getLikedPosts() {
-        viewModelScope.launch {
-            _likedPosts.value = likesRepository.getLikedPosts()
         }
     }
 }
