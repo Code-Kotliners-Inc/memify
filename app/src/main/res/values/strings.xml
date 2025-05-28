@@ -146,4 +146,5 @@
     <string name="name_changed">Имя успешно изменено</string>
 
     <string name="saved">Сохраненные</string>
+    <string name="Email">Почта</string>
 </resources>
