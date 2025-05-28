@@ -27,7 +27,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -92,7 +91,6 @@ fun ProfileScreen(
 
     LaunchedEffect(loginResult) {
         if (loginResult == true) {
-            viewModel.checkLogin()
             currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
         }
     }
@@ -182,18 +180,6 @@ private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
                 stringResource(R.string.profile),
                 style = MaterialTheme.typography.titleLarge,
             )
-        },
-        navigationIcon = {
-            if (showProfile) {
-                IconButton(
-                    onClick = {},
-                ) {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = null,
-                    )
-                }
-            }
         },
         actions = {
             IconButton(
@@ -291,7 +277,13 @@ private fun ProfileAvatar(
                 .size(100.dp * scrollOffset)
                 .clip(CircleShape)
                 .clickable(
-                    onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
+                    onClick = {
+                        if (state.isLoggedIn) {
+                            pickMedia.launch(
+                                PickVisualMediaRequest(PickVisualMedia.ImageOnly),
+                            )
+                        }
+                    },
                 ).border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onBackground,
