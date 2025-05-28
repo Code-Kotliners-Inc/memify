@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,6 +68,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.database.entities.UriEntity
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
+import com.codekotliners.memify.core.network.models.PostDto
 import com.codekotliners.memify.core.theme.MemifyTheme
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
@@ -102,6 +105,8 @@ fun ProfileScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollOffset = rememberScrollOffset(scrollState)
     val isExtended = scrollOffset >= 0.1f
+    val likedScrollState = rememberLazyGridState()
+    val savedScrollState = rememberLazyGridState()
 
     AppScaffold(
         navController = navController,
@@ -144,11 +149,13 @@ fun ProfileScreen(
 
             Box(modifier = Modifier.height(6.dp * scrollOffset))
 
-            FeedTabBar(state = state, onSelectTab = { index -> viewModel.selectTab(index) })
-
-            val savedUris = viewModel.savedUris.value
-
-            SavedMemesGrid(savedUris = savedUris, scrollState = scrollState)
+            FeedTabBar(
+                viewModel,
+                state = state,
+                onSelectTab = { index -> viewModel.selectTab(index) },
+                likedScrollState,
+                savedScrollState,
+            )
         }
     }
 }
@@ -320,10 +327,20 @@ private fun ProfileAvatar(
 }
 
 @Composable
-private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
+private fun FeedTabBar(
+    viewModel: ProfileViewModel,
+    state: ProfileState,
+    onSelectTab: (Int) -> Unit,
+    likedScrollState: LazyGridState,
+    savedScrollState: LazyGridState,
+) {
+    val savedUris = viewModel.savedUris.value
+    val likedPosts = viewModel.likedPosts.value
+
     val tabs =
         if (state.isLoggedIn) {
             listOf(
+                stringResource(R.string.created),
                 stringResource(R.string.liked),
                 stringResource(R.string.published),
                 stringResource(R.string.drafts),
@@ -331,14 +348,13 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
         } else {
             listOf(
                 stringResource(R.string.created),
+                stringResource(R.string.liked),
+                stringResource(R.string.published),
                 stringResource(R.string.drafts),
             )
         }
 
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         ScrollableTabRow(
             selectedTabIndex = state.selectedTab,
             contentColor = MaterialTheme.colorScheme.secondary,
@@ -370,6 +386,13 @@ private fun FeedTabBar(state: ProfileState, onSelectTab: (Int) -> Unit) {
                     },
                 )
             }
+        }
+
+        when (state.selectedTab) {
+            0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
+            1 -> LikedMemesGrid(likedPosts = likedPosts, scrollState = likedScrollState)
+            2 -> {}
+            3 -> {}
         }
     }
 }
@@ -403,6 +426,38 @@ fun SavedMemesGrid(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun LikedMemesGrid(
+    likedPosts: List<PostDto>,
+    scrollState: LazyGridState,
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        state = scrollState,
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(0.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        items(likedPosts) { post ->
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(post.width.toFloat() / post.height.toFloat())
+                        .padding(2.dp),
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(post.imageUrl),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(12.dp)),
                 )
             }
         }
