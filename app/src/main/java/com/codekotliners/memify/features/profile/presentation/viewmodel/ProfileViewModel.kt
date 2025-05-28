@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codekotliners.memify.core.database.entities.UriEntity
 import com.codekotliners.memify.core.network.models.PostDto
-import com.codekotliners.memify.core.repositories.user.UserRepository
 import com.codekotliners.memify.core.repositories.UriRepository
 import com.codekotliners.memify.core.repositories.user.UserRepository
 import com.codekotliners.memify.core.usecases.GetUserDataUseCase
