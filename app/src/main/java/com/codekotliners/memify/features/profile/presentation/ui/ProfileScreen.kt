@@ -523,26 +523,6 @@ fun LikedMemesGrid(
     }
 }
 
-@Composable
-fun MemeItem(index: Int) {
-    Card(
-        modifier =
-            Modifier
-                .padding(6.dp)
-                .aspectRatio(1f),
-    ) {
-        Box(
-            modifier = Modifier.background(Color.LightGray),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                "Мем $index",
-                color = Color.White,
-            )
-        }
-    }
-}
-
 @Preview(name = "Light Mode", showSystemUi = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
