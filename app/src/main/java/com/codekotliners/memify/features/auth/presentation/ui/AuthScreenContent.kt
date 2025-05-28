@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,7 +30,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
@@ -78,7 +81,10 @@ fun AuthScreenContent(
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 60.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom,
         ) {
@@ -116,7 +122,11 @@ fun LogInMethods(
             onClick = { navController.navigateToEmailLogin() },
         )
 
-        Spacer(Modifier.height(0.dp).padding(0.dp))
+        Spacer(
+            Modifier
+                .height(0.dp)
+                .padding(0.dp),
+        )
 
         NoAccountSection(
             onRegisterClick = { navController.navigateToRegister() },
@@ -127,15 +137,19 @@ fun LogInMethods(
 @Composable
 fun NoAccountSection(onRegisterClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = stringResource(R.string.no_account_question),
             style = MaterialTheme.typography.suggestNewAccount,
+            modifier = Modifier.padding(end = 4.dp),
         )
-        Spacer(modifier = Modifier.width(20.dp))
+
         Text(
             text = stringResource(R.string.register_button),
             style = MaterialTheme.typography.registerButton,
@@ -146,7 +160,7 @@ fun NoAccountSection(onRegisterClick: () -> Unit) {
                         indication = null,
                     ) {
                         onRegisterClick()
-                    }.padding(10.dp),
+                    }.padding(8.dp),
         )
     }
 }
@@ -165,23 +179,28 @@ fun AuthButton(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .height(54.dp)
-                .padding(horizontal = 36.dp),
+                .height(IntrinsicSize.Min)
+                .padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 painter = icon,
                 contentDescription = null,
-                modifier = Modifier.size(30.dp),
+                modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.width(20.dp))
             Text(
                 text = text,
-                style = MaterialTheme.typography.authButton,
+                style =
+                    MaterialTheme.typography.authButton.copy(
+                        fontSize = 14.sp,
+                    ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

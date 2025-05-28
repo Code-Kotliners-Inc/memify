@@ -135,7 +135,7 @@ fun LoginForm(
             isError = uiState.loginErrors.isNotEmpty(),
             value = uiState.login,
             onValueChange = { onEvent(LoginEvent.LoginChanged(it)) },
-            label = { Text(stringResource(R.string.name_field)) },
+            label = { Text(stringResource(R.string.Email)) },
             modifier = Modifier.fillMaxWidth(),
         )
         LoginErrors(uiState.loginErrors)
