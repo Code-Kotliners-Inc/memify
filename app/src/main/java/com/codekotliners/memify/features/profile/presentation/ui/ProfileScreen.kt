@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -34,7 +33,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -73,7 +71,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImagePainter
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.compose.rememberAsyncImagePainter
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.database.entities.UriEntity
@@ -108,7 +105,6 @@ fun ProfileScreen(
 
     LaunchedEffect(loginResult) {
         if (loginResult == true) {
-            viewModel.checkLogin()
             currentBackStackEntry.savedStateHandle.remove<Boolean>(AUTH_SUCCESS_EVENT)
         }
     }
@@ -202,18 +198,6 @@ private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
                 stringResource(R.string.profile),
                 style = MaterialTheme.typography.titleLarge,
             )
-        },
-        navigationIcon = {
-            if (showProfile) {
-                IconButton(
-                    onClick = {},
-                ) {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = null,
-                    )
-                }
-            }
         },
         actions = {
             IconButton(
@@ -311,7 +295,13 @@ private fun ProfileAvatar(
                 .size(100.dp * scrollOffset)
                 .clip(CircleShape)
                 .clickable(
-                    onClick = { pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly)) },
+                    onClick = {
+                        if (state.isLoggedIn) {
+                            pickMedia.launch(
+                                PickVisualMediaRequest(PickVisualMedia.ImageOnly),
+                            )
+                        }
+                    },
                 ).border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.onBackground,
