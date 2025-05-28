@@ -5,6 +5,7 @@ import com.codekotliners.memify.features.templates.domain.datasource.TemplatesDa
 import com.codekotliners.memify.features.templates.domain.datasource.TemplatesFilter
 import com.codekotliners.memify.features.templates.domain.repository.TemplatesRepository
 import com.codekotliners.memify.features.templates.exceptions.UnauthorizedActionException
+import com.codekotliners.memify.features.templates.exceptions.VKUnauthorizedActionException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.vk.api.sdk.VK
@@ -90,8 +91,8 @@ class TemplatesRepositoryImpl @Inject constructor(
                 }
                 result.asFlow()
             }
-        } catch (e: Exception) {
-            emptyList<Template>().asFlow()
+        } catch (_: Exception) {
+            flow { throw VKUnauthorizedActionException() }
         }
 
     override suspend fun getFavouriteTemplates(limit: Long, refresh: Boolean): Flow<Template> {

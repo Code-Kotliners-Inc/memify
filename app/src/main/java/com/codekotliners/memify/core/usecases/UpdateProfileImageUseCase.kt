@@ -39,7 +39,6 @@ class UpdateProfileImageUseCase @Inject constructor(
                 Response.Loading -> throw IllegalStateException("Unexpected loading state")
             }
 
-        println(photoUrl)
         return photoUrl
     }
 }

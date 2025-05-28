@@ -31,7 +31,7 @@ class HomeScreenViewModel @Inject constructor(
     val isRefreshing = _isRefreshing.asStateFlow()
 
     init {
-        loadDataForTab(_screenState.value.selectedTab)
+        refresh()
     }
 
     private fun startRefresh() {

@@ -57,7 +57,7 @@ class UserRepositoryImpl @Inject constructor(
             if (userData.username.isNotEmpty()) updates["username"] = userData.username
             userData.photoUrl?.let { updates["photoUrl"] = it }
             userData.phone?.let { updates["phone"] = it }
-            userData.newTSI?.let { updates["tsi"] = it }
+            userData.newTSI.let { updates["tsi"] = it }
 
             if (updates.isNotEmpty()) {
                 db
@@ -146,7 +146,9 @@ class UserRepositoryImpl @Inject constructor(
 
             if (documentSnapshot.exists()) {
                 val photoUrl = documentSnapshot.getString("photoUrl")
-                Log.d("test", "photoUrl = $photoUrl")
+                if (photoUrl == "") {
+                    return Response.Success(null)
+                }
                 return Response.Success(photoUrl)
             } else {
                 Response.Failure(NoSuchElementException("User document not found"))
