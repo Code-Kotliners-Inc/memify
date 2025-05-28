@@ -78,7 +78,7 @@ fun PostCardImage(post: Post, onImageClick: () -> Unit) {
                             rememberSharedContentState(post.id),
                             animatedVisibilityScope,
                         ),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
             )
         }
     }

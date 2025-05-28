@@ -3,6 +3,7 @@ package com.codekotliners.memify.features.templates.presentation.state
 import com.codekotliners.memify.core.models.Template
 
 data class TemplatesPageState(
+    val refreshing: Boolean,
     val selectedTab: Tab,
     val bestTemplatesState: TabState = TabState.None,
     val favouriteTemplatesState: TabState = TabState.None,
@@ -11,7 +12,7 @@ data class TemplatesPageState(
 ) {
     fun getTabs(): List<Tab> = Tab.entries.toList()
 
-    fun getCurrentState(): TabState =
+    fun getCurrentTabState(): TabState =
         when (selectedTab) {
             Tab.BEST -> bestTemplatesState
             Tab.NEW -> newTemplatesState
@@ -19,53 +20,30 @@ data class TemplatesPageState(
             Tab.VK_IMAGES -> vkTemplatesState
         }
 
-    fun getIsLoadingMoreByState(state: TabState): Boolean {
-        return when (state) {
-            is TabState.None -> false
-            is TabState.Loading -> false
-            is TabState.Error -> false
-            is TabState.Content -> {
-                return state.isLoadingMore
-            }
-            is TabState.Empty -> false
+    fun getIsLoadingMoreByState(state: TabState): Boolean =
+        when (state) {
+            is TabState.Content -> state.isLoadingMore
+            else -> false
         }
-    }
 
-    fun getReachedEndByState(state: TabState): Boolean {
-        return when (state) {
-            is TabState.None -> false
-            is TabState.Loading -> false
-            is TabState.Error -> false
-            is TabState.Content -> {
-                return state.reachedEnd
-            }
-            is TabState.Empty -> false
+    fun getReachedEndByState(state: TabState): Boolean =
+        when (state) {
+            is TabState.Content -> state.reachedEnd
+            else -> false
         }
-    }
 
     fun getTemplatesByState(state: TabState): List<Template> {
         return when (state) {
-            is TabState.None -> emptyList<Template>()
-            is TabState.Loading -> emptyList<Template>()
-            is TabState.Error -> emptyList<Template>()
             is TabState.Content -> {
                 return state.templates
             }
-            is TabState.Empty -> emptyList<Template>()
+            else -> emptyList<Template>()
         }
     }
 
     fun getTemplatesOfSelectedState(): List<Template> {
-        val state = getCurrentState()
-        return when (state) {
-            is TabState.None -> emptyList<Template>()
-            is TabState.Loading -> emptyList<Template>()
-            is TabState.Error -> emptyList<Template>()
-            is TabState.Content -> {
-                return state.templates
-            }
-            is TabState.Empty -> emptyList<Template>()
-        }
+        val state = getCurrentTabState()
+        return getTemplatesByState(state)
     }
 
     fun updatedCurrentTabState(newState: TabState): TemplatesPageState =
@@ -76,19 +54,21 @@ data class TemplatesPageState(
             Tab.VK_IMAGES -> copy(vkTemplatesState = newState)
         }
 
-    fun updatedCurrentContent(newTemplate: Template): TemplatesPageState {
+    fun updatedCurrentContent(
+        newTemplates: List<Template>,
+        loadMode: Boolean? = null,
+    ): TemplatesPageState {
         val updatedContent = { currentState: TabState ->
+            val currentTemplates = getTemplatesByState(currentState)
             TabState.Content(
-                getTemplatesByState(currentState) + newTemplate,
-                getIsLoadingMoreByState(currentState),
+                currentTemplates + (newTemplates - currentTemplates),
+                loadMode ?: getIsLoadingMoreByState(currentState),
                 false,
             )
         }
-        return when (selectedTab) {
-            Tab.BEST -> copy(bestTemplatesState = updatedContent(bestTemplatesState))
-            Tab.NEW -> copy(newTemplatesState = updatedContent(newTemplatesState))
-            Tab.FAVOURITE -> copy(favouriteTemplatesState = updatedContent(favouriteTemplatesState))
-            Tab.VK_IMAGES -> copy(vkTemplatesState = updatedContent(vkTemplatesState))
-        }
+
+        return updatedCurrentTabState(
+            updatedContent(getCurrentTabState()),
+        )
     }
 }

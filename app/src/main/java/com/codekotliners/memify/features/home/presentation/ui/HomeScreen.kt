@@ -29,7 +29,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.core.models.Post
 import com.codekotliners.memify.core.navigation.entities.NavRoutes
-import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.home.presentation.state.PostsFeedTabState
@@ -99,7 +98,8 @@ fun HomeScreen(
                 when (val currentState = screenState.getCurrentTabState()) {
                     is PostsFeedTabState.None -> {}
                     is PostsFeedTabState.Empty -> EmptyFeed()
-                    is PostsFeedTabState.Loading -> CenteredCircularProgressIndicator()
+                    is PostsFeedTabState.Loading -> {}
+
                     is PostsFeedTabState.Error ->
                         ErrorScreen(currentState.type)
 

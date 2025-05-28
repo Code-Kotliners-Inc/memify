@@ -25,7 +25,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.codekotliners.memify.features.auth.presentation.ui.AUTH_SUCCESS_EVENT
 import com.codekotliners.memify.features.templates.presentation.state.TabState
 import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorTab
-import com.codekotliners.memify.features.templates.presentation.ui.components.LoadingTab
 import com.codekotliners.memify.features.templates.presentation.ui.components.NoContentTab
 import com.codekotliners.memify.features.templates.presentation.ui.components.TemplatesGrid
 import com.codekotliners.memify.features.templates.presentation.viewmodel.TemplatesFeedViewModel
@@ -39,7 +38,6 @@ fun TemplatesFeedScreen(
     viewModel: TemplatesFeedViewModel = hiltViewModel(),
 ) {
     val pageState by viewModel.pageState.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val toastMessage by viewModel.toastMessage.collectAsState()
 
     val context = LocalContext.current
@@ -80,13 +78,14 @@ fun TemplatesFeedScreen(
             }
         }
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
+            isRefreshing = pageState.refreshing,
             onRefresh = { viewModel.refresh() },
+            modifier = Modifier.fillMaxSize(),
         ) {
-            when (val currentState = pageState.getCurrentState()) {
+            when (val currentState = pageState.getCurrentTabState()) {
                 TabState.None -> {}
 
-                is TabState.Loading -> LoadingTab()
+                is TabState.Loading -> {}
 
                 is TabState.Error -> {
                     ErrorTab(errorType = currentState.type) { onLoginClicked() }

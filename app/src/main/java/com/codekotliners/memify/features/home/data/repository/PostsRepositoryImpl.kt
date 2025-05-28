@@ -25,8 +25,8 @@ class PostsRepositoryImpl @Inject constructor(
                     is Response.Success -> {
                         User(
                             uid = it.creatorId,
-                            profileImageUrl = userData.data.get("photoUrl").toString(),
-                            username = userData.data.get("username").toString(),
+                            profileImageUrl = userData.data["photoUrl"].toString(),
+                            username = userData.data["username"].toString(),
                         )
                     }
 

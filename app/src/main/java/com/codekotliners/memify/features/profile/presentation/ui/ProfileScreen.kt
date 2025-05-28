@@ -311,7 +311,7 @@ private fun ProfileAvatar(
             )
         } else {
             Icon(
-                Icons.Default.Person,
+                imageVector = Icons.Default.Person,
                 contentDescription = null,
                 modifier = Modifier.size(50.dp * scrollOffset),
             )
