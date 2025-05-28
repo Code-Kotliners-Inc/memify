@@ -144,4 +144,6 @@
 
     <string name="new_name">Новое имя</string>
     <string name="name_changed">Имя успешно изменено</string>
+
+    <string name="saved">Сохраненные</string>
 </resources>

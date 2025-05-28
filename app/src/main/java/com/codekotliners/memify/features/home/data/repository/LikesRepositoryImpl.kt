@@ -43,4 +43,36 @@ class LikesRepositoryImpl @Inject constructor() : LikesRepository {
     }
 
     override suspend fun likesCount(postsDto: PostDto): Int = postsDto.liked.size
+
+    override suspend fun getLikedPosts(): List<PostDto> {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return emptyList()
+
+        return try {
+            val snapshot =
+                postsCollection
+                    .whereArrayContains("liked", userId)
+                    .get()
+                    .await()
+
+            snapshot.documents.mapNotNull { doc ->
+                try {
+                    PostDto(
+                        id = doc.id,
+                        imageUrl = doc.getString("imageUrl") ?: "",
+                        creatorId = doc.getString("creatorId") ?: "",
+                        liked = doc.get("liked") as? List<String> ?: emptyList(),
+                        templateId = doc.getString("templateId") ?: "",
+                        height = (doc.getLong("height") ?: 0L).toInt(),
+                        width = (doc.getLong("width") ?: 0L).toInt(),
+                    )
+                } catch (e: Exception) {
+                    Log.e("LIKED", "Error mapping post: ${e.message}")
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("LIKED", "Error fetching liked posts: ${e.message}")
+            emptyList()
+        }
+    }
 }

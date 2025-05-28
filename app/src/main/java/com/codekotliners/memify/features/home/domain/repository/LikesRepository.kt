@@ -8,4 +8,6 @@ interface LikesRepository {
     suspend fun isLiked(postsDto: PostDto): Boolean
 
     suspend fun likesCount(postsDto: PostDto): Int
+
+    suspend fun getLikedPosts(): List<PostDto>
 }
