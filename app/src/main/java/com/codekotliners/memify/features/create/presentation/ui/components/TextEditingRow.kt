@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,28 +29,14 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 
 @Composable
 fun TextEditingRow(viewModel: CanvasViewModel) {
-    Column(
-        modifier =
-            Modifier
-                .padding(horizontal = 4.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(vertical = 8.dp),
-    ) {
-        TextFormattingButtons(viewModel)
-    }
-}
-
-@Composable
-private fun TextFormattingButtons(viewModel: CanvasViewModel) {
     Row(
         modifier =
             Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 6.dp),
+                .padding(10.dp)
+                .background(MaterialTheme.colorScheme.surface, CircleShape)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         ColorSelectionButton(viewModel)
 
