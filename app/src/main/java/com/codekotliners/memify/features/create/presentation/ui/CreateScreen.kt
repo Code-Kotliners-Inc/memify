@@ -307,7 +307,6 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp)
                 .height(50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
