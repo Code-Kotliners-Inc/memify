@@ -27,9 +27,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -71,9 +71,6 @@ import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -94,6 +91,7 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 import com.codekotliners.memify.features.viewer.presentation.ui.components.ImageViewerTopBar
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,7 +104,6 @@ fun CreateScreen(
     viewModelViewer: ImageViewerViewModel = hiltViewModel(),
 ) {
     val isPublishing by viewModelViewer.isPublishing.collectAsState()
-    val context = LocalContext.current
 
     val galleryLauncher =
         rememberLauncherForActivityResult(
@@ -200,14 +197,14 @@ private fun CreateScreenBottomSheet(
             CreateScreenTopBar(
                 scrollBehavior,
                 onMenuClick = {
-                    if (scale == 1f) {
-                        coroutineScope.launch {
-                            showImageViewer.value = true
-                            val bitmapCompose = graphicsLayer.toImageBitmap()
+                    coroutineScope.launch {
+                        scale = 1f
+                        showImageViewer.value = true
+                        delay(350)
+                        val bitmapCompose = graphicsLayer.toImageBitmap()
+                        if (scale == 1f) {
                             bitmapState.value = bitmapCompose
                         }
-                    } else {
-                        scale = 1f
                     }
                 },
             )
@@ -344,15 +341,13 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
         title = {
             Text(
                 text = stringResource(R.string.editor_screen_title),
-                fontFamily = FontFamily(Font(R.font.ubunturegular)),
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         actions = {
             IconButton(onClick = onMenuClick) {
                 Icon(
-                    imageVector = Icons.Filled.MoreVert,
+                    imageVector = Icons.Filled.Check,
                     contentDescription = "Меню",
                 )
             }
@@ -445,6 +440,7 @@ private fun InteractiveCanvas(
                             .data(viewModel.imageUrl)
                             .build()
                     }
+
                     !viewModel.imageUrl.isNullOrEmpty() -> {
                         // Handle network URL
                         ImageRequest
@@ -452,6 +448,7 @@ private fun InteractiveCanvas(
                             .data(viewModel.imageUrl)
                             .build()
                     }
+
                     else -> null
                 },
         )
@@ -527,17 +524,20 @@ private fun ImageBox(
                         this@drawWithContent.drawContent()
                     }
                     drawLayer(graphicsLayer)
-                }.clickable(onClick = { onScaleChange(1f) })
+                }
+                .clickable(onClick = { onScaleChange(1f) })
                 .then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
                         Modifier
                     },
-                ).graphicsLayer(
+                )
+                .graphicsLayer(
                     scaleX = animatedScale.value,
                     scaleY = animatedScale.value,
-                ).transformable(state = state),
+                )
+                .transformable(state = state),
     ) {
         Image(
             painter = painter,
