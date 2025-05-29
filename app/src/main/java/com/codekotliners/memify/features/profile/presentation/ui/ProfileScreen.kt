@@ -21,9 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -115,7 +113,7 @@ fun ProfileScreen(
     val scrollOffset = rememberScrollOffset(scrollState)
     val isExtended = scrollOffset >= 0.1f
     val likedScrollState = rememberLazyStaggeredGridState()
-    val savedScrollState = rememberLazyGridState()
+    val savedScrollState = rememberLazyStaggeredGridState()
 
     AppScaffold(
         navController = navController,
@@ -335,7 +333,7 @@ private fun FeedTabBar(
     state: ProfileState,
     onSelectTab: (Int) -> Unit,
     likedScrollState: LazyStaggeredGridState,
-    savedScrollState: LazyGridState,
+    savedScrollState: LazyStaggeredGridState,
 ) {
     val savedUris = viewModel.savedUris.value
     val likedPosts = viewModel.likedPosts.value
@@ -407,25 +405,26 @@ private fun FeedTabBar(
 @Composable
 fun SavedMemesGrid(
     savedUris: List<UriEntity>,
-    scrollState: LazyGridState,
+    scrollState: LazyStaggeredGridState,
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
         state = scrollState,
+        verticalItemSpacing = 10.dp,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier =
-            Modifier.padding(
-                start = 10.dp,
-                end = 10.dp,
-                top = 10.dp,
-                bottom = 0.dp,
-            ),
+            Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxSize(),
+        contentPadding = PaddingValues(0.dp),
     ) {
-        items(savedUris.size) { index ->
-            val imageUri = Uri.parse(savedUris[index].uri)
+        items(savedUris) { item ->
+            val imageUri = Uri.parse(item.uri)
+
             Card(
                 modifier =
                     Modifier
-                        .padding(6.dp)
+                        .fillMaxWidth()
                         .aspectRatio(1f),
             ) {
                 Image(
