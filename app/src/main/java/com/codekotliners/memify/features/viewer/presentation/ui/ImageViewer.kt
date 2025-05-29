@@ -31,7 +31,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.codekotliners.memify.LocalNavAnimatedVisibilityScope
 import com.codekotliners.memify.LocalSharedTransitionScope
 import com.codekotliners.memify.R
@@ -88,9 +87,8 @@ fun ImageViewerScreen(
                     val url = viewModel.onTakeTemplateClick()
                     if (url != null) {
                         navController.navigate(NavRoutes.Create.createRoute(url)) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            popUpTo(NavRoutes.Home.route) { inclusive = true }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     } else {
                         Toast

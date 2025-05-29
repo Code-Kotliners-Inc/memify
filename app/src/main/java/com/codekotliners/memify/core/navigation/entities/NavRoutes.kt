@@ -1,6 +1,7 @@
 package com.codekotliners.memify.core.navigation.entities
 
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
+import java.util.Base64
 
 sealed class NavRoutes(
     val route: String,
@@ -8,11 +9,15 @@ sealed class NavRoutes(
     data object Home : NavRoutes("Home")
 
     data object Create : NavRoutes("Create") {
-        object Params {
-            const val IMAGE_URL = "image_url"
+        fun createRoute(imageUrl: String? = null): String {
+            if (imageUrl.isNullOrEmpty()) return "Create"
+            val b64 =
+                Base64
+                    .getUrlEncoder()
+                    .withoutPadding()
+                    .encodeToString(imageUrl.toByteArray(Charsets.UTF_8))
+            return "Create?image_url=$b64"
         }
-
-        fun createRoute(imageUrl: String? = null): String = "Create?image_url=${imageUrl ?: ""}"
     }
 
     data object Profile : NavRoutes("Profile")
@@ -30,6 +35,7 @@ sealed class NavRoutes(
     companion object {
         const val IMAGE_TYPE = "imageType"
         const val IMAGE_ID = "imageId"
+        const val IMAGE_URL = "image_url"
     }
 
     data object ImageViewer : NavRoutes("ImageViewer/{$IMAGE_TYPE}/{$IMAGE_ID}") {

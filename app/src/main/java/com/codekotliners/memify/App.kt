@@ -35,6 +35,7 @@ import com.codekotliners.memify.features.settings.presentation.ui.SettingsUnLogg
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.ui.ImageViewerScreen
+import java.util.Base64
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 val LocalSharedTransitionScope = compositionLocalOf<SharedTransitionScope?> { null }
@@ -84,18 +85,24 @@ fun App(
                     NavRoutes.SettingsLogged.route,
                 ) { SettingsLoggedScreen(navController, settingsViewModel) }
                 composable(
-                    route = NavRoutes.Create.route,
+                    route = "Create?${NavRoutes.IMAGE_URL}={${NavRoutes.IMAGE_URL}}",
                     arguments =
                         listOf(
-                            navArgument(NavRoutes.Create.Params.IMAGE_URL) {
+                            navArgument(NavRoutes.IMAGE_URL) {
                                 type = NavType.StringType
+                                defaultValue = null
                                 nullable = true
                             },
                         ),
                 ) { backStackEntry ->
-                    val imageUrl =
-                        backStackEntry.arguments?.getString(NavRoutes.Create.Params.IMAGE_URL)
-                            ?: "https://i.ytimg.com/vi/E-EtUFH7Ezs/maxresdefault.jpg"
+                    var encoded = backStackEntry.arguments?.getString(NavRoutes.IMAGE_URL)
+                    var imageUrl =
+                        encoded
+                            ?.let { Base64.getUrlDecoder().decode(it) }
+                            ?.let { String(it, Charsets.UTF_8) }
+                    if (imageUrl == "") {
+                        imageUrl = null
+                    }
 
                     CreateScreen(
                         navController = navController,

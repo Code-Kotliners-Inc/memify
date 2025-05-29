@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -88,7 +89,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateScreen(
     navController: NavController,
-    imageUrl: String,
+    imageUrl: String?,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel = hiltViewModel(),
     viewModelViewer: ImageViewerViewModel = hiltViewModel(),
@@ -108,12 +109,16 @@ fun CreateScreen(
         viewModel.imagePickerLauncher.value = galleryLauncher
     }
     LaunchedEffect(imageUrl) {
-        viewModel.imageUrl = imageUrl
+        if (imageUrl != null) {
+            viewModel.imageUrl = imageUrl
+        } else {
+            viewModel.imageUrl = "https://i.ytimg.com/vi/E-EtUFH7Ezs/maxresdefault.jpg"
+        }
     }
 
     val bottomSheetState =
         rememberStandardBottomSheetState(
-            initialValue = SheetValue.Expanded,
+            initialValue = if (imageUrl == null) SheetValue.Expanded else SheetValue.PartiallyExpanded,
             confirmValueChange = { newValue ->
                 newValue != SheetValue.Hidden && !isPublishing
             },
@@ -130,8 +135,7 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
-            PublishingLoadCircle(isPublishing)
+            CreateScreenBottomSheet(navController, isPublishing, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
         }
     }
 }
@@ -168,6 +172,7 @@ private fun PublishingLoadCircle(isPublishing: Boolean) {
 @Composable
 private fun CreateScreenBottomSheet(
     navController: NavController,
+    isPublishing: Boolean,
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     onLogin: () -> Unit,
@@ -233,6 +238,7 @@ private fun CreateScreenBottomSheet(
             scale,
             onScaleChange = { newScale -> scale = newScale },
         )
+        PublishingLoadCircle(isPublishing)
 
         LaunchedEffect(Unit) {
             viewModelViewer.shareImageEvent.collect { imageUri ->
@@ -412,8 +418,11 @@ private fun ImageBox(
                         this@drawWithContent.drawContent()
                     }
                     drawLayer(graphicsLayer)
-                }.clickable(onClick = { onScaleChange(1f) })
-                .then(
+                }.clickable(
+                    onClick = { onScaleChange(1f) },
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ).then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
