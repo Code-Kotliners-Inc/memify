@@ -31,7 +31,7 @@ fun ActionsRow(viewModel: CanvasViewModel) {
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             ActionsRowButton(R.drawable.baseline_undo_24) { viewModel.undo() }
@@ -45,7 +45,7 @@ fun ActionsRow(viewModel: CanvasViewModel) {
                 },
                 modifier =
                     Modifier
-                        .size(48.dp)
+                        .size(40.dp)
                         .background(
                             if (isPaintSelected) {
                                 MaterialTheme.colorScheme.primary
@@ -74,7 +74,7 @@ fun ActionsRow(viewModel: CanvasViewModel) {
                 },
                 modifier =
                     Modifier
-                        .size(48.dp)
+                        .size(40.dp)
                         .background(
                             if (isWriteSelected) {
                                 MaterialTheme.colorScheme.primary
