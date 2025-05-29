@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -129,7 +129,7 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
             text = stringResource(R.string.theme_title),
             style = MaterialTheme.typography.suggestNewAccount,
         )
-        Spacer(Modifier.width(100.dp))
+        Spacer(modifier = Modifier.weight(1f))
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = !expanded },
@@ -155,7 +155,7 @@ private fun ThemeChange(viewModel: SettingsScreenViewModel) {
                 modifier =
                     Modifier
                         .menuAnchor()
-                        .fillMaxWidth(),
+                        .widthIn(min = 120.dp, max = 200.dp),
             )
 
             ExposedDropdownMenu(
