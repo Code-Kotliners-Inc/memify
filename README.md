@@ -1,4 +1,5 @@
-# <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Memify
+# <img src="https://github.com/user-attachments/assets/4a07351b-a540-454f-9afe-a6e9bec2ce04" width="30" height="30" /> Memify
+
 <div align="center">
   <img src = "https://github.com/user-attachments/assets/7422bf9d-7ed7-4807-aeb2-207fcdb40b9b", width = 200/>
   <img src = "https://github.com/user-attachments/assets/d6860313-8c59-480f-ac96-bd4298eb841b", width = 200/>
