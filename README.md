@@ -1,10 +1,9 @@
 # <img src="https://github.com/user-attachments/assets/2465b87f-12fb-45dd-b8df-ffd426827c36" width="30" height="30" /> Memify
 <div align="center">
-  <img src= "https://github.com/user-attachments/assets/45b11df6-60ed-4f94-bef9-a7e038dda369", width =200/>
   <img src = "https://github.com/user-attachments/assets/7422bf9d-7ed7-4807-aeb2-207fcdb40b9b", width = 200/>
   <img src = "https://github.com/user-attachments/assets/d6860313-8c59-480f-ac96-bd4298eb841b", width = 200/>
   <img src = "https://github.com/user-attachments/assets/ca4f0316-4a35-4b04-ac11-8b424171aef1", width = 200/>
-  <img src = "https://github.com/user-attachments/assets/3c15b28b-99cd-4dba-a099-a94e233fbd7d, width = 200"/>
+  <img src = "https://github.com/user-attachments/assets/bcc0a6fd-6176-43db-a908-b5319bea8545",  width = 200"/>
 </div>
 Memify — это инновационное мобильное приложение для создания, редактирования и обмена мемами, объединяющее в себе мощный редактор и социальную платформу. Основная цель проекта — предоставить пользователям удобный и современный инструмент для творчества, а также возможность делиться своими работами с комьюнити, вдохновляться чужими мемами и участвовать в формировании интернет-культуры.
 
