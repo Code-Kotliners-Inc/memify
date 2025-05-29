@@ -113,14 +113,15 @@ fun CreateScreen(
     val isPublishing by viewModelViewer.isPublishing.collectAsState()
     val context = LocalContext.current
 
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val uri = result.data?.data
-            viewModel.handleImageSelection(uri)
+    val galleryLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                viewModel.handleImageSelection(uri)
+            }
         }
-    }
     LaunchedEffect(Unit) {
         viewModel.imagePickerLauncher.value = galleryLauncher
     }
@@ -150,7 +151,6 @@ fun CreateScreen(
             PublishingLoadCircle(isPublishing)
         }
     }
-
 }
 
 @Composable
@@ -375,15 +375,16 @@ private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasVi
         }
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 80.dp, end = 16.dp),
-        contentAlignment = Alignment.BottomEnd
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(bottom = 80.dp, end = 16.dp),
+        contentAlignment = Alignment.BottomEnd,
     ) {
         FloatingActionButton(
             onClick = { viewModel.pickImageFromGallery() },
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
+            contentColor = MaterialTheme.colorScheme.onPrimary,
         ) {
             Icon(Icons.Default.Add, contentDescription = "Add from gallery")
         }
@@ -418,23 +419,27 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 @Composable
 private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     val context = LocalContext.current
-    val painter = rememberAsyncImagePainter(
-        model = when {
-            viewModel.imageUrl?.startsWith("content://") == true -> {
-                // Handle content URI (from gallery)
-                ImageRequest.Builder(context)
-                    .data(viewModel.imageUrl)
-                    .build()
-            }
-            !viewModel.imageUrl.isNullOrEmpty() -> {
-                // Handle network URL
-                ImageRequest.Builder(context)
-                    .data(viewModel.imageUrl)
-                    .build()
-            }
-            else -> null
-        }
-    )
+    val painter =
+        rememberAsyncImagePainter(
+            model =
+                when {
+                    viewModel.imageUrl?.startsWith("content://") == true -> {
+                        // Handle content URI (from gallery)
+                        ImageRequest
+                            .Builder(context)
+                            .data(viewModel.imageUrl)
+                            .build()
+                    }
+                    !viewModel.imageUrl.isNullOrEmpty() -> {
+                        // Handle network URL
+                        ImageRequest
+                            .Builder(context)
+                            .data(viewModel.imageUrl)
+                            .build()
+                    }
+                    else -> null
+                },
+        )
 
     // Получаем размеры изображения после загрузки
     LaunchedEffect(painter.state) {

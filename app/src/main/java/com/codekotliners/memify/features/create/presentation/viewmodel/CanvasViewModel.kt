@@ -141,10 +141,12 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
             canvasElements[index] = element.copy(position = newPosition)
         }
     }
+
     fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-        }
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+            }
         imagePickerLauncher.value?.launch(intent)
     }
 
