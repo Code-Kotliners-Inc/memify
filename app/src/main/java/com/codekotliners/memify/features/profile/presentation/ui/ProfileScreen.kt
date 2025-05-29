@@ -343,7 +343,7 @@ private fun FeedTabBar(
             listOf(
                 stringResource(R.string.created),
                 stringResource(R.string.liked),
-                stringResource(R.string.published),
+                // stringResource(R.string.published),
                 // stringResource(R.string.drafts),
             )
         } else {
@@ -390,7 +390,7 @@ private fun FeedTabBar(
             when (state.selectedTab) {
                 0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
                 1 -> LikedMemesGrid(likedPosts = likedPosts, scrollState = likedScrollState)
-                2 -> {}
+                // 2 -> {}
                 // 3 -> {}
             }
         } else {
