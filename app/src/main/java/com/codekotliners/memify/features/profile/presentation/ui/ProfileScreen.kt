@@ -85,6 +85,7 @@ import com.codekotliners.memify.features.templates.presentation.ui.components.Er
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import kotlin.math.min
+import androidx.core.net.toUri
 
 @Composable
 fun ProfileScreen(
@@ -121,7 +122,7 @@ fun ProfileScreen(
             Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background),
-        topBar = { ProfileTopBar(navController, showProfile = !isExtended) },
+        topBar = { ProfileTopBar(navController) },
         floatingActionButton = {
             ProfileFloatingActionButton(
                 showFloatingBtn = !isExtended,
@@ -183,7 +184,7 @@ private fun rememberScrollOffset(scrollState: LazyGridState): Float =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
+private fun ProfileTopBar(navController: NavController) {
     var route = NavRoutes.SettingsUnlogged.route
     if (FirebaseAuth.getInstance().currentUser != null) {
         route = NavRoutes.SettingsLogged.route
@@ -207,6 +208,7 @@ private fun ProfileTopBar(navController: NavController, showProfile: Boolean) {
                 )
             }
         },
+        expandedHeight = 48.dp,
     )
 }
 
@@ -419,7 +421,7 @@ fun SavedMemesGrid(
         contentPadding = PaddingValues(0.dp),
     ) {
         items(savedUris) { item ->
-            val imageUri = Uri.parse(item.uri)
+            val imageUri = item.uri.toUri()
 
             Card(
                 modifier =
