@@ -1,29 +1,31 @@
 package com.codekotliners.memify.features.settings.presentation.viewmodel
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserNameUseCase
-import com.vk.id.AccessToken
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-import androidx.core.content.edit
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.theme.ThemeMode
+import com.codekotliners.memify.core.usecases.UpdateProfileImageUseCase
 import com.codekotliners.memify.features.settings.presentation.domain.UpdatePasswordResult
 import com.codekotliners.memify.features.settings.presentation.domain.WeakPasswordReason
 import com.codekotliners.memify.features.settings.presentation.usecase.SignOutUseCase
+import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserNameUseCase
 import com.codekotliners.memify.features.settings.presentation.usecase.UpdateUserPasswordUseCase
 import com.google.firebase.auth.FirebaseAuth
+import com.vk.id.AccessToken
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
     private val updateUserNameUseCase: UpdateUserNameUseCase,
     private val updateUserPasswordUseCase: UpdateUserPasswordUseCase,
+    private val updateProfileImageUseCase: UpdateProfileImageUseCase,
     private val singOutUseCase: SignOutUseCase,
     private val sharedPreferences: SharedPreferences,
 ) : ViewModel() {

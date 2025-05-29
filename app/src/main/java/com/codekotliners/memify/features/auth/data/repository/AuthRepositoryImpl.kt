@@ -82,7 +82,22 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun firebaseGoogleAuth(idToken: String) =
         try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(credential).await()
+            val authResult = auth.signInWithCredential(credential).await()
+            // Получаем данные пользователя из Google
+            val user = authResult.user
+            if (user != null) {
+                val userData =
+                    UserData(
+                        email = user.email ?: "",
+                        password = "",
+                        username = user.displayName ?: "Google User",
+                        newTSI = 0,
+                        photoUrl = user.photoUrl?.toString(),
+                        phone = user.phoneNumber,
+                    )
+                userRepo.createUser(userData)
+            }
+
             Response.Success(true)
         } catch (e: Exception) {
             Response.Failure(e)
@@ -116,7 +131,23 @@ class AuthRepositoryImpl @Inject constructor(
 
             account.idToken?.let { token ->
                 val credential = GoogleAuthProvider.getCredential(token, null)
-                auth.signInWithCredential(credential).await()
+                val authResult = auth.signInWithCredential(credential).await()
+
+                // Создаём запись в Firestore
+                val user = authResult.user
+                if (user != null) {
+                    val userData =
+                        UserData(
+                            email = user.email ?: "",
+                            password = "",
+                            username = user.displayName ?: "Google User",
+                            newTSI = 0,
+                            photoUrl = user.photoUrl?.toString(),
+                            phone = user.phoneNumber,
+                        )
+                    userRepo.createUser(userData)
+                }
+
                 Response.Success(true)
             } ?: Response.Failure(Exception("Google sign-in failed: no ID token"))
         } catch (e: Exception) {
