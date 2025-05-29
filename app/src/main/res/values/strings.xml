@@ -95,6 +95,7 @@
     <string name="new_tab_name">Новые</string>
     <string name="preview_screen_title">Предпросмотр</string>
     <string name="editor_screen_title">Editor</string>
+    <string name="memify">Memify</string>
     <string name="templates_tab_vk">ВК</string>
     <string name="not_less_than_8_symbols_requirement">не менее 8 символов</string>
     <string name="require_special_character">хотя бы один специальный символ</string>
