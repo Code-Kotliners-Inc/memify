@@ -344,12 +344,12 @@ private fun FeedTabBar(
                 stringResource(R.string.created),
                 stringResource(R.string.liked),
                 stringResource(R.string.published),
-                stringResource(R.string.drafts),
+                // stringResource(R.string.drafts),
             )
         } else {
             listOf(
                 stringResource(R.string.created),
-                stringResource(R.string.drafts),
+                // stringResource(R.string.drafts),
             )
         }
 
@@ -391,12 +391,12 @@ private fun FeedTabBar(
                 0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
                 1 -> LikedMemesGrid(likedPosts = likedPosts, scrollState = likedScrollState)
                 2 -> {}
-                3 -> {}
+                // 3 -> {}
             }
         } else {
             when (state.selectedTab) {
                 0 -> SavedMemesGrid(savedUris = savedUris, scrollState = savedScrollState)
-                1 -> {}
+                // 1 -> {}
             }
         }
     }
