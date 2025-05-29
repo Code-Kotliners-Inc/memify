@@ -1,6 +1,9 @@
 package com.codekotliners.memify.features.create.presentation.ui
 
+import android.app.Activity
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -33,6 +37,7 @@ import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -106,11 +111,22 @@ fun CreateScreen(
     viewModelViewer: ImageViewerViewModel = hiltViewModel(),
 ) {
     val isPublishing by viewModelViewer.isPublishing.collectAsState()
+    val context = LocalContext.current
 
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data
+            viewModel.handleImageSelection(uri)
+        }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.imagePickerLauncher.value = galleryLauncher
+    }
     LaunchedEffect(imageUrl) {
         viewModel.imageUrl = imageUrl
     }
-
     val bottomSheetState =
         rememberStandardBottomSheetState(
             initialValue = SheetValue.Expanded,
@@ -134,6 +150,7 @@ fun CreateScreen(
             PublishingLoadCircle(isPublishing)
         }
     }
+
 }
 
 @Composable
@@ -357,6 +374,20 @@ private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasVi
             InteractiveCanvas(viewModel, graphicsLayer)
         }
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.dp, end = 16.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        FloatingActionButton(
+            onClick = { viewModel.pickImageFromGallery() },
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add from gallery")
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -387,14 +418,23 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 @Composable
 private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
     val context = LocalContext.current
-    val painter =
-        rememberAsyncImagePainter(
-            model =
-                ImageRequest
-                    .Builder(context)
+    val painter = rememberAsyncImagePainter(
+        model = when {
+            viewModel.imageUrl?.startsWith("content://") == true -> {
+                // Handle content URI (from gallery)
+                ImageRequest.Builder(context)
                     .data(viewModel.imageUrl)
-                    .build(),
-        )
+                    .build()
+            }
+            !viewModel.imageUrl.isNullOrEmpty() -> {
+                // Handle network URL
+                ImageRequest.Builder(context)
+                    .data(viewModel.imageUrl)
+                    .build()
+            }
+            else -> null
+        }
+    )
 
     // Получаем размеры изображения после загрузки
     LaunchedEffect(painter.state) {
