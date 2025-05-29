@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -22,10 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
 
@@ -45,9 +41,7 @@ fun CreateScreenTopBar(
         title = {
             Text(
                 text = title,
-                fontFamily = FontFamily(Font(R.font.ubunturegular)),
-                fontStyle = FontStyle.Normal,
-                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
             )
         },
         actions = {
@@ -58,7 +52,7 @@ fun CreateScreenTopBar(
                 },
             ) {
                 Icon(
-                    Icons.Default.MoreVert,
+                    Icons.Default.Check,
                     contentDescription = null,
                 )
             }
@@ -90,6 +84,7 @@ fun CreateScreenTopBar(
                 }
             }
         },
+        expandedHeight = 48.dp,
     )
 }
 
