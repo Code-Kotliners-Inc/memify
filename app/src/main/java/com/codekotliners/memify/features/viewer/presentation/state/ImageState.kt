@@ -14,7 +14,9 @@ sealed class ImageState {
         val image: GenericImage,
     ) : ImageState()
 
-    object LoadingBitmap : ImageState()
+    data class LoadingBitmap(
+        val image: GenericImage,
+    ) : ImageState()
 
     data class Content(
         val image: GenericImage,

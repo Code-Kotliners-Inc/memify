@@ -157,7 +157,7 @@ fun PostCard(
                 .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
     ) {
         Column(Modifier.padding(horizontal = 8.dp)) {
             PostCardHeader(card)
