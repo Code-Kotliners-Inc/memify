@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,10 +37,7 @@ fun RowSlider(
                 viewModel.showTextPreview = false
             },
             valueRange = 5f..99f,
-            modifier =
-                Modifier
-                    .padding(horizontal = 10.dp)
-                    .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             thumb = {
                 Box(
                     modifier =
