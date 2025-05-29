@@ -1,10 +1,9 @@
-package com.codekotliners.memify.features.viewer.presentation.ui.components
+package com.codekotliners.memify.features.create.presentation.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
@@ -23,35 +22,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.codekotliners.memify.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageViewerTopBar(
-    onBack: () -> Unit,
+fun CreateScreenTopBar(
+    onMenuClick: () -> Unit,
     onShareClick: () -> Unit,
     onDownloadClick: () -> Unit,
-    onTakeTemplateClick: () -> Unit,
+    onPublishClick: () -> Unit,
+    title: String,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
         windowInsets = WindowInsets(0),
-        navigationIcon = {
-            IconButton(
-                onClick = { onBack() },
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                )
-            }
+        title = {
+            Text(
+                text = title,
+                fontFamily = FontFamily(Font(R.font.ubunturegular)),
+                fontStyle = FontStyle.Normal,
+                textAlign = TextAlign.Center,
+            )
         },
-        title = {},
         actions = {
             IconButton(
-                onClick = { expanded = true },
+                onClick = {
+                    expanded = true
+                    onMenuClick()
+                },
             ) {
                 Icon(
                     Icons.Default.MoreVert,
@@ -78,10 +82,10 @@ fun ImageViewerTopBar(
                     expanded = false
                 }
                 MenuItem(
-                    stringResource(R.string.take_template_action),
-                    painterResource(R.drawable.copy),
+                    stringResource(R.string.publish_action),
+                    painterResource(R.drawable.publish),
                 ) {
-                    onTakeTemplateClick()
+                    onPublishClick()
                     expanded = false
                 }
             }

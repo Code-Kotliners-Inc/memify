@@ -49,6 +49,7 @@ fun TemplateItem(
                     .crossfade(true)
                     .build(),
         )
+
     val state = painter.state
 
     Card(
