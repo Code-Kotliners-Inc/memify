@@ -88,6 +88,7 @@
     <string name="unknown_error_message">Упс, что-то пошло не так, попробуйте позже</string>
     <string name="empty_templates_tab_message">Кажется, здесь ничего нет</string>
     <string name="login_error_message">Ошибка входа</string>
+    <string name="cant_take_template">Опция недоступна, попробуйте позжа</string>
     <string name="id_token_not_found">ID токен не найден</string>
     <string name="auth_error">Ошибка авторизации:</string>
     <string name="auth">Авторизация...</string>
@@ -147,4 +148,5 @@
 
     <string name="saved">Сохраненные</string>
     <string name="Email">Почта</string>
+    <string name="publishing_process">Публикация...</string>
 </resources>

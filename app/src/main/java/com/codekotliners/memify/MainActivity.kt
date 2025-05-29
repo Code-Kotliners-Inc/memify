@@ -14,17 +14,17 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.codekotliners.memify.core.theme.MemifyTheme
+import com.codekotliners.memify.core.theme.ThemeMode
 import com.codekotliners.memify.core.theme.surfaceDark
 import com.codekotliners.memify.core.theme.surfaceLight
 import com.codekotliners.memify.features.settings.presentation.viewmodel.SettingsScreenViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.compose.runtime.getValue
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import com.codekotliners.memify.core.theme.ThemeMode
 
 @Composable
 fun SetStatusBarBackground(window: Window, isDark: Boolean) {

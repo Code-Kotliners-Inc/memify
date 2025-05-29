@@ -11,11 +11,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
@@ -32,25 +31,18 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -74,7 +66,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
@@ -82,14 +73,16 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.codekotliners.memify.R
 import com.codekotliners.memify.core.ui.components.AppScaffold
+import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
+import com.codekotliners.memify.features.create.presentation.ui.components.CreateScreenTopBar
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
-import com.codekotliners.memify.features.viewer.presentation.ui.components.ImageViewerTopBar
+import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorLoadingItem
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -98,7 +91,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateScreen(
     navController: NavController,
-    imageUrl: String,
+    imageUrl: String?,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel = hiltViewModel(),
     viewModelViewer: ImageViewerViewModel = hiltViewModel(),
@@ -118,11 +111,16 @@ fun CreateScreen(
         viewModel.imagePickerLauncher.value = galleryLauncher
     }
     LaunchedEffect(imageUrl) {
-        viewModel.imageUrl = imageUrl
+        if (imageUrl != null) {
+            viewModel.imageUrl = imageUrl
+        } else {
+            viewModel.imageUrl = "https://i.ytimg.com/vi/E-EtUFH7Ezs/maxresdefault.jpg"
+        }
     }
+
     val bottomSheetState =
         rememberStandardBottomSheetState(
-            initialValue = SheetValue.Expanded,
+            initialValue = if (imageUrl == null) SheetValue.Expanded else SheetValue.PartiallyExpanded,
             confirmValueChange = { newValue ->
                 newValue != SheetValue.Hidden && !isPublishing
             },
@@ -139,8 +137,15 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(navController, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
-            PublishingLoadCircle(isPublishing)
+            CreateScreenBottomSheet(
+                navController,
+                isPublishing,
+                scaffoldState,
+                bottomSheetState,
+                onLogin,
+                viewModel,
+                viewModelViewer,
+            )
         }
     }
 }
@@ -164,8 +169,8 @@ private fun PublishingLoadCircle(isPublishing: Boolean) {
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Публикация...",
-                    color = MaterialTheme.colorScheme.onPrimary,
+                    stringResource(R.string.publishing_process),
+                    color = Color.White,
                     fontSize = 18.sp,
                 )
             }
@@ -177,25 +182,24 @@ private fun PublishingLoadCircle(isPublishing: Boolean) {
 @Composable
 private fun CreateScreenBottomSheet(
     navController: NavController,
+    isPublishing: Boolean,
     scaffoldState: BottomSheetScaffoldState,
     bottomSheetState: SheetState,
     onLogin: () -> Unit,
     viewModel: CanvasViewModel,
     viewModelViewer: ImageViewerViewModel,
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val coroutineScope = rememberCoroutineScope()
     val graphicsLayer = rememberGraphicsLayer()
     val showImageViewer = remember { mutableStateOf(false) }
     val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
-    val isPublishing by viewModelViewer.isPublishing.collectAsState()
 
     var scale by remember { mutableFloatStateOf(1f) }
+    val context = LocalContext.current
 
     BottomSheetScaffold(
         topBar = {
             CreateScreenTopBar(
-                scrollBehavior,
                 onMenuClick = {
                     coroutineScope.launch {
                         scale = 1f
@@ -204,9 +208,18 @@ private fun CreateScreenBottomSheet(
                         val bitmapCompose = graphicsLayer.toImageBitmap()
                         if (scale == 1f) {
                             bitmapState.value = bitmapCompose
+
+                            val state = bitmapState.value
+                            if (state != null) {
+                                viewModelViewer.setBitmapOnly(state.asAndroidBitmap())
+                            }
                         }
                     }
                 },
+                onShareClick = { viewModelViewer.onShareClick() },
+                onDownloadClick = { viewModelViewer.onDownloadClick(context) },
+                onPublishClick = { viewModelViewer.onPublishClick() },
+                title = stringResource(R.string.editor_screen_title),
             )
         },
         scaffoldState = scaffoldState,
@@ -225,7 +238,7 @@ private fun CreateScreenBottomSheet(
                 },
             )
         },
-        sheetPeekHeight = 58.dp,
+        sheetPeekHeight = 54.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
         CreateScreenContent(
@@ -235,130 +248,21 @@ private fun CreateScreenBottomSheet(
             scale,
             onScaleChange = { newScale -> scale = newScale },
         )
+        PublishingLoadCircle(isPublishing)
 
-        if (showImageViewer.value && bitmapState.value != null) {
-            ImagePreviewDialog(
-                bitmapState = bitmapState,
-                isPublishing = isPublishing,
-                viewModelViewer = viewModelViewer,
-                onDismiss = { showImageViewer.value = false },
-            )
-        }
-    }
-}
-
-@Composable
-private fun ImagePreviewDialog(
-    bitmapState: MutableState<ImageBitmap?>,
-    isPublishing: Boolean,
-    viewModelViewer: ImageViewerViewModel,
-    onDismiss: () -> Unit,
-) {
-    val context = LocalContext.current
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(12.dp),
-            tonalElevation = 4.dp,
-            modifier = Modifier.wrapContentSize(),
-        ) {
-            Column {
-                ImageViewerTopBar(
-                    onBack = onDismiss,
-                    onShareClick = { viewModelViewer.onShareClick() },
-                    onDownloadClick = { viewModelViewer.onDownloadClick(context) },
-                    onPublishClick = { viewModelViewer.onPublishClick() },
-                    onTakeTemplateClick = { viewModelViewer.onTakeTemplateClick() },
-                    isPublising = isPublishing,
-                    title = stringResource(R.string.preview_screen_title),
-                )
-
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(
-                                bitmapState.value!!.width.toFloat() / bitmapState.value!!.height.toFloat(),
-                            ),
-                ) {
-                    Image(
-                        bitmap = bitmapState.value!!,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-
-                    if (isPublishing) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black.copy(alpha = 0.4f)),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(64.dp),
-                                    color = MaterialTheme.colorScheme.primary,
-                                    strokeWidth = 4.dp,
-                                )
-                                Spacer(Modifier.height(16.dp))
-                                Text(
-                                    "Публикация...",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    fontSize = 18.sp,
-                                )
-                            }
-                        }
+        LaunchedEffect(Unit) {
+            viewModelViewer.shareImageEvent.collect { imageUri ->
+                val sendIntent =
+                    Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_STREAM, imageUri)
+                        type = "image/*"
                     }
-                }
-            }
-
-            LaunchedEffect(Unit) {
-                viewModelViewer.setBitmapOnly(bitmapState.value!!.asAndroidBitmap())
-            }
-
-            LaunchedEffect(Unit) {
-                viewModelViewer.shareImageEvent.collect { imageUri ->
-                    val sendIntent =
-                        Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_STREAM, imageUri)
-                            type = "image/*"
-                        }
-                    val shareIntent = Intent.createChooser(sendIntent, null)
-                    context.startActivity(shareIntent)
-                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                context.startActivity(shareIntent)
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuClick: () -> Unit) {
-    CenterAlignedTopAppBar(
-        windowInsets = WindowInsets(0),
-        title = {
-            Text(
-                text = stringResource(R.string.editor_screen_title),
-                style = MaterialTheme.typography.titleLarge,
-            )
-        },
-        actions = {
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = "Меню",
-                )
-            }
-        },
-        colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                titleContentColor = MaterialTheme.colorScheme.onSurface,
-            ),
-        scrollBehavior = scrollBehavior,
-    )
 }
 
 @Composable
@@ -524,9 +428,11 @@ private fun ImageBox(
                         this@drawWithContent.drawContent()
                     }
                     drawLayer(graphicsLayer)
-                }
-                .clickable(onClick = { onScaleChange(1f) })
-                .then(
+                }.clickable(
+                    onClick = { onScaleChange(1f) },
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ).then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
@@ -545,6 +451,19 @@ private fun ImageBox(
             contentScale = ContentScale.Fit,
             modifier = Modifier.matchParentSize(),
         )
+        val state = painter.state
+
+        when (state) {
+            is AsyncImagePainter.State.Error -> {
+                ErrorLoadingItem()
+            }
+
+            is AsyncImagePainter.State.Loading -> {
+                CenteredCircularProgressIndicator()
+            }
+
+            else -> {}
+        }
 
         EditingCanvasElements(viewModel)
 
