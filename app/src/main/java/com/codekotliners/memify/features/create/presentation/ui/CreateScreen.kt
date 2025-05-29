@@ -5,16 +5,15 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,9 +22,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -63,7 +61,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -73,7 +70,6 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -92,7 +88,6 @@ import com.codekotliners.memify.core.ui.components.AppScaffold
 import com.codekotliners.memify.features.create.presentation.ui.components.ActionsRow
 import com.codekotliners.memify.features.create.presentation.ui.components.DrawingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.EditingCanvasElements
-import com.codekotliners.memify.features.create.presentation.ui.components.InstrumentsTextBox
 import com.codekotliners.memify.features.create.presentation.ui.components.TextEditingRow
 import com.codekotliners.memify.features.create.presentation.ui.components.TextInputDialog
 import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasViewModel
@@ -198,15 +193,21 @@ private fun CreateScreenBottomSheet(
     val bitmapState = remember { mutableStateOf<ImageBitmap?>(null) }
     val isPublishing by viewModelViewer.isPublishing.collectAsState()
 
+    var scale by remember { mutableFloatStateOf(1f) }
+
     BottomSheetScaffold(
         topBar = {
             CreateScreenTopBar(
                 scrollBehavior,
                 onMenuClick = {
-                    coroutineScope.launch {
-                        showImageViewer.value = true
-                        val bitmapCompose = graphicsLayer.toImageBitmap()
-                        bitmapState.value = bitmapCompose
+                    if (scale == 1f) {
+                        coroutineScope.launch {
+                            showImageViewer.value = true
+                            val bitmapCompose = graphicsLayer.toImageBitmap()
+                            bitmapState.value = bitmapCompose
+                        }
+                    } else {
+                        scale = 1f
                     }
                 },
             )
@@ -223,13 +224,20 @@ private fun CreateScreenBottomSheet(
                     coroutineScope.launch {
                         bottomSheetState.partialExpand()
                     }
+                    viewModel.clearCanvas()
                 },
             )
         },
         sheetPeekHeight = 58.dp,
         sheetSwipeEnabled = true,
     ) { innerPadding ->
-        CreateScreenContent(innerPadding, viewModel, graphicsLayer)
+        CreateScreenContent(
+            innerPadding,
+            viewModel,
+            graphicsLayer,
+            scale,
+            onScaleChange = { newScale -> scale = newScale },
+        )
 
         if (showImageViewer.value && bitmapState.value != null) {
             ImagePreviewDialog(
@@ -359,20 +367,22 @@ private fun CreateScreenTopBar(scrollBehavior: TopAppBarScrollBehavior, onMenuCl
 }
 
 @Composable
-private fun CreateScreenContent(innerPadding: PaddingValues, viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
-    LazyColumn(
+private fun CreateScreenContent(
+    innerPadding: PaddingValues,
+    viewModel: CanvasViewModel,
+    graphicsLayer: GraphicsLayer,
+    scale: Float,
+    onScaleChange: (Float) -> Unit,
+) {
+    Column(
         modifier =
             Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(bottom = 80.dp),
     ) {
-        item { ActionsRow(viewModel) }
-        item {
-            InteractiveCanvas(viewModel, graphicsLayer)
-        }
+        InteractiveCanvas(viewModel, graphicsLayer, scale, onScaleChange)
     }
     Box(
         modifier =
@@ -417,7 +427,12 @@ fun BottomSheetHandle(bottomSheetState: SheetState) {
 }
 
 @Composable
-private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: GraphicsLayer) {
+private fun InteractiveCanvas(
+    viewModel: CanvasViewModel,
+    graphicsLayer: GraphicsLayer,
+    scale: Float,
+    onScaleChange: (Float) -> Unit,
+) {
     val context = LocalContext.current
     val painter =
         rememberAsyncImagePainter(
@@ -450,107 +465,32 @@ private fun InteractiveCanvas(viewModel: CanvasViewModel, graphicsLayer: Graphic
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        Tools(viewModel)
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) { ImageBox(viewModel, graphicsLayer, painter, scale, onScaleChange) }
 
-        ImageBox(viewModel, graphicsLayer, painter)
-
-        if (viewModel.showTextInput) {
-            TextInputDialog(viewModel)
-        }
-
-        AnimatedVisibility(
-            visible = (viewModel.isPaintingEnabled == false && viewModel.isWritingEnabled == false),
-        ) {
-            InstrumentsTextBox()
-        }
-
-        AnimatedVisibility(visible = viewModel.isPaintingEnabled) {
-            DrawingRow(viewModel)
-        }
-
-        AnimatedVisibility(visible = viewModel.isWritingEnabled) {
-            TextEditingRow(viewModel)
-        }
-    }
-}
-
-@Composable
-private fun Tools(viewModel: CanvasViewModel) {
-    Row(
-        modifier =
-            Modifier
-                .padding(16.dp)
-                .background(MaterialTheme.colorScheme.surface, CircleShape)
-                .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        // Состояния
-        val isPaintSelected = viewModel.isPaintingEnabled
-        val isWriteSelected = viewModel.isWritingEnabled
-
-        // Кнопка Paint
-        IconButton(
-            onClick = {
-                viewModel.isPaintingEnabled = !viewModel.isPaintingEnabled
-                viewModel.isWritingEnabled = false
-            },
+        Column(
             modifier =
                 Modifier
-                    .size(48.dp)
-                    .background(
-                        if (isPaintSelected) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.background
-                        },
-                        CircleShape,
-                    ),
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Icon(
-                painter = painterResource(R.drawable.baseline_brush_24),
-                contentDescription = "Paint",
-                tint =
-                    if (isPaintSelected) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-            )
-        }
-
-        // Кнопка Write
-        IconButton(
-            onClick = {
-                viewModel.isWritingEnabled = !viewModel.isWritingEnabled
-                viewModel.isPaintingEnabled = false
-            },
-            modifier =
-                Modifier
-                    .size(48.dp)
-                    .background(
-                        if (isWriteSelected) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.background
-                        },
-                        CircleShape,
-                    ),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.round_text_fields_24),
-                contentDescription = "Write",
-                tint =
-                    if (isWriteSelected) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-            )
+            ActionsRow(viewModel)
+            AnimatedVisibility(visible = viewModel.isWritingEnabled) {
+                TextEditingRow(viewModel)
+            }
+            AnimatedVisibility(visible = viewModel.isPaintingEnabled) {
+                DrawingRow(viewModel)
+            }
+            if (viewModel.showTextInput) {
+                TextInputDialog(viewModel)
+            }
         }
     }
 }
@@ -560,46 +500,43 @@ private fun ImageBox(
     viewModel: CanvasViewModel,
     graphicsLayer: GraphicsLayer,
     painter: AsyncImagePainter,
+    scale: Float,
+    onScaleChange: (Float) -> Unit,
 ) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var angle by remember { mutableFloatStateOf(0f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    val animatedScale = animateFloatAsState(targetValue = scale)
     val state =
-        rememberTransformableState { scaleChange, offsetChange, rotationChange ->
-            scale *= scaleChange
-            angle += rotationChange
-            offset += offsetChange
+        rememberTransformableState { scaleChange, _, _ ->
+            onScaleChange(scale * scaleChange)
+        }
+
+    val aspectRatio =
+        if (viewModel.imageWidth > 0 && viewModel.imageHeight > 0) {
+            viewModel.imageWidth / viewModel.imageHeight
+        } else {
+            1f
         }
 
     Box(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .aspectRatio(
-                    if (viewModel.imageWidth > 0 && viewModel.imageHeight > 0) {
-                        viewModel.imageWidth / viewModel.imageHeight
-                    } else {
-                        // Дефолтное соотношение, пока не загрузилось
-                        1f
-                    },
-                ).padding(4.dp)
+                .aspectRatio(aspectRatio)
+                .padding(4.dp)
                 .drawWithContent {
                     graphicsLayer.record {
                         this@drawWithContent.drawContent()
                     }
                     drawLayer(graphicsLayer)
-                }.then(
+                }.clickable(onClick = { onScaleChange(1f) })
+                .then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
                         Modifier
                     },
                 ).graphicsLayer(
-                    scaleX = scale,
-                    scaleY = scale,
-                    rotationZ = angle,
-                    translationX = offset.x,
-                    translationY = offset.y,
+                    scaleX = animatedScale.value,
+                    scaleY = animatedScale.value,
                 ).transformable(state = state),
     ) {
         Image(

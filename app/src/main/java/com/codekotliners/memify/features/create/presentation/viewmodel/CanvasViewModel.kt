@@ -53,9 +53,6 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
 
     var imageUrl by mutableStateOf<String?>(null)
 
-    var showRadialMenu by mutableStateOf(false)
-    var radialMenuPosition by mutableStateOf(Offset.Zero)
-
     val imagePickerLauncher = mutableStateOf<ActivityResultLauncher<Intent>?>(null)
 
     fun addPointToCurrentLine(point: Offset) {
