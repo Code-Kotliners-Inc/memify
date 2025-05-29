@@ -83,6 +83,7 @@ import com.codekotliners.memify.features.create.presentation.viewmodel.CanvasVie
 import com.codekotliners.memify.features.templates.presentation.ui.TemplatesFeedScreen
 import com.codekotliners.memify.features.templates.presentation.ui.components.ErrorLoadingItem
 import com.codekotliners.memify.features.viewer.presentation.viewmodel.ImageViewerViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -199,10 +200,12 @@ private fun CreateScreenBottomSheet(
         topBar = {
             CreateScreenTopBar(
                 onMenuClick = {
-                    if (scale == 1f) {
-                        coroutineScope.launch {
-                            showImageViewer.value = true
-                            val bitmapCompose = graphicsLayer.toImageBitmap()
+                    coroutineScope.launch {
+                        scale = 1f
+                        showImageViewer.value = true
+                        delay(350)
+                        val bitmapCompose = graphicsLayer.toImageBitmap()
+                        if (scale == 1f) {
                             bitmapState.value = bitmapCompose
 
                             val state = bitmapState.value
@@ -210,8 +213,6 @@ private fun CreateScreenBottomSheet(
                                 viewModelViewer.setBitmapOnly(state.asAndroidBitmap())
                             }
                         }
-                    } else {
-                        scale = 1f
                     }
                 },
                 onShareClick = { viewModelViewer.onShareClick() },
