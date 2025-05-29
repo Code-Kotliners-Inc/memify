@@ -1,16 +1,17 @@
 package com.codekotliners.memify.core.navigation
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -23,6 +24,11 @@ import com.codekotliners.memify.core.navigation.entities.NavBarItems
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     NavigationBar(
+        modifier =
+            Modifier
+                .border(BorderStroke(1.dp, Color.LightGray))
+                .height(60.dp)
+                .fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface,
     ) {
@@ -31,8 +37,8 @@ fun BottomNavigationBar(navController: NavController) {
 
         NavBarItems.BarItems.forEach { navItem ->
             val selected = currentRoute == navItem.route
-
             NavigationBarItem(
+                modifier = Modifier.weight(1f),
                 selected = selected,
                 onClick = {
                     navController.navigate(navItem.route) {
@@ -42,23 +48,16 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 },
                 icon = {
-                    Box(
-                        modifier = Modifier.size(32.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            painter =
-                                painterResource(
-                                    if (selected) navItem.iconPressed else navItem.iconNotPressed,
-                                ),
-                            contentDescription = navItem.title,
-                            modifier = Modifier.size(if (selected) 28.dp else 24.dp),
-                        )
-                    }
+                    Icon(
+                        painter =
+                            painterResource(
+                                if (selected) navItem.iconPressed else navItem.iconNotPressed,
+                            ),
+                        contentDescription = navItem.title,
+                        modifier = Modifier.size(if (selected) 28.dp else 24.dp),
+                    )
                 },
-                label = {
-                    Text(text = navItem.title)
-                },
+                alwaysShowLabel = false,
                 colors =
                     NavigationBarItemDefaults.colors(
                         indicatorColor = Color.Transparent,
