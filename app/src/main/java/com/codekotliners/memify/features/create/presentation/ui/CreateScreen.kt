@@ -135,7 +135,15 @@ fun CreateScreen(
                     .fillMaxSize()
                     .padding(padding),
         ) {
-            CreateScreenBottomSheet(navController, isPublishing, scaffoldState, bottomSheetState, onLogin, viewModel, viewModelViewer)
+            CreateScreenBottomSheet(
+                navController,
+                isPublishing,
+                scaffoldState,
+                bottomSheetState,
+                onLogin,
+                viewModel,
+                viewModelViewer,
+            )
         }
     }
 }
