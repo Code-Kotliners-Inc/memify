@@ -524,20 +524,17 @@ private fun ImageBox(
                         this@drawWithContent.drawContent()
                     }
                     drawLayer(graphicsLayer)
-                }
-                .clickable(onClick = { onScaleChange(1f) })
+                }.clickable(onClick = { onScaleChange(1f) })
                 .then(
                     if (viewModel.isWritingEnabled) {
                         Modifier.clickable(onClick = { viewModel.startWriting() })
                     } else {
                         Modifier
                     },
-                )
-                .graphicsLayer(
+                ).graphicsLayer(
                     scaleX = animatedScale.value,
                     scaleY = animatedScale.value,
-                )
-                .transformable(state = state),
+                ).transformable(state = state),
     ) {
         Image(
             painter = painter,
