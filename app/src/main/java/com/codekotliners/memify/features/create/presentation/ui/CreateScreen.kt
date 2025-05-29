@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.BottomSheetScaffold
@@ -438,12 +437,10 @@ private fun ImageBox(
                     } else {
                         Modifier
                     },
-                )
-                .graphicsLayer(
+                ).graphicsLayer(
                     scaleX = animatedScale.value,
                     scaleY = animatedScale.value,
-                )
-                .transformable(state = state),
+                ).transformable(state = state),
     ) {
         Image(
             painter = painter,
