@@ -1,5 +1,9 @@
 package com.codekotliners.memify.features.create.presentation.viewmodel
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -48,6 +52,8 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
     var isWritingEnabled by mutableStateOf(false)
 
     var imageUrl by mutableStateOf<String?>(null)
+
+    val imagePickerLauncher = mutableStateOf<ActivityResultLauncher<Intent>?>(null)
 
     fun addPointToCurrentLine(point: Offset) {
         currentLine.add(point)
@@ -130,6 +136,20 @@ open class CanvasViewModel @Inject constructor() : ViewModel() {
         val index = canvasElements.indexOfFirst { it.id == element.id }
         if (index >= 0) {
             canvasElements[index] = element.copy(position = newPosition)
+        }
+    }
+
+    fun pickImageFromGallery() {
+        val intent =
+            Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+            }
+        imagePickerLauncher.value?.launch(intent)
+    }
+
+    fun handleImageSelection(uri: Uri?) {
+        uri?.let {
+            imageUrl = it.toString()
         }
     }
 }
