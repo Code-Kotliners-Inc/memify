@@ -239,6 +239,7 @@ private fun CreateScreenBottomSheet(
         },
         sheetPeekHeight = 54.dp,
         sheetSwipeEnabled = true,
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         CreateScreenContent(
             innerPadding,
