@@ -11,6 +11,8 @@ sealed class NavRoutes(
         object Params {
             const val IMAGE_URL = "image_url"
         }
+
+        fun createRoute(imageUrl: String? = null): String = "Create?image_url=${imageUrl ?: ""}"
     }
 
     data object Profile : NavRoutes("Profile")

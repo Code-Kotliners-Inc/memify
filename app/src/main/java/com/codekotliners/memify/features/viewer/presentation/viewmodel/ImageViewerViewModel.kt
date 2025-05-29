@@ -112,8 +112,15 @@ class ImageViewerViewModel @Inject constructor(
         }
     }
 
-    fun onTakeTemplateClick() {
-        // add some logic here
+    fun onTakeTemplateClick(): String? {
+        val state = _imageState.value
+        if (state is ImageState.MetaLoaded) {
+            return state.image.url
+        }
+        if (state is ImageState.Content) {
+            return state.image.url
+        }
+        return null
     }
 
     fun loadData(type: ImageType, id: String) {
@@ -135,7 +142,7 @@ class ImageViewerViewModel @Inject constructor(
     }
 
     suspend fun loadImage(image: GenericImage) {
-        _imageState.value = ImageState.LoadingBitmap
+        _imageState.value = ImageState.LoadingBitmap(image)
         val bitmap = fetchBitmap(context, image.url)
         if (bitmap != null) {
             _imageState.value = ImageState.Content(image, bitmap)
