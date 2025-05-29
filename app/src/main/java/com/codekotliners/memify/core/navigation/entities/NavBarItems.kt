@@ -15,7 +15,7 @@ object NavBarItems {
                 title = "Create",
                 iconNotPressed = R.drawable.outline_add_24,
                 iconPressed = R.drawable.outline_add_24,
-                route = "Create",
+                route = NavRoutes.Create.createRoute(),
             ),
             BarItem(
                 title = "Profile",

@@ -197,7 +197,7 @@ fun AuthButton(
                 text = text,
                 style =
                     MaterialTheme.typography.authButton.copy(
-                        fontSize = 14.sp,
+                        fontSize = 16.sp,
                     ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
