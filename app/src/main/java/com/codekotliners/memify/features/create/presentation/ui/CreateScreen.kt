@@ -404,8 +404,9 @@ private fun ImageBox(
     onScaleChange: (Float) -> Unit,
 ) {
     val animatedScale = animateFloatAsState(targetValue = scale)
+
     val state =
-        rememberTransformableState { scaleChange, _, _ ->
+        rememberTransformableState { scaleChange, offsetChange, _ ->
             onScaleChange(scale * scaleChange)
         }
 

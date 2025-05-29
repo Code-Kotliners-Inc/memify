@@ -90,6 +90,7 @@ fun HomeScreen(
                         textAlign = TextAlign.Center,
                     )
                 },
+                expandedHeight = 48.dp,
             )
 
             PullToRefreshBox(
