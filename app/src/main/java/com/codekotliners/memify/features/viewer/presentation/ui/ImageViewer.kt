@@ -1,6 +1,7 @@
 package com.codekotliners.memify.features.viewer.presentation.ui
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,6 +34,7 @@ import androidx.navigation.NavController
 import com.codekotliners.memify.LocalNavAnimatedVisibilityScope
 import com.codekotliners.memify.LocalSharedTransitionScope
 import com.codekotliners.memify.R
+import com.codekotliners.memify.core.navigation.entities.NavRoutes
 import com.codekotliners.memify.core.ui.components.CenteredCircularProgressIndicator
 import com.codekotliners.memify.features.viewer.domain.model.ImageType
 import com.codekotliners.memify.features.viewer.presentation.state.ImageState
@@ -81,9 +83,22 @@ fun ImageViewerScreen(
                 onBack = { navController.popBackStack() },
                 onShareClick = { viewModel.onShareClick() },
                 onDownloadClick = { viewModel.onDownloadClick(context) },
-                onPublishClick = { viewModel.onPublishClick() },
-                onTakeTemplateClick = { viewModel.onTakeTemplateClick() },
-                title = stringResource(R.string.preview_screen_title),
+                onTakeTemplateClick = {
+                    val url = viewModel.onTakeTemplateClick()
+                    if (url != null) {
+                        navController.navigate(NavRoutes.Create.createRoute(url)) {
+                            popUpTo(NavRoutes.Home.route) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    } else {
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(R.string.cant_take_template),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                    }
+                },
             )
         },
         modifier = Modifier.fillMaxSize(),
