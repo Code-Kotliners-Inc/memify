@@ -13,8 +13,8 @@ object NavBarItems {
             ),
             BarItem(
                 title = "Create",
-                iconNotPressed = R.drawable.outline_add_24,
-                iconPressed = R.drawable.outline_add_24,
+                iconNotPressed = R.drawable.add_24dp,
+                iconPressed = R.drawable.add_24dp,
                 route = NavRoutes.Create.createRoute(),
             ),
             BarItem(
