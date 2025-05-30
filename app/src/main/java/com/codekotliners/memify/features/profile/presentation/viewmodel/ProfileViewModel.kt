@@ -70,6 +70,19 @@ class ProfileViewModel @Inject constructor(
             _state.value = _state.value.copy(isLoggedIn = isLoggedInActually)
         }
 
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            _state.value = _state.value.copy(isLoggedIn = true)
+            viewModelScope.launch {
+                _likedPosts.value = likesRepository.getLikedPosts()
+            }
+        }
+
+        viewModelScope.launch {
+            uriRepository.getAllUris().collect {
+                _savedUris.value = it
+            }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             val imageUri = updateProfileImageUseCase.getProfileImageUrl()?.toUri()
 
