@@ -10,4 +10,5 @@ data class Post(
     val width: Int,
     val isLiked: Boolean,
     val author: User,
+    val createdAt: Long? = 0L,
 )

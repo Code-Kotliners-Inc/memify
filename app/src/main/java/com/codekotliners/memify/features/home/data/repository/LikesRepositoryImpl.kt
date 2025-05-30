@@ -64,6 +64,7 @@ class LikesRepositoryImpl @Inject constructor() : LikesRepository {
                         templateId = doc.getString("templateId") ?: "",
                         height = (doc.getLong("height") ?: 0L).toInt(),
                         width = (doc.getLong("width") ?: 0L).toInt(),
+                        createdAt = doc.getLong("createdAt") ?: 0L,
                     )
                 } catch (e: Exception) {
                     Log.e("LIKED", "Error mapping post: ${e.message}")
