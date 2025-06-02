@@ -15,6 +15,7 @@ fun PostDto.toPost(user: User, isLiked: Boolean): Post =
         width = width,
         isLiked = isLiked,
         author = user,
+        createdAt = createdAt,
     )
 
 fun Post.toPostDto(): PostDto =
@@ -26,4 +27,5 @@ fun Post.toPostDto(): PostDto =
         templateId = templateId,
         height = height,
         width = width,
+        createdAt = createdAt,
     )

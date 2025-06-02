@@ -8,6 +8,7 @@ data class PostDto(
     val templateId: String,
     val height: Int,
     val width: Int,
+    val createdAt: Long? = null,
 ) {
     fun toMap(): Map<String, Any> =
         mapOf(

@@ -32,6 +32,7 @@ class PublishImageUseCase @Inject constructor(
                     templateId = "templateId",
                     height = height,
                     width = width,
+                    createdAt = System.currentTimeMillis(),
                 )
             if (remoteDatasource.uploadPost(postDto, imageUri)) {
                 Log.d("test", "post uploaded successfully")

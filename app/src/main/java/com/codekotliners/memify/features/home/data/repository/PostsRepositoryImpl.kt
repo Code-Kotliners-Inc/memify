@@ -19,23 +19,24 @@ class PostsRepositoryImpl @Inject constructor(
     override suspend fun getPosts(): List<Post> {
         val postDtos = remoteDatasource.getPosts()
 
-        return postDtos.map {
-            val user =
-                when (val userData = userRepository.getUserDataByUid(it.creatorId)) {
-                    is Response.Success -> {
-                        User(
-                            uid = it.creatorId,
-                            profileImageUrl = userData.data["photoUrl"].toString(),
-                            username = userData.data["username"].toString(),
-                        )
+        return postDtos
+            .map {
+                val user =
+                    when (val userData = userRepository.getUserDataByUid(it.creatorId)) {
+                        is Response.Success -> {
+                            User(
+                                uid = it.creatorId,
+                                profileImageUrl = userData.data["photoUrl"].toString(),
+                                username = userData.data["username"].toString(),
+                            )
+                        }
+
+                        is Response.Failure -> mockUser
+                        Response.Loading -> mockUser
                     }
 
-                    is Response.Failure -> mockUser
-                    Response.Loading -> mockUser
-                }
-
-            it.toPost(user, isPostLiked(it))
-        }
+                it.toPost(user, isPostLiked(it))
+            }.sortedByDescending { it.createdAt }
     }
 
     private fun isPostLiked(postDto: PostDto): Boolean {
